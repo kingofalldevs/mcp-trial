@@ -548,7 +548,7 @@
             
             try {
                 const idToken = await user.getIdToken();
-                const response = await fetch('/api/memories', {
+                const response = await fetch(baseUrl + '/api/memories', {
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });
                 
@@ -569,7 +569,7 @@
         async function fetchManualToken(user) {
             try {
                 const idToken = await user.getIdToken();
-                const response = await fetch('/api/generate_token', {
+                const response = await fetch(baseUrl + '/api/generate_token', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${idToken}` }
                 });

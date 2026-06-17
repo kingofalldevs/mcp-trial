@@ -17,6 +17,7 @@ from mcp.server.transport_security import TransportSecuritySettings
 from starlette.responses import JSONResponse, HTMLResponse, RedirectResponse
 from starlette.requests import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 
 load_dotenv()
@@ -460,6 +461,7 @@ async def token_endpoint(request: Request) -> JSONResponse:
 
 if __name__ == "__main__":
     app = mcp.sse_app()
+    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
     app.add_middleware(AuthMiddleware)
     
     port = int(os.environ.get("PORT", "8000"))
