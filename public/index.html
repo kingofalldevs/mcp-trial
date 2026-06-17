@@ -260,8 +260,8 @@
     </main>
 
     <script>
-        // Populate the URLs dynamically based on the current domain
-        const baseUrl = window.location.origin;
+        // Use the production Render URL
+        const baseUrl = "https://mcp-trial-m3g4.onrender.com";
         document.getElementById('mcp-url').innerText = baseUrl + '/sse';
         document.getElementById('auth-url').innerText = baseUrl + '/authorize';
         document.getElementById('token-url').innerText = baseUrl + '/token';
