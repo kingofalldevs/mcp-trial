@@ -399,6 +399,20 @@
                             <button onclick="copyText('client-secret')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                     </div>
+                    
+                    <h3 style="font-size: 1.2rem; color: #f8fafc; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem;">Manual Configuration (Manus, etc.)</h3>
+                    <p style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5;">For AI clients that don't support OAuth, use these manual configuration settings:</p>
+                    
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #a5b4fc; font-size: 0.95rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <div><strong style="color: #fff;">Server URL:</strong> <span id="manual-url"></span></div>
+                            <button onclick="copyText('manual-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div><strong style="color: #fff;">Custom header:</strong> <span id="manual-header">Loading...</span></div>
+                            <button onclick="copyText('manual-header')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -461,6 +475,7 @@
         document.getElementById('mcp-url').innerText = baseUrl + '/sse';
         document.getElementById('auth-url').innerText = baseUrl + '/authorize';
         document.getElementById('token-url').innerText = baseUrl + '/token';
+        document.getElementById('manual-url').innerText = baseUrl + '/sse';
         // Use placeholders that server.py will replace during rendering
         const firebaseConfig = {
             apiKey: "{{FIREBASE_API_KEY}}",
@@ -515,6 +530,7 @@
                     }
                     
                     fetchMemories(user);
+                    fetchManualToken(user);
                 } else {
                     // User is signed out
                     document.getElementById('main-header').style.display = 'flex';
@@ -550,7 +566,24 @@
             }
         }
 
-        
+        async function fetchManualToken(user) {
+            try {
+                const idToken = await user.getIdToken();
+                const response = await fetch('/api/generate_token', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    document.getElementById('manual-header').innerText = `{\"Authorization\": \"Bearer ${data.token}\"}`;
+                } else {
+                    document.getElementById('manual-header').innerText = "Error generating token";
+                }
+            } catch (error) {
+                document.getElementById('manual-header').innerText = "Connection error";
+            }
+        }
+
         function switchTab(tabId) {
             // Hide all contents
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));

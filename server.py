@@ -251,6 +251,50 @@ async def api_memories(request: Request) -> JSONResponse:
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=401)
 
+@mcp.custom_route("/api/generate_token", methods=["POST"])
+async def api_generate_token(request: Request) -> JSONResponse:
+    """Generates a personal access token for clients that don't support OAuth."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        access_token = "memorie-" + str(uuid.uuid4())
+        auth_code = "pat-" + str(uuid.uuid4())
+        created_at = datetime.utcnow().isoformat()
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT access_token FROM oauth_sessions WHERE user_email = %s AND auth_code LIKE 'pat-%%' LIMIT 1", (email,))
+                    row = cursor.fetchone()
+                    if row:
+                        return JSONResponse({"status": "success", "token": row[0]})
+                        
+                    cursor.execute('INSERT INTO oauth_sessions (auth_code, access_token, user_email, created_at) VALUES (%s, %s, %s, %s)', (auth_code, access_token, email, created_at))
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT access_token FROM oauth_sessions WHERE user_email = ? AND auth_code LIKE 'pat-%' LIMIT 1", (email,))
+                row = cursor.fetchone()
+                if row:
+                    return JSONResponse({"status": "success", "token": row[0]})
+                    
+                cursor.execute('INSERT INTO oauth_sessions (auth_code, access_token, user_email, created_at) VALUES (?, ?, ?, ?)', (auth_code, access_token, email, created_at))
+                conn.commit()
+                
+        return JSONResponse({"status": "success", "token": access_token})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
 @mcp.custom_route("/authorize", methods=["GET"])
 async def authorize(request: Request) -> HTMLResponse:
     """The OAuth 2.0 Authorization Endpoint. Displays the Firebase Login page."""
