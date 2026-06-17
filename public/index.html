@@ -318,6 +318,7 @@
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="tab-btn active" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
                 <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Memories</button>
+                <button class="tab-btn" onclick="switchTab('tutorials')" id="btn-tutorials"><i class="ph ph-book-open"></i> Tutorials</button>
                 <button class="tab-btn" onclick="switchTab('billing')" id="btn-billing"><i class="ph ph-credit-card"></i> Billing</button>
                 <button class="tab-btn" onclick="switchTab('account')" id="btn-account"><i class="ph ph-user"></i> Account</button>
             </nav>
@@ -466,6 +467,21 @@
                         </div>
                     </div>
                     <button style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%;" onclick="firebase.auth().signOut()">Sign Out of Memorie</button>
+                </div>
+            </div>
+
+            <!-- Tutorials Tab -->
+            <div id="tab-tutorials" class="tab-content">
+                <div class="dashboard-header">
+                    <div>
+                        <h2 style="font-weight: 600; font-size: 2rem;">Tutorials</h2>
+                        <p style="color: #000000; margin-top: 0.5rem;">Learn how to get the most out of your AI.</p>
+                    </div>
+                </div>
+                <div class="glass-container" style="padding: 2rem; text-align: center;">
+                    <i class="ph ph-video" style="font-size: 48px; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Tutorials coming soon</h3>
+                    <p style="color: #000000; font-size: 0.95rem;">We're working on some great video guides and articles.</p>
                 </div>
             </div>
 
