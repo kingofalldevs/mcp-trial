@@ -194,6 +194,56 @@ def list_memories(limit: int = 10) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 
+@mcp.custom_route("/", methods=["GET"])
+async def serve_dashboard(request: Request) -> HTMLResponse:
+    """Serves the main dashboard UI."""
+    try:
+        index_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "index.html")
+        with open(index_path, "r", encoding="utf-8") as f:
+            html = f.read()
+            
+        # Inject Firebase config into the HTML
+        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
+        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
+        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
+        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
+        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
+        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
+        
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading dashboard: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/api/memories", methods=["GET"])
+async def api_memories(request: Request) -> JSONResponse:
+    """API endpoint for the dashboard to fetch memories using a Firebase ID token."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                    cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (email,))
+                    results = cursor.fetchall()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (email,))
+                results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+                
+        return JSONResponse({"status": "success", "results": results})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=401)
+
 @mcp.custom_route("/authorize", methods=["GET"])
 async def authorize(request: Request) -> HTMLResponse:
     """The OAuth 2.0 Authorization Endpoint. Displays the Firebase Login page."""

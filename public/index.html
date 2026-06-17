@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorie Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        #user-info {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        button.logout {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Glassmorphism Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.5s ease;
+        }
+
+        .glass-container h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-container p {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Dashboard View */
+        #dashboard-view {
+            display: none;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+
+        .memories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .memory-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .memory-date {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .memory-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #loader { display: none; }
+        
+        /* Customizing Firebase UI */
+        .firebaseui-container {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .firebaseui-title { color: white !important; }
+        .firebaseui-subtitle { color: #94a3b8 !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="ph-fill ph-brain"></i> Memorie
+        </div>
+        <div id="user-info">
+            <span id="user-email"></span>
+            <button class="logout" onclick="firebase.auth().signOut()">Sign Out</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Login View -->
+        <div id="login-view" class="glass-container">
+            <h1>Welcome back</h1>
+            <p>Sign in to view the memories your AI assistant has saved for you.</p>
+            <div id="firebaseui-auth-container"></div>
+            <div id="loader" class="spinner"></div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view">
+            <div class="dashboard-header">
+                <div>
+                    <h2 style="font-weight: 600; font-size: 2rem;">Your Memories</h2>
+                    <p style="color: #94a3b8; margin-top: 0.5rem;">Everything your AI has learned.</p>
+                </div>
+            </div>
+            
+            <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px;"></div>
+            <div id="memories-container" class="memories-grid"></div>
+        </div>
+    </main>
+
+    <script>
+        // Use placeholders that server.py will replace during rendering
+        const firebaseConfig = {
+            apiKey: "{{FIREBASE_API_KEY}}",
+            authDomain: "{{FIREBASE_AUTH_DOMAIN}}",
+            projectId: "{{FIREBASE_PROJECT_ID}}",
+            storageBucket: "{{FIREBASE_STORAGE_BUCKET}}",
+            messagingSenderId: "{{FIREBASE_MESSAGING_SENDER_ID}}",
+            appId: "{{FIREBASE_APP_ID}}"
+        };
+        
+        // Only init if API key exists
+        if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
+            firebase.initializeApp(firebaseConfig);
+            
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
+            const uiConfig = {
+                callbacks: {
+                    signInSuccessWithAuthResult: function() { return false; },
+                    uiShown: function() { document.getElementById('loader').style.display = 'none'; }
+                },
+                signInFlow: 'popup',
+                signInOptions: [ firebase.auth.EmailAuthProvider.PROVIDER_ID ]
+            };
+
+            // Listen for auth state changes
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // User is signed in
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('dashboard-view').style.display = 'block';
+                    document.getElementById('user-info').style.display = 'flex';
+                    document.getElementById('user-email').innerText = user.email;
+                    
+                    fetchMemories(user);
+                } else {
+                    // User is signed out
+                    document.getElementById('login-view').style.display = 'block';
+                    document.getElementById('dashboard-view').style.display = 'none';
+                    document.getElementById('user-info').style.display = 'none';
+                    ui.start('#firebaseui-auth-container', uiConfig);
+                }
+            });
+        }
+
+        async function fetchMemories(user) {
+            document.getElementById('memories-loading').style.display = 'block';
+            document.getElementById('memories-container').innerHTML = '';
+            
+            try {
+                const idToken = await user.getIdToken();
+                const response = await fetch('/api/memories', {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                
+                const data = await response.json();
+                document.getElementById('memories-loading').style.display = 'none';
+                
+                if (data.status === 'success') {
+                    renderMemories(data.results);
+                } else {
+                    document.getElementById('memories-container').innerHTML = `<p style="color: #ef4444;">Error loading memories: ${data.message}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('memories-loading').style.display = 'none';
+                document.getElementById('memories-container').innerHTML = `<p style="color: #ef4444;">Connection error.</p>`;
+            }
+        }
+
+        function renderMemories(memories) {
+            const container = document.getElementById('memories-container');
+            if (memories.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 3rem;">Your AI hasn't saved any memories yet. Go chat with it!</p>`;
+                return;
+            }
+            
+            memories.forEach(mem => {
+                const date = new Date(mem.timestamp).toLocaleDateString('en-US', { 
+                    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' 
+                });
+                
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.innerHTML = `
+                    <div class="memory-date"><i class="ph ph-clock"></i> ${date}</div>
+                    <div class="memory-content">${mem.content}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
