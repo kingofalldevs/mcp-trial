@@ -1,24 +1,31 @@
-from mcp.server.fastmcp import FastMCP
-from mcp.server.transport_security import TransportSecuritySettings
-from starlette.responses import JSONResponse, HTMLResponse
-from starlette.requests import Request
-import sqlite3
 import os
 import json
 import uuid
-from datetime import datetime
+import sqlite3
 import psycopg2
+from datetime import datetime
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+
+import contextvars
 
 import firebase_admin
 from firebase_admin import credentials, auth as firebase_auth
 
+from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
+from starlette.responses import JSONResponse, HTMLResponse, RedirectResponse
+from starlette.requests import Request
+from starlette.middleware.base import BaseHTTPMiddleware
+import uvicorn
+
 load_dotenv()
 
-# Initialize FastMCP server
+# We use a ContextVar to store the user's email securely across the async call chain
+user_email_var = contextvars.ContextVar("user_email", default=None)
+
 mcp = FastMCP(
-    "simple-json-server",
+    "ai-memory-server",
     transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False)
 )
 
@@ -40,7 +47,6 @@ def init_db():
     if DATABASE_URL:
         with psycopg2.connect(DATABASE_URL) as conn:
             with conn.cursor() as cursor:
-                # Memories table
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS memories (
                         id SERIAL PRIMARY KEY,
@@ -49,12 +55,12 @@ def init_db():
                         user_email TEXT NOT NULL
                     )
                 ''')
-                # Sessions table
                 cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS sessions (
+                    CREATE TABLE IF NOT EXISTS oauth_sessions (
                         auth_code TEXT PRIMARY KEY,
-                        user_email TEXT,
-                        status TEXT NOT NULL
+                        access_token TEXT,
+                        user_email TEXT NOT NULL,
+                        created_at TEXT NOT NULL
                     )
                 ''')
             conn.commit()
@@ -70,67 +76,58 @@ def init_db():
                 )
             ''')
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS sessions (
+                CREATE TABLE IF NOT EXISTS oauth_sessions (
                     auth_code TEXT PRIMARY KEY,
-                    user_email TEXT,
-                    status TEXT NOT NULL
+                    access_token TEXT,
+                    user_email TEXT NOT NULL,
+                    created_at TEXT NOT NULL
                 )
             ''')
             conn.commit()
 
 init_db()
 
-def get_session_email(auth_code: str):
-    """Returns the email for an auth_code if verified, else None."""
+def get_email_for_access_token(access_token: str):
+    """Verifies the bearer token against the database."""
+    if not access_token: return None
     if DATABASE_URL:
         with psycopg2.connect(DATABASE_URL) as conn:
             with conn.cursor() as cursor:
-                cursor.execute('SELECT user_email, status FROM sessions WHERE auth_code = %s', (auth_code,))
+                cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = %s', (access_token,))
                 row = cursor.fetchone()
-                if row and row[1] == 'verified':
-                    return row[0]
+                return row[0] if row else None
     else:
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT user_email, status FROM sessions WHERE auth_code = ?', (auth_code,))
+            cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = ?', (access_token,))
             row = cursor.fetchone()
-            if row and row[1] == 'verified':
-                return row[0]
-    return None
+            return row[0] if row else None
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # We only protect the MCP streaming endpoints
+        if request.url.path in ["/sse", "/messages/"]:
+            auth_header = request.headers.get("Authorization")
+            if not auth_header or not auth_header.startswith("Bearer "):
+                return JSONResponse({"error": "Unauthorized", "details": "Missing Bearer token"}, status_code=401)
+            
+            token = auth_header.split(" ")[1]
+            email = get_email_for_access_token(token)
+            
+            if not email:
+                return JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401)
+            
+            # Save the email in context so the tools can magically read it
+            user_email_var.set(email)
+            
+        return await call_next(request)
 
 @mcp.tool()
-def get_auth_link() -> str:
-    """Generates a secure login link. The AI should tell the user to visit this link to authenticate. Returns the auth_code and the URL."""
-    auth_code = str(uuid.uuid4())[:8].upper()
-    try:
-        if DATABASE_URL:
-            with psycopg2.connect(DATABASE_URL) as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO sessions (auth_code, status) VALUES (%s, %s)', (auth_code, 'pending'))
-                conn.commit()
-        else:
-            with sqlite3.connect(DB_PATH) as conn:
-                cursor = conn.cursor()
-                cursor.execute('INSERT INTO sessions (auth_code, status) VALUES (?, ?)', (auth_code, 'pending'))
-                conn.commit()
-        
-        # Replace this with your actual Render URL later if hardcoding, or use a generic one
-        login_url = f"http://localhost:8000/login?code={auth_code}" 
-        return json.dumps({
-            "message": f"Please ask the user to visit this URL to authenticate.",
-            "auth_code": auth_code,
-            "url": login_url,
-            "instructions_for_ai": "Display the URL to the user. Once they verify, you can use the 'auth_code' in subsequent tool calls."
-        }, indent=2)
-    except Exception as e:
-        return json.dumps({"status": "error", "message": str(e)})
-
-@mcp.tool()
-def save_memory(auth_code: str, content: str) -> str:
-    """Saves a memory for the user. Requires a verified auth_code."""
-    user_email = get_session_email(auth_code)
+def save_memory(content: str) -> str:
+    """Saves a piece of information, a summary, or a memory into the AI's persistent storage for the authenticated user."""
+    user_email = user_email_var.get()
     if not user_email:
-        return json.dumps({"status": "error", "message": "Unauthorized. Call get_auth_link() and ask the user to sign in."})
+        return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
     try:
         timestamp = datetime.utcnow().isoformat() + "Z"
@@ -151,11 +148,11 @@ def save_memory(auth_code: str, content: str) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def search_memory(auth_code: str, query: str) -> str:
-    """Searches past memories based on a text query. Requires a verified auth_code."""
-    user_email = get_session_email(auth_code)
+def search_memory(query: str) -> str:
+    """Searches past memories based on a text query for the authenticated user."""
+    user_email = user_email_var.get()
     if not user_email:
-        return json.dumps({"status": "error", "message": "Unauthorized. Call get_auth_link() and ask the user to sign in."})
+        return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
     try:
         if DATABASE_URL:
@@ -174,11 +171,11 @@ def search_memory(auth_code: str, query: str) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def list_memories(auth_code: str, limit: int = 10) -> str:
-    """Lists the most recent memories. Requires a verified auth_code."""
-    user_email = get_session_email(auth_code)
+def list_memories(limit: int = 10) -> str:
+    """Lists the most recent memories for the authenticated user."""
+    user_email = user_email_var.get()
     if not user_email:
-        return json.dumps({"status": "error", "message": "Unauthorized. Call get_auth_link() and ask the user to sign in."})
+        return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
     try:
         if DATABASE_URL:
@@ -197,26 +194,20 @@ def list_memories(auth_code: str, limit: int = 10) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 
-@mcp.custom_route("/", methods=["GET"])
-async def home(request: Request) -> JSONResponse:
-    return JSONResponse({
-        "status": "online",
-        "message": "AI Memory MCP Server is running!",
-        "version": "1.1.0"
-    })
-
-@mcp.custom_route("/login", methods=["GET"])
-async def login_page(request: Request) -> HTMLResponse:
-    """Serves the Firebase UI login page."""
-    code = request.query_params.get("code")
-    if not code:
-        return HTMLResponse("<h1>Missing auth code</h1>", status_code=400)
+@mcp.custom_route("/authorize", methods=["GET"])
+async def authorize(request: Request) -> HTMLResponse:
+    """The OAuth 2.0 Authorization Endpoint. Displays the Firebase Login page."""
+    redirect_uri = request.query_params.get("redirect_uri")
+    state = request.query_params.get("state")
+    
+    if not redirect_uri:
+        return HTMLResponse("<h1>Missing redirect_uri parameter</h1>", status_code=400)
     
     html = f"""
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Login - AI Memory Server</title>
+        <title>Login - Connect AI</title>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
@@ -228,18 +219,12 @@ async def login_page(request: Request) -> HTMLResponse:
     </head>
     <body>
         <div class="container">
-            <h2>Sign in to connect your AI</h2>
-            <p>Auth Code: <strong>{code}</strong></p>
+            <h2>Authorize AI Access</h2>
             <div id="firebaseui-auth-container"></div>
             <div id="loader">Loading...</div>
-            <div id="success-message" style="display: none; color: green;">
-                <h3>Verified!</h3>
-                <p>You can close this window and return to your AI assistant.</p>
-            </div>
         </div>
 
         <script>
-            // Initialize Firebase from environment variables injected by server
             const firebaseConfig = {{
                 apiKey: "{os.environ.get('FIREBASE_API_KEY', '')}",
                 authDomain: "{os.environ.get('FIREBASE_AUTH_DOMAIN', '')}",
@@ -255,20 +240,21 @@ async def login_page(request: Request) -> HTMLResponse:
                 callbacks: {{
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {{
                         document.getElementById('firebaseui-auth-container').style.display = 'none';
-                        document.getElementById('loader').innerText = 'Verifying token...';
+                        document.getElementById('loader').innerText = 'Verifying and redirecting...';
                         
-                        // Get ID token and send to backend
                         authResult.user.getIdToken().then(function(idToken) {{
-                            fetch('/verify_token', {{
+                            fetch('/oauth/verify_firebase_token', {{
                                 method: 'POST',
                                 headers: {{ 'Content-Type': 'application/json' }},
-                                body: JSON.stringify({{ code: '{code}', idToken: idToken }})
+                                body: JSON.stringify({{ idToken: idToken }})
                             }})
                             .then(response => response.json())
                             .then(data => {{
                                 if(data.status === 'success') {{
-                                    document.getElementById('loader').style.display = 'none';
-                                    document.getElementById('success-message').style.display = 'block';
+                                    // Complete OAuth flow by redirecting back with code and state
+                                    const sep = "{redirect_uri}".includes("?") ? "&" : "?";
+                                    const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
+                                    window.location.href = redirectUri;
                                 }} else {{
                                     document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
                                 }}
@@ -288,48 +274,93 @@ async def login_page(request: Request) -> HTMLResponse:
     """
     return HTMLResponse(html)
 
-@mcp.custom_route("/verify_token", methods=["POST"])
-async def verify_token(request: Request) -> JSONResponse:
-    """Receives the Firebase ID token from the client, verifies it, and links the session."""
+@mcp.custom_route("/oauth/verify_firebase_token", methods=["POST"])
+async def oauth_verify_firebase(request: Request) -> JSONResponse:
+    """Internal route. Verifies Firebase token and creates an OAuth authorization code."""
     try:
         body = await request.json()
-        code = body.get("code")
         id_token = body.get("idToken")
-
-        if not code or not id_token:
-            return JSONResponse({"status": "error", "message": "Missing code or token"}, status_code=400)
-
-        # Verify the token using Firebase Admin
+        
+        if not id_token:
+            return JSONResponse({"status": "error", "message": "Missing idToken"}, status_code=400)
+            
         decoded_token = firebase_auth.verify_id_token(id_token)
         email = decoded_token.get("email")
-
         if not email:
-            return JSONResponse({"status": "error", "message": "Token does not contain an email"}, status_code=400)
-
-        # Update the session in the database
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        auth_code = str(uuid.uuid4())
+        created_at = datetime.utcnow().isoformat()
+        
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('UPDATE sessions SET user_email = %s, status = %s WHERE auth_code = %s', (email, 'verified', code))
+                    cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at) VALUES (%s, %s, %s)', (auth_code, email, created_at))
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('UPDATE sessions SET user_email = ?, status = ? WHERE auth_code = ?', (email, 'verified', code))
+                cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at) VALUES (?, ?, ?)', (auth_code, email, created_at))
                 conn.commit()
-
-        return JSONResponse({"status": "success", "message": "Verified successfully"})
-
+                
+        return JSONResponse({"status": "success", "auth_code": auth_code})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
+@mcp.custom_route("/token", methods=["POST", "OPTIONS"])
+async def token_endpoint(request: Request) -> JSONResponse:
+    """The OAuth 2.0 Token Endpoint. Exchanges an auth_code for an access_token."""
+    # Support CORS for browser-based OAuth flows if needed
+    if request.method == "OPTIONS":
+        return JSONResponse({}, headers={"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type"})
+        
+    try:
+        content_type = request.headers.get("content-type", "")
+        if "application/x-www-form-urlencoded" in content_type:
+            form = await request.form()
+            code = form.get("code")
+        else:
+            body = await request.json()
+            code = body.get("code")
+    except:
+        return JSONResponse({"error": "invalid_request"}, status_code=400)
+            
+    if not code:
+        return JSONResponse({"error": "invalid_request", "error_description": "Missing code"}, status_code=400)
+        
+    access_token = str(uuid.uuid4()) + "-token"
+    
+    # Verify auth_code and swap it for access_token
+    updated = False
+    if DATABASE_URL:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('UPDATE oauth_sessions SET access_token = %s WHERE auth_code = %s RETURNING user_email', (access_token, code))
+                if cursor.fetchone():
+                    updated = True
+            conn.commit()
+    else:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('UPDATE oauth_sessions SET access_token = ? WHERE auth_code = ?', (access_token, code))
+            if cursor.rowcount > 0:
+                updated = True
+            conn.commit()
+            
+    if not updated:
+        return JSONResponse({"error": "invalid_grant"}, status_code=400)
+        
+    return JSONResponse({
+        "access_token": access_token,
+        "token_type": "Bearer",
+        "expires_in": 31536000 # 1 year
+    }, headers={"Access-Control-Allow-Origin": "*"})
+
 
 if __name__ == "__main__":
-    port = os.environ.get("PORT")
-    if port:
-        print(f"Starting SSE server on port {port}")
-        mcp.settings.host = "0.0.0.0"
-        mcp.settings.port = int(port)
-        mcp.run(transport="sse")
-    else:
-        mcp.run()
+    app = mcp.sse_app()
+    app.add_middleware(AuthMiddleware)
+    
+    port = int(os.environ.get("PORT", "8000"))
+    print(f"Starting MCP Server with Native OAuth on port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port)
