@@ -334,8 +334,14 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div style="flex: 1; padding: 3rem; overflow-y: auto;">
+        <div style="flex: 1; padding: 3rem; overflow-y: auto; position: relative;">
             
+            <!-- Theme Toggle -->
+            <div style="position: absolute; top: 2rem; right: 3rem; background: rgba(0, 0, 0, 0.05); border: 1px solid var(--glass-border); border-radius: 30px; padding: 0.5rem 1rem; display: flex; gap: 1.2rem; align-items: center; z-index: 10;">
+                <i class="ph ph-sun" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.color='#000000'" onmouseout="this.style.transform='scale(1)'; this.style.color='#475569'"></i>
+                <i class="ph ph-coffee" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.color='#000000'" onmouseout="this.style.transform='scale(1)'; this.style.color='#475569'"></i>
+                <i class="ph ph-moon" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.color='#000000'" onmouseout="this.style.transform='scale(1)'; this.style.color='#475569'"></i>
+            </div>
             <!-- Memories Tab -->
             <div id="tab-memories" class="tab-content">
                 <div class="dashboard-header">
