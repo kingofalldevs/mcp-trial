@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorie - Your AI's Perfect Memory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg-color: #f2ebd9;
+            --text-color: #1e293b;
+            --glass-bg: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism utility */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0f172a;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+            box-shadow: none;
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #334155;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 2.5rem;
+            text-align: left;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            background: rgba(16, 185, 129, 0.15);
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+
+        .feature-desc {
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 3rem;
+            text-align: center;
+            color: #64748b;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="ph-fill ph-brain" style="color: var(--primary);"></i> Memorie
+        </div>
+        <div>
+            <a href="/" class="btn">Go to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.05); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #0f172a; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
+            <i class="ph-fill ph-sparkle" style="color: var(--primary);"></i> Now supporting full MCP integration
+        </div>
+        <h1>Your AI's Perfect <br/> <span style="color: var(--primary);">Photographic Memory</span></h1>
+        <p>Connect Memorie to your favorite AI tools like ChatGPT, Claude, and Cursor. Give your AI assistants persistent, long-term memory across all your sessions.</p>
+        <div class="hero-actions">
+            <a href="/" class="btn">Get Started for Free</a>
+            <a href="#features" class="btn btn-outline">Explore Features</a>
+        </div>
+    </div>
+
+    <div id="features" class="features">
+        <div class="feature-card glass-container">
+            <div class="feature-icon"><i class="ph-fill ph-plugs"></i></div>
+            <h3 class="feature-title">Universal Compatibility</h3>
+            <p class="feature-desc">Works seamlessly with any AI tool that supports the Model Context Protocol (MCP). ChatGPT, Claude, Cursor, and Windsurf are all ready to go.</p>
+        </div>
+        <div class="feature-card glass-container">
+            <div class="feature-icon"><i class="ph-fill ph-hard-drives"></i></div>
+            <h3 class="feature-title">Persistent Storage</h3>
+            <p class="feature-desc">Your AI tools will never forget important details again. Memorie securely stores context, preferences, and project details across separate sessions.</p>
+        </div>
+        <div class="feature-card glass-container">
+            <div class="feature-icon"><i class="ph-fill ph-lock-key"></i></div>
+            <h3 class="feature-title">Secure & Private</h3>
+            <p class="feature-desc">Your memories are tied directly to your account. You have full control over what your AI remembers and what gets deleted.</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Memorie Inc. All rights reserved.
+    </footer>
+
+</body>
+</html>

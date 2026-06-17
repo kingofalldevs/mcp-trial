@@ -200,7 +200,16 @@ def list_memories(limit: int = 10) -> str:
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
-
+@mcp.custom_route("/landing", methods=["GET"])
+async def serve_landing(request: Request) -> HTMLResponse:
+    """Serves the landing page."""
+    try:
+        landing_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "landing.html")
+        with open(landing_path, "r", encoding="utf-8") as f:
+            html = f.read()
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading landing page: {str(e)}</h1>", status_code=500)
 
 @mcp.custom_route("/", methods=["GET"])
 async def serve_dashboard(request: Request) -> HTMLResponse:
