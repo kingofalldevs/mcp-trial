@@ -1,11 +1,15 @@
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 import json
 from datetime import datetime
 from starlette.responses import JSONResponse
 from starlette.requests import Request
 
-# Initialize FastMCP server
-mcp = FastMCP("simple-json-server")
+# Initialize FastMCP server with DNS rebinding protection disabled for cloud hosting
+mcp = FastMCP(
+    "simple-json-server",
+    transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False)
+)
 
 @mcp.custom_route("/", methods=["GET"])
 async def home(request: Request) -> JSONResponse:
