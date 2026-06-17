@@ -233,17 +233,7 @@
 
         <!-- Dashboard View -->
         <div id="dashboard-view">
-            <div class="dashboard-header">
-                <div>
-                    <h2 style="font-weight: 600; font-size: 2rem;">Your Memories</h2>
-                    <p style="color: #94a3b8; margin-top: 0.5rem;">Everything your AI has learned.</p>
-                </div>
-            </div>
-            
-            <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px;"></div>
-            <div id="memories-container" class="memories-grid"></div>
-            
-            <div class="glass-container" style="max-width: 100%; margin-top: 4rem; text-align: left; padding: 2.5rem;">
+            <div class="glass-container" style="max-width: 100%; margin-bottom: 3rem; text-align: left; padding: 2.5rem;">
                 <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #f8fafc; font-weight: 600;">How to Connect Your AI</h3>
                 <p style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5;">To give your AI access to these memories, go to ChatGPT, click "Create App" (or "Attach Custom MCP Server"), and enter these exact details:</p>
                 
@@ -256,6 +246,16 @@
                     <div style="margin-bottom: 0;"><strong style="color: #fff;">Client Secret:</strong> secret-123</div>
                 </div>
             </div>
+
+            <div class="dashboard-header">
+                <div>
+                    <h2 style="font-weight: 600; font-size: 2rem;">Your Memories</h2>
+                    <p style="color: #94a3b8; margin-top: 0.5rem;">Everything your AI has learned.</p>
+                </div>
+            </div>
+            
+            <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px;"></div>
+            <div id="memories-container" class="memories-grid"></div>
         </div>
     </main>
 
