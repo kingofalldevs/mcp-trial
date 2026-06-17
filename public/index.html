@@ -74,18 +74,8 @@
             gap: 1rem;
         }
 
-        button.logout {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        button.logout:hover {
-            background: rgba(255, 255, 255, 0.2);
+        #user-avatar:hover, #user-icon:hover {
+            transform: scale(1.05);
         }
 
         main {
@@ -221,9 +211,8 @@
             <i class="ph-fill ph-brain"></i> Memorie
         </div>
         <div id="user-info">
-            <img id="user-avatar" src="" alt="User profile" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border); cursor: pointer;">
-            <i id="user-icon" class="ph-fill ph-user-circle" style="font-size: 36px; color: #94a3b8; display: none; cursor: pointer;"></i>
-            <button class="logout" onclick="firebase.auth().signOut()">Sign Out</button>
+            <img id="user-avatar" src="" alt="User profile" title="Click to sign out" onclick="firebase.auth().signOut()" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border); cursor: pointer; transition: transform 0.2s;">
+            <i id="user-icon" class="ph-fill ph-user-circle" title="Click to sign out" onclick="firebase.auth().signOut()" style="font-size: 36px; color: #94a3b8; display: none; cursor: pointer; transition: transform 0.2s;"></i>
         </div>
     </header>
 
