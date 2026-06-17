@@ -621,7 +621,7 @@
             navigator.clipboard.writeText(text).then(() => {
                 const btn = event.currentTarget;
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="ph ph-check" style="color: #4ade80;"></i>';
+                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> <span style="font-size: 0.75rem; margin-left: 0.3rem; font-weight: 500;">Copied!</span>';
                 setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
             });
         }
