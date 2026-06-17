@@ -21,10 +21,10 @@
         :root {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
-            --bg-color: #0f172a;
-            --text-color: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-color: #f2ebd9;
+            --text-color: #1e293b;
+            --glass-bg: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -167,8 +167,8 @@
         }
 
         .tab-btn:hover {
-            background: rgba(255,255,255,0.05);
-            color: #f8fafc;
+            background: rgba(0,0,0,0.05);
+            color: #1e293b;
         }
 
         .tab-btn.active {
@@ -178,7 +178,7 @@
         }
 
         .copy-btn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.1);
             border: none;
             color: #94a3b8;
             border-radius: 6px;
@@ -191,8 +191,8 @@
         }
         
         .copy-btn:hover {
-            background: rgba(255,255,255,0.2);
-            color: #fff;
+            background: rgba(0,0,0,0.2);
+            color: #0f172a;
         }
 
         .tab-content {
@@ -264,7 +264,7 @@
 
         /* Loading Spinner */
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(0, 0, 0, 0.1);
             border-top: 3px solid var(--primary);
             border-radius: 50%;
             width: 24px;
@@ -361,7 +361,7 @@
                 
                 <div class="glass-container" style="max-width: 100%; margin-bottom: 3rem; text-align: left; padding: 2rem;">
                     <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                        <h3 style="font-size: 1.2rem; color: #f8fafc; font-weight: 600;">Connection Details</h3>
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600;">Connection Details</h3>
                         <div style="display: flex; gap: 0.75rem; font-size: 0.85rem; font-weight: 400; color: #cbd5e1; background: rgba(0,0,0,0.2); padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid var(--glass-border); align-items: center;">
                             <span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 0.25rem;">Works with:</span>
                             <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 14px; height: 14px; border-radius: 3px;"> ChatGPT</span> • 
@@ -374,42 +374,42 @@
                     
                     <p style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5;">To give your AI access to these memories, go to your AI client, click "Create App" (or "Attach Custom MCP Server"), and enter these exact details:</p>
                     
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #a5b4fc; font-size: 0.95rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Connection URL:</strong> <span id="mcp-url"></span></div>
+                    <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Connection URL:</strong> <span id="mcp-url"></span></div>
                             <button onclick="copyText('mcp-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Authentication:</strong> OAuth</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Authentication:</strong> OAuth</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Authorization URL:</strong> <span id="auth-url"></span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Authorization URL:</strong> <span id="auth-url"></span></div>
                             <button onclick="copyText('auth-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Token URL:</strong> <span id="token-url"></span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Token URL:</strong> <span id="token-url"></span></div>
                             <button onclick="copyText('token-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Client ID:</strong> <span id="client-id">memorie-client</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Client ID:</strong> <span id="client-id">memorie-client</span></div>
                             <button onclick="copyText('client-id')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div><strong style="color: #fff;">Client Secret:</strong> <span id="client-secret">secret-123</span></div>
+                            <div><strong style="color: #0f172a;">Client Secret:</strong> <span id="client-secret">secret-123</span></div>
                             <button onclick="copyText('client-secret')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                     </div>
                     
-                    <h3 style="font-size: 1.2rem; color: #f8fafc; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem;">Manual Configuration (Manus, etc.)</h3>
+                    <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem;">Manual Configuration (Manus, etc.)</h3>
                     <p style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.5;">For AI clients that don't support OAuth, use these manual configuration settings:</p>
                     
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #a5b4fc; font-size: 0.95rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <div><strong style="color: #fff;">Server URL:</strong> <span id="manual-url"></span></div>
+                    <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div><strong style="color: #0f172a;">Server URL:</strong> <span id="manual-url"></span></div>
                             <button onclick="copyText('manual-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div><strong style="color: #fff;">Custom header:</strong> <span id="manual-header">Loading...</span></div>
+                            <div><strong style="color: #0f172a;">Custom header:</strong> <span id="manual-header">Loading...</span></div>
                             <button onclick="copyText('manual-header')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                     </div>
@@ -428,14 +428,14 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem;">
                         <div>
                             <div style="color: #94a3b8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Current Plan</div>
-                            <div style="font-size: 1.5rem; color: #fff; font-weight: 600;">Free Tier</div>
+                            <div style="font-size: 1.5rem; color: #0f172a; font-weight: 600;">Free Tier</div>
                         </div>
-                        <div style="font-size: 2rem; color: #fff; font-weight: 800;">
+                        <div style="font-size: 2rem; color: #0f172a; font-weight: 800;">
                             $0 <span style="font-size: 1rem; color: #94a3b8; font-weight: 400;">/mo</span>
                         </div>
                     </div>
                     
-                    <h3 style="font-size: 1.1rem; color: #f8fafc; font-weight: 600; margin-bottom: 1rem;">Usage this month</h3>
+                    <h3 style="font-size: 1.1rem; color: #1e293b; font-weight: 600; margin-bottom: 1rem;">Usage this month</h3>
                     <div style="background: rgba(0,0,0,0.2); border-radius: 8px; height: 8px; width: 100%; margin-bottom: 0.5rem; overflow: hidden;">
                         <div style="background: var(--primary); height: 100%; width: 15%; border-radius: 8px;"></div>
                     </div>
@@ -458,7 +458,7 @@
                         <i id="account-icon" class="ph-fill ph-user-circle" style="font-size: 64px; color: #94a3b8; display: none;"></i>
                         <div>
                             <div style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.25rem;">Signed in as</div>
-                            <div id="account-email" style="font-size: 1.1rem; color: #fff; font-weight: 500;"></div>
+                            <div id="account-email" style="font-size: 1.1rem; color: #0f172a; font-weight: 500;"></div>
                         </div>
                     </div>
                     <button style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%;" onclick="firebase.auth().signOut()">Sign Out of Memorie</button>
