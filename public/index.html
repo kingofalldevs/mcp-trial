@@ -300,8 +300,8 @@
                 <i class="ph-fill ph-brain" style="color: var(--primary);"></i> Memorie
             </div>
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <button class="tab-btn active" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Memories</button>
-                <button class="tab-btn" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
+                <button class="tab-btn active" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
+                <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Memories</button>
                 <button class="tab-btn" onclick="switchTab('billing')" id="btn-billing"><i class="ph ph-credit-card"></i> Billing</button>
                 <button class="tab-btn" onclick="switchTab('account')" id="btn-account"><i class="ph ph-user"></i> Account</button>
             </nav>
@@ -321,7 +321,7 @@
         <div style="flex: 1; padding: 3rem; overflow-y: auto;">
             
             <!-- Memories Tab -->
-            <div id="tab-memories" class="tab-content active">
+            <div id="tab-memories" class="tab-content">
                 <div class="dashboard-header">
                     <div>
                         <h2 style="font-weight: 600; font-size: 2rem;">Your Memories</h2>
@@ -333,7 +333,7 @@
             </div>
 
             <!-- Connect Tab -->
-            <div id="tab-connect" class="tab-content">
+            <div id="tab-connect" class="tab-content active">
                 <div class="dashboard-header">
                     <div>
                         <h2 style="font-weight: 600; font-size: 2rem;">Connect Your AI</h2>
