@@ -1,9 +1,23 @@
 from mcp.server.fastmcp import FastMCP
 import json
 from datetime import datetime
+from starlette.responses import JSONResponse
+from starlette.requests import Request
 
 # Initialize FastMCP server
 mcp = FastMCP("simple-json-server")
+
+@mcp.custom_route("/", methods=["GET"])
+async def home(request: Request) -> JSONResponse:
+    return JSONResponse({
+        "status": "online",
+        "message": "Simple JSON MCP Server is running!",
+        "version": "1.0.0",
+        "endpoints": {
+            "sse": "/sse",
+            "messages": "/messages/"
+        }
+    })
 
 @mcp.tool()
 def get_json_data() -> str:
