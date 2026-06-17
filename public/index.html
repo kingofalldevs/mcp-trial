@@ -221,7 +221,8 @@
             <i class="ph-fill ph-brain"></i> Memorie
         </div>
         <div id="user-info">
-            <span id="user-email"></span>
+            <img id="user-avatar" src="" alt="User profile" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border); cursor: pointer;">
+            <i id="user-icon" class="ph-fill ph-user-circle" style="font-size: 36px; color: #94a3b8; display: none; cursor: pointer;"></i>
             <button class="logout" onclick="firebase.auth().signOut()">Sign Out</button>
         </div>
     </header>
@@ -317,7 +318,17 @@
                     document.getElementById('login-view').style.display = 'none';
                     document.getElementById('dashboard-view').style.display = 'block';
                     document.getElementById('user-info').style.display = 'flex';
-                    document.getElementById('user-email').innerText = user.email;
+                    
+                    if (user.photoURL) {
+                        document.getElementById('user-avatar').src = user.photoURL;
+                        document.getElementById('user-avatar').title = user.email;
+                        document.getElementById('user-avatar').style.display = 'block';
+                        document.getElementById('user-icon').style.display = 'none';
+                    } else {
+                        document.getElementById('user-icon').title = user.email;
+                        document.getElementById('user-icon').style.display = 'block';
+                        document.getElementById('user-avatar').style.display = 'none';
+                    }
                     
                     fetchMemories(user);
                 } else {
