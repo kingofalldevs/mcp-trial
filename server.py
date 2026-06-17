@@ -51,10 +51,13 @@ def init_db():
                     CREATE TABLE IF NOT EXISTS memories (
                         id SERIAL PRIMARY KEY,
                         timestamp TEXT NOT NULL,
-                        content TEXT NOT NULL,
-                        user_email TEXT NOT NULL
+                        content TEXT NOT NULL
                     )
                 ''')
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='memories' AND column_name='user_email'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE memories ADD COLUMN user_email TEXT DEFAULT ''")
+                
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS oauth_sessions (
                         auth_code TEXT PRIMARY KEY,
@@ -71,10 +74,14 @@ def init_db():
                 CREATE TABLE IF NOT EXISTS memories (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp TEXT NOT NULL,
-                    content TEXT NOT NULL,
-                    user_email TEXT NOT NULL
+                    content TEXT NOT NULL
                 )
             ''')
+            cursor.execute("PRAGMA table_info(memories)")
+            columns = [info[1] for info in cursor.fetchall()]
+            if 'user_email' not in columns:
+                cursor.execute("ALTER TABLE memories ADD COLUMN user_email TEXT DEFAULT ''")
+                
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS oauth_sessions (
                     auth_code TEXT PRIMARY KEY,
@@ -315,7 +322,7 @@ async def authorize(request: Request) -> HTMLResponse:
                     uiShown: function() {{ document.getElementById('loader').style.display = 'none'; }}
                 }},
                 signInFlow: 'popup',
-                signInOptions: [ firebase.auth.EmailAuthProvider.PROVIDER_ID ]
+                signInOptions: [ firebase.auth.GoogleAuthProvider.PROVIDER_ID ]
             }};
             ui.start('#firebaseui-auth-container', uiConfig);
         </script>
