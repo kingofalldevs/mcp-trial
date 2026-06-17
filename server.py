@@ -23,32 +23,63 @@ async def home(request: Request) -> JSONResponse:
         }
     })
 
+import sqlite3
+import os
+
+# Initialize database
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "memory.db")
+
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS memories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                content TEXT NOT NULL
+            )
+        ''')
+        conn.commit()
+
+init_db()
+
 @mcp.tool()
-def get_json_data() -> str:
-    """Returns a mock JSON dataset representing user info and system status."""
-    data = {
-        "status": "success",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "serverInfo": {
-            "name": "simple-json-server",
-            "type": "Model Context Protocol (MCP)",
-            "status": "online",
-            "environment": "Python"
-        },
-        "payload": {
-            "users": [
-                { "id": 101, "name": "Sarah Connor", "role": "Leader" },
-                { "id": 102, "name": "John Connor", "role": "Commander" },
-                { "id": 103, "name": "T-800", "role": "Guardian" }
-            ],
-            "config": {
-                "debug": True,
-                "mode": "autonomous",
-                "location": "Los Angeles"
-            }
-        }
-    }
-    return json.dumps(data, indent=2)
+def save_memory(content: str) -> str:
+    """Saves a piece of information, a summary, or a memory into the AI's persistent storage."""
+    try:
+        timestamp = datetime.utcnow().isoformat() + "Z"
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO memories (timestamp, content) VALUES (?, ?)', (timestamp, content))
+            conn.commit()
+            return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)})
+
+@mcp.tool()
+def search_memory(query: str) -> str:
+    """Searches past memories based on a text query. Use this to remember previous conversations or facts."""
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            # simple text search
+            cursor.execute('SELECT id, timestamp, content FROM memories WHERE content LIKE ? ORDER BY timestamp DESC', (f'%{query}%',))
+            results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+            return json.dumps({"status": "success", "results": results}, indent=2)
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)})
+
+@mcp.tool()
+def list_memories(limit: int = 10) -> str:
+    """Lists the most recent memories stored by the AI."""
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT id, timestamp, content FROM memories ORDER BY timestamp DESC LIMIT ?', (limit,))
+            results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+            return json.dumps({"status": "success", "results": results}, indent=2)
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)})
 
 if __name__ == "__main__":
     import os
