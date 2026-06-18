@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rulip - Sign In</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --bg-color: #f2ebd9;
+            --text-color: #1e293b;
+            --glass-bg: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Card Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .glass-container h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-container p {
+            color: #475569;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* Firebase UI overrides to match styling */
+        .firebaseui-container {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        .firebaseui-idp-button {
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .firebaseui-idp-button:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        /* Loader Spinner */
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer-link {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .footer-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer-link a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/landing" class="logo">
+            <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="60" style="display:block;">
+        </a>
+    </header>
+
+    <main>
+        <div class="glass-container">
+            <div id="loader" class="spinner"></div>
+            <h1>Welcome back</h1>
+            <p>Sign in to view the memories your AI assistant has saved for you.</p>
+            
+            <div id="firebaseui-auth-container"></div>
+            
+            <div class="footer-link">
+                New to Rulip? <a href="/signup">Create an account</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const baseUrl = "https://mcp-trial-m3g4.onrender.com";
+        
+        const firebaseConfig = {
+            apiKey: "{{FIREBASE_API_KEY}}",
+            authDomain: "{{FIREBASE_AUTH_DOMAIN}}",
+            projectId: "{{FIREBASE_PROJECT_ID}}",
+            storageBucket: "{{FIREBASE_STORAGE_BUCKET}}",
+            messagingSenderId: "{{FIREBASE_MESSAGING_SENDER_ID}}",
+            appId: "{{FIREBASE_APP_ID}}"
+        };
+        
+        if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
+            firebase.initializeApp(firebaseConfig);
+            
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
+            const uiConfig = {
+                callbacks: {
+                    signInSuccessWithAuthResult: function() { return false; },
+                    uiShown: function() { document.getElementById('loader').style.display = 'none'; }
+                },
+                signInFlow: 'popup',
+                signInOptions: [ firebase.auth.GoogleAuthProvider.PROVIDER_ID ]
+            };
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // Redirect to dashboard upon successful login
+                    window.location.href = "/dashboard";
+                } else {
+                    ui.start('#firebaseui-auth-container', uiConfig);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

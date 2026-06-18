@@ -200,6 +200,19 @@ def list_memories(limit: int = 10) -> str:
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
+@mcp.custom_route("/static/{filename}", methods=["GET"])
+async def serve_static(request: Request):
+    """Serves static files from the public directory."""
+    from starlette.responses import FileResponse, Response
+    filename = request.path_params.get("filename", "")
+    # Basic security: no path traversal
+    if ".." in filename or "/" in filename:
+        return Response("Forbidden", status_code=403)
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", filename)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    return Response("Not found", status_code=404)
+
 @mcp.custom_route("/landing", methods=["GET"])
 async def serve_landing(request: Request) -> HTMLResponse:
     """Serves the landing page."""
@@ -211,7 +224,48 @@ async def serve_landing(request: Request) -> HTMLResponse:
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading landing page: {str(e)}</h1>", status_code=500)
 
-@mcp.custom_route("/", methods=["GET"])
+@mcp.custom_route("/signup", methods=["GET"])
+async def serve_signup(request: Request) -> HTMLResponse:
+    """Serves the signup page."""
+    try:
+        signup_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "signup.html")
+        with open(signup_path, "r", encoding="utf-8") as f:
+            html = f.read()
+            
+        # Inject Firebase config into the HTML
+        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
+        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
+        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
+        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
+        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
+        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
+        
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading signup page: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/signin", methods=["GET"])
+async def serve_signin(request: Request) -> HTMLResponse:
+    """Serves the signin page."""
+    try:
+        signin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "signin.html")
+        with open(signin_path, "r", encoding="utf-8") as f:
+            html = f.read()
+            
+        # Inject Firebase config into the HTML
+        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
+        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
+        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
+        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
+        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
+        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
+        
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading signin page: {str(e)}</h1>", status_code=500)
+
+
+@mcp.custom_route("/dashboard", methods=["GET"])
 async def serve_dashboard(request: Request) -> HTMLResponse:
     """Serves the main dashboard UI."""
     try:
@@ -230,6 +284,12 @@ async def serve_dashboard(request: Request) -> HTMLResponse:
         return HTMLResponse(html)
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading dashboard: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/", methods=["GET"])
+async def serve_root(request: Request) -> RedirectResponse:
+    """Redirects root to the dashboard."""
+    return RedirectResponse(url="/dashboard")
+
 
 @mcp.custom_route("/api/memories", methods=["GET"])
 async def api_memories(request: Request) -> JSONResponse:

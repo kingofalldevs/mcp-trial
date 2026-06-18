@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memorie Dashboard</title>
+    <title>Rulip Dashboard</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -291,7 +291,7 @@
 
     <header id="main-header">
         <div class="logo">
-            <i class="ph-fill ph-brain"></i> Memorie
+            <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="50" style="display:block;">
         </div>
         <div id="user-info">
             <img id="user-avatar" src="" alt="User profile" title="Click to sign out" onclick="firebase.auth().signOut()" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border); cursor: pointer; transition: transform 0.2s;">
@@ -300,12 +300,10 @@
     </header>
 
     <main id="main-content">
-        <!-- Login View -->
-        <div id="login-view" class="glass-container">
-            <h1>Welcome back</h1>
-            <p>Sign in to view the memories your AI assistant has saved for you.</p>
-            <div id="firebaseui-auth-container"></div>
-            <div id="loader" class="spinner"></div>
+        <!-- Login Redirect/Loading View -->
+        <div id="login-view" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: auto; height: 50vh;">
+            <div class="spinner" style="width: 40px; height: 40px;"></div>
+            <p style="margin-top: 1rem; color: #64748b;">Checking authorization...</p>
         </div>
 
         <!-- Dashboard View -->
@@ -313,11 +311,11 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <i class="ph-fill ph-brain" style="color: var(--primary);"></i> Memorie
+                <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="50" style="display:block;">
             </div>
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="tab-btn active" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
-                <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Memories</button>
+                <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Rulips</button>
                 <button class="tab-btn" onclick="switchTab('tutorials')" id="btn-tutorials"><i class="ph ph-book-open"></i> Tutorials</button>
                 <button class="tab-btn" onclick="switchTab('billing')" id="btn-billing"><i class="ph ph-credit-card"></i> Billing</button>
                 <button class="tab-btn" onclick="switchTab('account')" id="btn-account"><i class="ph ph-user"></i> Account</button>
@@ -343,11 +341,11 @@
                 <i class="ph ph-coffee" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: color 0.2s;" onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#475569'"></i>
                 <i class="ph ph-moon" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: color 0.2s;" onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#475569'"></i>
             </div>
-            <!-- Memories Tab -->
+            <!-- Rulips Tab -->
             <div id="tab-memories" class="tab-content">
                 <div class="dashboard-header">
                     <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Your Memories</h2>
+                        <h2 style="font-weight: 600; font-size: 2rem;">Your Rulips</h2>
                         <p style="color: #000000; margin-top: 0.5rem;">Everything your AI has learned.</p>
                     </div>
                 </div>
@@ -444,7 +442,7 @@
                     <div style="background: rgba(0,0,0,0.2); border-radius: 8px; height: 8px; width: 100%; margin-bottom: 0.5rem; overflow: hidden;">
                         <div style="background: var(--primary); height: 100%; width: 15%; border-radius: 8px;"></div>
                     </div>
-                    <div style="color: #000000; font-size: 0.85rem; margin-bottom: 2rem;">150 / 1000 Memories saved</div>
+                    <div style="color: #000000; font-size: 0.85rem; margin-bottom: 2rem;">150 / 1000 Rulips saved</div>
 
                     <button style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: transform 0.2s;">Upgrade to Pro</button>
                 </div>
@@ -466,7 +464,7 @@
                             <div id="account-email" style="font-size: 1.1rem; color: #0f172a; font-weight: 500;"></div>
                         </div>
                     </div>
-                    <button style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%;" onclick="firebase.auth().signOut()">Sign Out of Memorie</button>
+                    <button style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%;" onclick="firebase.auth().signOut()">Sign Out of Rulip</button>
                 </div>
             </div>
 
@@ -510,16 +508,6 @@
         if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
             firebase.initializeApp(firebaseConfig);
             
-            const ui = new firebaseui.auth.AuthUI(firebase.auth());
-            const uiConfig = {
-                callbacks: {
-                    signInSuccessWithAuthResult: function() { return false; },
-                    uiShown: function() { document.getElementById('loader').style.display = 'none'; }
-                },
-                signInFlow: 'popup',
-                signInOptions: [ firebase.auth.GoogleAuthProvider.PROVIDER_ID ]
-            };
-
             // Listen for auth state changes
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
@@ -549,20 +537,16 @@
                         document.getElementById('account-avatar').style.display = 'none';
                     }
                     
-                    fetchMemories(user);
+                    fetchRulips(user);
                     fetchManualToken(user);
                 } else {
-                    // User is signed out
-                    document.getElementById('main-header').style.display = 'flex';
-                    document.getElementById('login-view').style.display = 'block';
-                    document.getElementById('dashboard-view').style.display = 'none';
-                    document.getElementById('user-info').style.display = 'none';
-                    ui.start('#firebaseui-auth-container', uiConfig);
+                    // User is signed out - redirect to signin
+                    window.location.href = "/signin";
                 }
             });
         }
 
-        async function fetchMemories(user) {
+        async function fetchRulips(user) {
             document.getElementById('memories-loading').style.display = 'block';
             document.getElementById('memories-container').innerHTML = '';
             
@@ -576,7 +560,7 @@
                 document.getElementById('memories-loading').style.display = 'none';
                 
                 if (data.status === 'success') {
-                    renderMemories(data.results);
+                    renderRulips(data.results);
                 } else {
                     document.getElementById('memories-container').innerHTML = `<p style="color: #ef4444;">Error loading memories: ${data.message}</p>`;
                 }
@@ -626,7 +610,7 @@
             });
         }
 
-        function renderMemories(memories) {
+        function renderRulips(memories) {
             const container = document.getElementById('memories-container');
             if (memories.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #000000; padding: 3rem;">Your AI hasn't saved any memories yet. Go chat with it!</p>`;

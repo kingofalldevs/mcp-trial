@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memorie - Your AI's Perfect Memory</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Rulip - Your AI's Perfect Memory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
@@ -24,7 +24,7 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: #ffffff;
             color: var(--text-color);
             min-height: 100vh;
             display: flex;
@@ -43,19 +43,46 @@
 
         /* Navigation */
         nav {
-            padding: 1.5rem 3rem;
+            position: sticky;
+            top: 16px;
+            margin: 16px 30px;
+            padding: 0.75rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 6px;
+            z-index: 100;
+            background-color: #ffffff;
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
             color: #0f172a;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .btn {
@@ -92,38 +119,166 @@
 
         /* Hero Section */
         .hero {
-            flex: 1;
+            margin: 16px 30px;
+            padding: 5rem 2rem;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            background-color: var(--bg-color);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 4rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 4rem;
+            font-size: 1.85rem;
             font-weight: 700;
             line-height: 1.1;
             margin-bottom: 1.5rem;
             color: #0f172a;
             letter-spacing: -0.02em;
+            white-space: nowrap;
         }
 
         .hero p {
             font-size: 1.25rem;
             line-height: 1.6;
             color: #334155;
-            margin-bottom: 2.5rem;
+            margin-bottom: 0;
             max-width: 700px;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            width: 750px;
+            height: auto;
+            margin-top: 3rem;
+            border-radius: 12px;
+            border: 1.5px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            display: block;
         }
 
         .hero-actions {
             display: flex;
             gap: 1rem;
             justify-content: center;
+        }
+
+        /* Connection Diagram */
+        .diagram-wrapper {
+            margin-top: 3.5rem;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .diagram-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .diagram-platforms {
+            display: flex;
+            justify-content: center;
+            gap: 0.85rem;
+            flex-wrap: nowrap;
+            width: 100%;
+        }
+
+        .platform-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 0.6rem 1.2rem;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+            position: relative;
+            z-index: 2;
+        }
+
+        .platform-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.12);
+            color: #0f172a;
+        }
+
+        .platform-item img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .platform-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .diagram-arrow-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .diagram-logo {
+            margin-top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .diagram-wordmark {
+            font-family: 'Nunito', 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 2.4rem;
+            color: #2d1569;
+            letter-spacing: -0.5px;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .diagram-wordmark .dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-left: 2px;
+            vertical-align: super;
+            position: relative;
+            top: -2px;
         }
 
         /* Features Section */
@@ -185,22 +340,147 @@
 
     <nav>
         <div class="logo">
-            <i class="ph-fill ph-brain" style="color: var(--primary);"></i> Memorie
+            <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="60" style="display:block;">
         </div>
-        <div>
-            <a href="/" class="btn">Go to Dashboard</a>
+        <div class="nav-links">
+            <a href="#pricing">Pricing</a>
+            <a href="#research">Research</a>
+            <a href="#blog">Blog</a>
+            <a href="#mcp">MCP</a>
+        </div>
+        <div class="nav-actions">
+            <a href="/signin" class="btn btn-outline" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">Sign In</a>
+            <a href="/signup" class="btn" style="padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.95rem;">Sign Up</a>
         </div>
     </nav>
 
     <div class="hero">
-        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.05); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #0f172a; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
-            <i class="ph-fill ph-sparkle" style="color: var(--primary);"></i> Now supporting full MCP integration
-        </div>
-        <h1>Your AI's Perfect <br/> <span style="color: var(--primary);">Photographic Memory</span></h1>
-        <p>Connect Memorie to your favorite AI tools like ChatGPT, Claude, and Cursor. Give your AI assistants persistent, long-term memory across all your sessions.</p>
-        <div class="hero-actions">
-            <a href="/" class="btn">Get Started for Free</a>
-            <a href="#features" class="btn btn-outline">Explore Features</a>
+        <div class="hero-content">
+            <h1>Let ChatGPT Remember <span style="color: var(--primary);">What Claude Said</span></h1>
+            <p>Shared memory for all your AIs.</p>
+            
+            <div class="diagram-wrapper" id="diagram-wrapper">
+                <span class="diagram-label">Integrates With Your Favorite AI Tools</span>
+                <div class="diagram-platforms" id="diagram-platforms">
+                    <div class="platform-item" id="platform-chatgpt">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT">
+                        <span>ChatGPT</span>
+                    </div>
+                    <div class="platform-item" id="platform-claude">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude">
+                        <span>Claude</span>
+                    </div>
+                    <div class="platform-item" id="platform-cursor">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor">
+                        <span>Cursor</span>
+                    </div>
+                    <div class="platform-item" id="platform-manus">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus">
+                        <span>Manus</span>
+                    </div>
+                    <div class="platform-item" id="platform-windsurf">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf">
+                        <span>Windsurf</span>
+                    </div>
+                </div>
+
+                <!-- SVG arrow layer, sized by JS -->
+                <svg class="diagram-arrow-layer" id="diagram-svg" style="height:0"></svg>
+
+                <div class="diagram-logo" id="diagram-logo">
+                    <span class="diagram-wordmark">Rulip<span class="dot"></span></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 3.5rem; z-index: 10; position: relative;">
+                <a href="/signup" class="btn" style="padding: 1rem 3rem; font-size: 1.1rem; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);">Get Started</a>
+            </div>
+
+            <script>
+            (function() {
+                function drawArrows() {
+                    const wrapper  = document.getElementById('diagram-wrapper');
+                    const platforms = document.getElementById('diagram-platforms');
+                    const svg      = document.getElementById('diagram-svg');
+                    const logo     = document.getElementById('diagram-logo');
+                    const items    = platforms.querySelectorAll('.platform-item');
+
+                    const wRect = wrapper.getBoundingClientRect();
+
+                    // --- Gap between platforms row and logo ---
+                    const GAP = 72; // px space for the arrows
+                    svg.style.height = GAP + 'px';
+                    svg.style.position = 'relative';
+                    svg.style.width = '100%';
+                    svg.setAttribute('viewBox', `0 0 ${wRect.width} ${GAP}`);
+                    svg.setAttribute('preserveAspectRatio', 'none');
+                    svg.innerHTML = '';
+
+                    // Define arrowhead marker
+                    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                    defs.innerHTML = `
+                        <marker id="arrowhead" markerWidth="8" markerHeight="6"
+                                refX="6" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6"
+                                     fill="#10b981" opacity="0.75"/>
+                        </marker>
+                        <marker id="arrowhead-hover" markerWidth="8" markerHeight="6"
+                                refX="6" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#059669"/>
+                        </marker>`;
+                    svg.appendChild(defs);
+
+                    // Re-query rects AFTER svg is in flow
+                    const logoRect = logo.getBoundingClientRect();
+
+                    // Target: top-center of the logo
+                    const tx = logoRect.left - wRect.left + logoRect.width / 2;
+                    const ty = GAP; // bottom of svg = top of logo
+
+                    items.forEach(function(item) {
+                        const iRect = item.getBoundingClientRect();
+                        // Source: bottom-center of each pill
+                        const sx = iRect.left - wRect.left + iRect.width / 2;
+                        const sy = 0; // top of svg = bottom of platforms
+
+                        // Cubic bezier: control points pull toward center vertically
+                        const cp1y = GAP * 0.35;
+                        const cp2y = GAP * 0.65;
+
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${sx} ${sy} C ${sx} ${cp1y}, ${tx} ${cp2y}, ${tx} ${ty}`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('fill', 'none');
+                        path.setAttribute('stroke', '#10b981');
+                        path.setAttribute('stroke-width', '1.5');
+                        path.setAttribute('stroke-opacity', '0.55');
+                        path.setAttribute('stroke-dasharray', '5 4');
+                        path.setAttribute('marker-end', 'url(#arrowhead)');
+
+                        // Animate dash offset for flowing effect
+                        const len = path.getTotalLength ? path.getTotalLength() : 200;
+                        path.style.strokeDashoffset = '0';
+                        const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                        anim.setAttribute('attributeName', 'stroke-dashoffset');
+                        anim.setAttribute('from', len);
+                        anim.setAttribute('to', '0');
+                        anim.setAttribute('dur', '1.8s');
+                        anim.setAttribute('repeatCount', 'indefinite');
+                        path.appendChild(anim);
+
+                        svg.appendChild(path);
+                    });
+                }
+
+                // Draw once layout is complete
+                if (document.readyState === 'complete') {
+                    drawArrows();
+                } else {
+                    window.addEventListener('load', drawArrows);
+                }
+                window.addEventListener('resize', drawArrows);
+            })();
+            </script>
         </div>
     </div>
 
@@ -213,7 +493,7 @@
         <div class="feature-card glass-container">
             <div class="feature-icon"><i class="ph-fill ph-hard-drives"></i></div>
             <h3 class="feature-title">Persistent Storage</h3>
-            <p class="feature-desc">Your AI tools will never forget important details again. Memorie securely stores context, preferences, and project details across separate sessions.</p>
+            <p class="feature-desc">Your AI tools will never forget important details again. Rulip securely stores context, preferences, and project details across separate sessions.</p>
         </div>
         <div class="feature-card glass-container">
             <div class="feature-icon"><i class="ph-fill ph-lock-key"></i></div>
@@ -223,7 +503,7 @@
     </div>
 
     <footer>
-        &copy; 2026 Memorie Inc. All rights reserved.
+        &copy; 2026 Rulip Inc. All rights reserved.
     </footer>
 
 </body>
