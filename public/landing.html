@@ -708,10 +708,7 @@
                     </div>
                 </div>
 
-                <!-- SVG arrow layer, sized by JS -->
-                <svg class="diagram-arrow-layer" id="diagram-svg" style="height:0"></svg>
-
-                <div class="diagram-logo" id="diagram-logo">
+                <div class="diagram-logo" id="diagram-logo" style="margin-top: 1.5rem;">
                     <span class="diagram-wordmark">Memory<span class="dot"></span></span>
                 </div>
             </div>
@@ -730,89 +727,6 @@
             </div>
 
             <script>
-            (function() {
-                function drawArrows() {
-                    const wrapper  = document.getElementById('diagram-wrapper');
-                    const platforms = document.getElementById('diagram-platforms');
-                    const svg      = document.getElementById('diagram-svg');
-                    const logo     = document.getElementById('diagram-logo');
-                    const items    = platforms.querySelectorAll('.platform-item');
-
-                    const wRect = wrapper.getBoundingClientRect();
-
-                    // --- Gap between platforms row and logo ---
-                    const GAP = 72; // px space for the arrows
-                    svg.style.height = GAP + 'px';
-                    svg.style.position = 'relative';
-                    svg.style.width = '100%';
-                    svg.setAttribute('viewBox', `0 0 ${wRect.width} ${GAP}`);
-                    svg.setAttribute('preserveAspectRatio', 'none');
-                    svg.innerHTML = '';
-
-                    // Define arrowhead marker
-                    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-                    defs.innerHTML = `
-                        <marker id="arrowhead" markerWidth="8" markerHeight="6"
-                                refX="6" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6"
-                                     fill="#10b981" opacity="0.75"/>
-                        </marker>
-                        <marker id="arrowhead-hover" markerWidth="8" markerHeight="6"
-                                refX="6" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#059669"/>
-                        </marker>`;
-                    svg.appendChild(defs);
-
-                    // Re-query rects AFTER svg is in flow
-                    const logoRect = logo.getBoundingClientRect();
-
-                    // Target: top-center of the logo
-                    const tx = logoRect.left - wRect.left + logoRect.width / 2;
-                    const ty = GAP; // bottom of svg = top of logo
-
-                    items.forEach(function(item) {
-                        const iRect = item.getBoundingClientRect();
-                        // Source: bottom-center of each pill
-                        const sx = iRect.left - wRect.left + iRect.width / 2;
-                        const sy = 0; // top of svg = bottom of platforms
-
-                        // Cubic bezier: control points pull toward center vertically
-                        const cp1y = GAP * 0.35;
-                        const cp2y = GAP * 0.65;
-
-                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        const d = `M ${sx} ${sy} C ${sx} ${cp1y}, ${tx} ${cp2y}, ${tx} ${ty}`;
-                        path.setAttribute('d', d);
-                        path.setAttribute('fill', 'none');
-                        path.setAttribute('stroke', '#10b981');
-                        path.setAttribute('stroke-width', '1.5');
-                        path.setAttribute('stroke-opacity', '0.55');
-                        path.setAttribute('stroke-dasharray', '5 4');
-                        path.setAttribute('marker-end', 'url(#arrowhead)');
-
-                        // Animate dash offset for flowing effect
-                        const len = path.getTotalLength ? path.getTotalLength() : 200;
-                        path.style.strokeDashoffset = '0';
-                        const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
-                        anim.setAttribute('attributeName', 'stroke-dashoffset');
-                        anim.setAttribute('from', len);
-                        anim.setAttribute('to', '0');
-                        anim.setAttribute('dur', '1.8s');
-                        anim.setAttribute('repeatCount', 'indefinite');
-                        path.appendChild(anim);
-
-                        svg.appendChild(path);
-                    });
-                }
-
-                // Draw once layout is complete
-                if (document.readyState === 'complete') {
-                    drawArrows();
-                } else {
-                    window.addEventListener('load', drawArrows);
-                }
-                window.addEventListener('resize', drawArrows);
-            })();
 
             // Dynamic AI Name Rotator
             (function() {
