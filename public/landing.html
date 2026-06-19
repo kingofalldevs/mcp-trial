@@ -44,9 +44,9 @@
         /* Navigation */
         nav {
             position: sticky;
-            top: 16px;
-            margin: 16px 30px;
-            padding: 0.75rem 2rem;
+            top: 8px;
+            margin: 8px 30px;
+            padding: 0.3rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -121,7 +121,7 @@
         .hero {
             margin: 16px 30px;
             padding: 5rem 2rem;
-            border: 2px solid var(--primary);
+            border: none;
             border-radius: 6px;
             background-color: var(--bg-color);
             display: flex;
@@ -283,22 +283,35 @@
 
         /* Features Section */
         .features {
-            padding: 5rem 3rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            margin: 16px 30px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--bg-color);
+            display: flex;
+            min-height: 480px;
+            overflow: hidden;
         }
 
-        .feature-card {
-            padding: 2.5rem;
-            text-align: left;
-            transition: transform 0.3s;
+        .feature-half {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
+
+
+        .bg-white {
+            background-color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                flex-direction: column;
+                min-height: auto;
+            }
+
         }
 
         .feature-icon {
@@ -326,13 +339,293 @@
             line-height: 1.6;
         }
         
-        /* Footer */
-        footer {
-            padding: 3rem;
+        /* CTA Section */
+        .cta-section {
+            margin: 6rem auto 4rem auto;
+            max-width: 1200px;
+            width: calc(100% - 60px);
+            display: block;
+        }
+
+        .cta-card {
+            background: linear-gradient(to top, var(--bg-color), #ffffff);
+            border: none;
+            border-radius: 24px;
+            padding: 4.5rem 2rem;
             text-align: center;
-            color: #64748b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.04);
+        }
+
+        .cta-icon-wrapper {
+            background: #ffffff;
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .cta-icon-wrapper i {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+
+        .cta-card h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+
+        .cta-features {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cta-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .cta-feature-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+        }
+
+        .cta-btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        .cta-btn-secondary {
+            background: #ffffff;
+            color: #1e293b;
+            padding: 0.85rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .cta-btn-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            border-color: rgba(0,0,0,0.15);
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: var(--bg-color);
             border-top: 1px solid var(--glass-border);
-            margin-top: 4rem;
+            padding: 5rem 2rem 2rem 2rem;
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer-brand .logo {
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-item:hover {
+            color: var(--primary);
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-socials a {
+            color: #64748b;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-socials a:hover {
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            text-align: left;
+        }
+
+        .footer-column h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1e293b;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links a {
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-legal-links a {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-legal-links a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            .cta-card h2 {
+                font-size: 2rem;
+            }
+        }
+
+        #dynamic-ai-name-1, #dynamic-ai-name-2 {
+            display: inline-block;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .text-transition {
+            opacity: 0;
+            transform: translateY(8px);
         }
     </style>
 </head>
@@ -340,7 +633,7 @@
 
     <nav>
         <div class="logo">
-            <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="60" style="display:block;">
+            <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
         </div>
         <div class="nav-links">
             <a href="#pricing">Pricing</a>
@@ -356,7 +649,7 @@
 
     <div class="hero">
         <div class="hero-content">
-            <h1>Let ChatGPT Remember <span style="color: var(--primary);">What Claude Said</span></h1>
+            <h1>Let <span id="dynamic-ai-name-1" style="color: var(--primary);">ChatGPT</span> Remember What <span id="dynamic-ai-name-2" style="color: var(--primary);">Claude</span> Said</h1>
             <p>Shared memory for all your AIs.</p>
             
             <div class="diagram-wrapper" id="diagram-wrapper">
@@ -388,7 +681,7 @@
                 <svg class="diagram-arrow-layer" id="diagram-svg" style="height:0"></svg>
 
                 <div class="diagram-logo" id="diagram-logo">
-                    <span class="diagram-wordmark">Rulip<span class="dot"></span></span>
+                    <span class="diagram-wordmark">Memory<span class="dot"></span></span>
                 </div>
             </div>
 
@@ -480,30 +773,155 @@
                 }
                 window.addEventListener('resize', drawArrows);
             })();
+
+            // Dynamic AI Name Rotator
+            (function() {
+                const pairs = [
+                    { first: "ChatGPT", second: "Claude" },
+                    { first: "Claude", second: "it" },
+                    { first: "Claude", second: "Manus" },
+                    { first: "Manus", second: "it" },
+                    { first: "Manus", second: "Gemini" },
+                    { first: "Gemini", second: "it" },
+                    { first: "Gemini", second: "ChatGPT" },
+                    { first: "ChatGPT", second: "it" },
+                    { first: "Cursor", second: "ChatGPT" },
+                    { first: "Cursor", second: "it" },
+                    { first: "ChatGPT", second: "Windsurf" },
+                    { first: "Windsurf", second: "it" },
+                    { first: "Claude", second: "ChatGPT" },
+                    { first: "Gemini", second: "Claude" }
+                ];
+                let index = 0;
+                const target1 = document.getElementById("dynamic-ai-name-1");
+                const target2 = document.getElementById("dynamic-ai-name-2");
+                
+                if (target1 && target2) {
+                    setInterval(() => {
+                        target1.classList.add("text-transition");
+                        target2.classList.add("text-transition");
+                        
+                        setTimeout(() => {
+                            index = (index + 1) % pairs.length;
+                            target1.innerText = pairs[index].first;
+                            target2.innerText = pairs[index].second;
+                            
+                            target1.classList.remove("text-transition");
+                            target2.classList.remove("text-transition");
+                        }, 500); // 500ms matches CSS transition duration
+                    }, 3000);
+                }
+            })();
             </script>
         </div>
     </div>
 
     <div id="features" class="features">
-        <div class="feature-card glass-container">
-            <div class="feature-icon"><i class="ph-fill ph-plugs"></i></div>
-            <h3 class="feature-title">Universal Compatibility</h3>
-            <p class="feature-desc">Works seamlessly with any AI tool that supports the Model Context Protocol (MCP). ChatGPT, Claude, Cursor, and Windsurf are all ready to go.</p>
+        <div class="feature-half bg-white" style="padding: 0;">
+            <img src="/static/connect-ai-feature.png" alt="Connect Your AI" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
-        <div class="feature-card glass-container">
-            <div class="feature-icon"><i class="ph-fill ph-hard-drives"></i></div>
-            <h3 class="feature-title">Persistent Storage</h3>
-            <p class="feature-desc">Your AI tools will never forget important details again. Rulip securely stores context, preferences, and project details across separate sessions.</p>
+        <div class="feature-half">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; max-width: 440px; width: 100%;">
+                <h3 class="feature-title" style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 1.25rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em;">Connect your AIs seamlessly</h3>
+                <p class="feature-desc" style="font-size: 1.05rem; line-height: 1.65; color: #475569; margin-bottom: 2rem;">
+                    Instantly sync your long-term memory across all major AI tools and IDEs. Give ChatGPT, Claude, Cursor, Windsurf, and Manus a unified context to remember everything you do.
+                </p>
+                <a href="/signup" class="btn" style="padding: 0.85rem 2rem; font-size: 1rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);">
+                    Connect Now (2 mins setup)
+                </a>
+            </div>
         </div>
-        <div class="feature-card glass-container">
-            <div class="feature-icon"><i class="ph-fill ph-lock-key"></i></div>
-            <h3 class="feature-title">Secure & Private</h3>
-            <p class="feature-desc">Your memories are tied directly to your account. You have full control over what your AI remembers and what gets deleted.</p>
+    </div>
+
+    <div class="features">
+        <div class="feature-half">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; max-width: 440px; width: 100%;">
+                <h3 class="feature-title" style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 1.25rem; font-weight: 800; color: #0f172a; letter-spacing: -0.03em;">Portable memory. Carry it with you across platforms.</h3>
+                <p class="feature-desc" style="font-size: 1.05rem; line-height: 1.65; color: #475569; margin-bottom: 2rem;">
+                    All memories saved by your AI assistants are stored securely in one central dashboard. Access, search, and manage your long-term context from anywhere, at any time.
+                </p>
+                <a href="/signup" class="btn" style="padding: 0.85rem 2rem; font-size: 1rem; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);">
+                    Start Organizing
+                </a>
+            </div>
+        </div>
+        <div class="feature-half bg-white" style="padding: 0;">
+            <img src="/static/portable-memory-feature.png" alt="Portable Memory Dashboard" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-half"></div>
+        <div class="feature-half"></div>
+    </div>
+
+    <div class="cta-section">
+        <div class="cta-card">
+            <h2>Give all your AIs one memory to remember across platforms.</h2>
+            <div class="cta-buttons">
+                <a href="/signup" class="cta-btn-primary">Get Started for Free →</a>
+            </div>
         </div>
     </div>
 
     <footer>
-        &copy; 2026 Rulip Inc. All rights reserved.
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="/landing" class="logo">
+                    <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
+                </a>
+                <div class="footer-brand-contact">
+                    <a href="https://maps.google.com/?q=100+Pine+Street,+San+Francisco,+CA+94111" target="_blank" class="contact-item">
+                        <i class="ph ph-map-pin"></i> 100 Pine St, San Francisco, CA 94111
+                    </a>
+                    <a href="mailto:hello@rulip.com" class="contact-item">
+                        <i class="ph ph-envelope"></i> hello@rulip.com
+                    </a>
+                    <a href="tel:+14155550199" class="contact-item">
+                        <i class="ph ph-phone"></i> +1 (415) 555-0199
+                    </a>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://twitter.com/rulip" target="_blank" title="Twitter/X"><i class="ph ph-twitter-logo"></i></a>
+                    <a href="https://linkedin.com/company/rulip" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="https://instagram.com/rulip" target="_blank" title="Instagram"><i class="ph ph-instagram-logo"></i></a>
+                    <a href="https://facebook.com/rulip" target="_blank" title="Facebook"><i class="ph ph-facebook-logo"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#changelog">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="footer-copyright">&copy; 2026 Rulip Inc. All rights reserved.</p>
+        </div>
     </footer>
 
 </body>

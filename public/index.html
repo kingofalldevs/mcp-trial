@@ -291,7 +291,7 @@
 
     <header id="main-header">
         <div class="logo">
-            <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="50" style="display:block;">
+            <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
         </div>
         <div id="user-info">
             <img id="user-avatar" src="" alt="User profile" title="Click to sign out" onclick="firebase.auth().signOut()" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border); cursor: pointer; transition: transform 0.2s;">
@@ -311,7 +311,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <img src="/static/rulip-logo.png?v=2" alt="Rulip" height="50" style="display:block;">
+                <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
             </div>
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="tab-btn active" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
@@ -355,66 +355,217 @@
 
             <!-- Connect Tab -->
             <div id="tab-connect" class="tab-content active">
+                <style>
+                    .ai-card {
+                        background: rgba(255, 255, 255, 0.2);
+                        border: 2px solid var(--glass-border);
+                        border-radius: 16px;
+                        padding: 1.25rem;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .ai-card:hover {
+                        transform: translateY(-2px);
+                        border-color: rgba(16, 185, 129, 0.4);
+                        background: rgba(255, 255, 255, 0.4);
+                    }
+                    .ai-card.active {
+                        background: rgba(255, 255, 255, 0.5) !important;
+                        border-color: var(--primary) !important;
+                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+                    }
+                    .ai-panel {
+                        display: none;
+                        animation: slideUp 0.3s ease;
+                    }
+                    .ai-panel.active {
+                        display: block;
+                    }
+                    @keyframes slideUp {
+                        from { opacity: 0; transform: translateY(8px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                </style>
                 <div class="dashboard-header">
                     <div>
                         <h2 style="font-weight: 600; font-size: 2rem;">Connect Your AI</h2>
                         <p style="color: #000000; margin-top: 0.5rem;">Give your agents access to your long-term memory.</p>
                     </div>
                 </div>
-                
-                <div class="glass-container" style="max-width: 100%; margin-bottom: 3rem; text-align: left; padding: 2rem;">
-                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600;">Connection Details</h3>
-                        <div style="display: flex; gap: 0.75rem; font-size: 0.85rem; font-weight: 500; color: #000000; background: transparent; padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid var(--glass-border); align-items: center;">
-                            <span style="color: #000000; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 0.25rem;">Works with:</span>
-                            <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 14px; height: 14px; border-radius: 3px;"> ChatGPT</span> • 
-                            <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 14px; height: 14px; border-radius: 3px;"> Claude</span> • 
-                            <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 14px; height: 14px; border-radius: 3px;"> Cursor</span> • 
-                            <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 14px; height: 14px; border-radius: 3px;"> Manus</span> • 
-                            <span style="display: flex; align-items: center; gap: 0.4rem;"><img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 14px; height: 14px; border-radius: 3px;"> Windsurf</span>
+
+                <!-- SELECTOR GRID -->
+                <div class="ai-selector-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="ai-card active" onclick="selectAI('chatgpt')" id="ai-card-chatgpt">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 0.95rem;">ChatGPT</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">OAuth Flow</div>
+                    </div>
+                    <div class="ai-card" onclick="selectAI('claude')" id="ai-card-claude">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 0.95rem;">Claude</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">SSE Config</div>
+                    </div>
+                    <div class="ai-card" onclick="selectAI('cursor')" id="ai-card-cursor">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 0.95rem;">Cursor</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Custom MCP</div>
+                    </div>
+                    <div class="ai-card" onclick="selectAI('windsurf')" id="ai-card-windsurf">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 0.95rem;">Windsurf</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Config File</div>
+                    </div>
+                    <div class="ai-card" onclick="selectAI('manus')" id="ai-card-manus">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div style="font-weight: 600; font-size: 0.95rem;">Manus</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Custom Token</div>
+                    </div>
+                </div>
+
+                <!-- CONNECTION DETAIL PANELS -->
+                <div class="glass-container" style="max-width: 100%; margin-bottom: 2.5rem; text-align: left; padding: 2.25rem;">
+                    <!-- ChatGPT Panel -->
+                    <div id="panel-chatgpt" class="ai-panel active">
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 20px; height: 20px; border-radius: 4px;"> 
+                            Connect to ChatGPT (Custom Actions)
+                        </h3>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect ChatGPT, create a GPT or Custom Action and configure OAuth authentication with these exact parameters:</p>
+                        
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Action SSE URL:</strong> <span id="mcp-url-chatgpt"></span></div>
+                                <button onclick="copyText('mcp-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Authentication Type:</strong> OAuth</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Client ID:</strong> <span id="client-id-chatgpt">memorie-client</span></div>
+                                <button onclick="copyText('client-id-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Client Secret:</strong> <span id="client-secret-chatgpt">secret-123</span></div>
+                                <button onclick="copyText('client-secret-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Authorization URL:</strong> <span id="auth-url-chatgpt"></span></div>
+                                <button onclick="copyText('auth-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div><strong style="color: #0f172a;">Token URL:</strong> <span id="token-url-chatgpt"></span></div>
+                                <button onclick="copyText('token-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <p style="color: #000000; margin-bottom: 1.5rem; line-height: 1.5;">To give your AI access to these memories, go to your AI client, click "Create App" (or "Attach Custom MCP Server"), and enter these exact details:</p>
-                    
-                    <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Connection URL:</strong> <span id="mcp-url"></span></div>
-                            <button onclick="copyText('mcp-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Authentication:</strong> OAuth</div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Authorization URL:</strong> <span id="auth-url"></span></div>
-                            <button onclick="copyText('auth-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Token URL:</strong> <span id="token-url"></span></div>
-                            <button onclick="copyText('token-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Client ID:</strong> <span id="client-id">memorie-client</span></div>
-                            <button onclick="copyText('client-id')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div><strong style="color: #0f172a;">Client Secret:</strong> <span id="client-secret">secret-123</span></div>
-                            <button onclick="copyText('client-secret')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+
+                    <!-- Claude Panel -->
+                    <div id="panel-claude" class="ai-panel">
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 20px; height: 20px; border-radius: 4px;"> 
+                            Connect to Claude Desktop (MCP Config)
+                        </h3>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Claude Desktop, edit your `claude_desktop_config.json` file and paste the following server configuration:</p>
+                        
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; position: relative;">
+                            <pre id="claude-json" style="font-family: monospace; color: #4338ca; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 0; padding-right: 2rem;"></pre>
+                            <button onclick="copyText('claude-json')" class="copy-btn" style="position: absolute; top: 1rem; right: 1rem;" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
                     </div>
-                    
-                    <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem;">Manual Configuration (Manus, etc.)</h3>
-                    <p style="color: #000000; margin-bottom: 1.5rem; line-height: 1.5;">For AI clients that don't support OAuth, use these manual configuration settings:</p>
-                    
-                    <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                            <div><strong style="color: #0f172a;">Server URL:</strong> <span id="manual-url"></span></div>
-                            <button onclick="copyText('manual-url')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+
+                    <!-- Cursor Panel -->
+                    <div id="panel-cursor" class="ai-panel">
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 20px; height: 20px; border-radius: 4px;"> 
+                            Connect to Cursor IDE (SSE Server)
+                        </h3>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Cursor, go to <strong>Settings > Features > MCP</strong>, click <strong>+ Add New MCP Server</strong>, configure it as type <strong>SSE</strong>, and provide this URL:</p>
+                        
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Name:</strong> Rulip</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">Type:</strong> SSE</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div><strong style="color: #0f172a;">URL:</strong> <span id="mcp-url-cursor"></span></div>
+                                <button onclick="copyText('mcp-url-cursor')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div><strong style="color: #0f172a;">Custom header:</strong> <span id="manual-header">Loading...</span></div>
-                            <button onclick="copyText('manual-header')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
+
+                    <!-- Windsurf Panel -->
+                    <div id="panel-windsurf" class="ai-panel">
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 20px; height: 20px; border-radius: 4px;"> 
+                            Connect to Windsurf IDE (SSE Server)
+                        </h3>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Windsurf, click the <strong>MCP</strong> button in the bottom bar, click the <strong>Settings</strong> gear icon, and add this configuration:</p>
+                        
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; position: relative;">
+                            <pre id="windsurf-json" style="font-family: monospace; color: #4338ca; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 0; padding-right: 2rem;"></pre>
+                            <button onclick="copyText('windsurf-json')" class="copy-btn" style="position: absolute; top: 1rem; right: 1rem;" title="Copy"><i class="ph ph-copy"></i></button>
                         </div>
+                    </div>
+
+                    <!-- Manus Panel -->
+                    <div id="panel-manus" class="ai-panel">
+                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 20px; height: 20px; border-radius: 4px;"> 
+                            Connect to Manus / Custom Client (Headers Token)
+                        </h3>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">For Manus and custom AI clients that don't support OAuth, use this static SSE url and authorization header:</p>
+                        
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">SSE Endpoint:</strong> <span id="mcp-url-manus"></span></div>
+                                <button onclick="copyText('mcp-url-manus')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div><strong style="color: #0f172a;">Custom Header:</strong> <span id="manual-header-manus">Loading...</span></div>
+                                <button onclick="copyText('manual-header-manus')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VERIFYING / CONNECTION STATUS GRID -->
+                <div class="glass-container" style="max-width: 100%; text-align: left; padding: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 style="font-size: 1.25rem; color: #1e293b; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="ph-fill ph-shield-check" style="color: var(--primary);"></i> Verify Connected AIs
+                            </h3>
+                            <p style="color: #475569; font-size: 0.85rem; margin-top: 0.25rem;">Real-time check of your active AI integrations.</p>
+                        </div>
+                        <button onclick="pollConnections(true)" class="copy-btn" style="background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="ph ph-arrow-clockwise" id="poll-spinner"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;" id="connections-status-list">
+                        <!-- Loaded dynamically -->
+                        <div style="grid-column: 1/-1; text-align: center; padding: 1.5rem; color: #64748b;">
+                            <div class="spinner" style="width: 20px; height: 20px; margin-bottom: 0.5rem;"></div>
+                            Checking active connections...
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--primary); padding: 1.25rem; border-radius: 0 12px 12px 0;">
+                        <h4 style="font-weight: 600; color: #065f46; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
+                            <i class="ph ph-info"></i> How to verify?
+                        </h4>
+                        <p style="color: #047857; font-size: 0.85rem; line-height: 1.5;">
+                            Open your connected AI client (Claude, Cursor, etc.) and type: 
+                            <code style="background: rgba(255,255,255,0.7); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: monospace; font-weight: 600; color: #0f172a; border: 1px solid rgba(0,0,0,0.05); margin: 0 0.2rem;">save_memory: test connection to Rulip</code> or just ask the AI to remember something. 
+                            The moment the AI queries your memory server, it will appear as <strong>Connected</strong> here immediately!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -490,10 +641,11 @@
     <script>
         // Use the production Render URL
         const baseUrl = "https://mcp-trial-m3g4.onrender.com";
-        document.getElementById('mcp-url').innerText = baseUrl + '/sse';
-        document.getElementById('auth-url').innerText = baseUrl + '/authorize';
-        document.getElementById('token-url').innerText = baseUrl + '/token';
-        document.getElementById('manual-url').innerText = baseUrl + '/sse';
+        document.getElementById('mcp-url-chatgpt').innerText = baseUrl + '/sse';
+        document.getElementById('auth-url-chatgpt').innerText = baseUrl + '/authorize';
+        document.getElementById('token-url-chatgpt').innerText = baseUrl + '/token';
+        document.getElementById('mcp-url-manus').innerText = baseUrl + '/sse';
+        
         // Use placeholders that server.py will replace during rendering
         const firebaseConfig = {
             apiKey: "{{FIREBASE_API_KEY}}",
@@ -504,6 +656,8 @@
             appId: "{{FIREBASE_APP_ID}}"
         };
         
+        let pollTimer = null;
+
         // Only init if API key exists
         if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
             firebase.initializeApp(firebaseConfig);
@@ -539,8 +693,14 @@
                     
                     fetchRulips(user);
                     fetchManualToken(user);
+                    
+                    // Initial poll for client connections
+                    pollConnections();
+                    if (pollTimer) clearInterval(pollTimer);
+                    pollTimer = setInterval(pollConnections, 10000);
                 } else {
                     // User is signed out - redirect to signin
+                    if (pollTimer) clearInterval(pollTimer);
                     window.location.href = "/signin";
                 }
             });
@@ -579,13 +739,148 @@
                 });
                 const data = await response.json();
                 if (data.status === 'success') {
-                    document.getElementById('manual-header').innerText = `{\"Authorization\": \"Bearer ${data.token}\"}`;
+                    const token = data.token;
+                    
+                    document.getElementById('manual-header-manus').innerText = `{"Authorization": "Bearer ${token}"}`;
+                    document.getElementById('mcp-url-cursor').innerText = `${baseUrl}/sse?token=${token}`;
+                    
+                    const claudeConfig = {
+                        "mcpServers": {
+                            "rulip": {
+                                "type": "sse",
+                                "url": `${baseUrl}/sse`,
+                                "headers": {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            }
+                        }
+                    };
+                    document.getElementById('claude-json').innerText = JSON.stringify(claudeConfig, null, 2);
+
+                    const windsurfConfig = {
+                        "mcpServers": {
+                            "rulip": {
+                                "type": "sse",
+                                "url": `${baseUrl}/sse`,
+                                "headers": {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            }
+                        }
+                    };
+                    document.getElementById('windsurf-json').innerText = JSON.stringify(windsurfConfig, null, 2);
                 } else {
-                    document.getElementById('manual-header').innerText = "Error generating token";
+                    document.getElementById('manual-header-manus').innerText = "Error generating token";
                 }
             } catch (error) {
-                document.getElementById('manual-header').innerText = "Connection error";
+                document.getElementById('manual-header-manus').innerText = "Connection error";
             }
+        }
+
+        async function pollConnections(isManual = false) {
+            const spinner = document.getElementById('poll-spinner');
+            if (isManual && spinner) {
+                spinner.classList.add('ph-spin');
+            }
+            
+            try {
+                const user = firebase.auth().currentUser;
+                if (!user) return;
+                
+                const idToken = await user.getIdToken();
+                const response = await fetch(baseUrl + '/api/connected_clients', {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+                const data = await response.json();
+                
+                if (isManual && spinner) {
+                    setTimeout(() => spinner.classList.remove('ph-spin'), 600);
+                }
+                
+                if (data.status === 'success') {
+                    renderConnectionsStatus(data.results);
+                }
+            } catch (error) {
+                console.error("Error polling connections:", error);
+                if (isManual && spinner) {
+                    spinner.classList.remove('ph-spin');
+                }
+            }
+        }
+
+        function renderConnectionsStatus(connectedClients) {
+            const container = document.getElementById('connections-status-list');
+            if (!container) return;
+            
+            const ais = [
+                { id: 'chatgpt', name: 'ChatGPT', domain: 'chatgpt.com' },
+                { id: 'claude', name: 'Claude', domain: 'claude.ai' },
+                { id: 'cursor', name: 'Cursor', domain: 'cursor.com' },
+                { id: 'windsurf', name: 'Windsurf', domain: 'codeium.com' },
+                { id: 'manus', name: 'Manus', domain: 'manus.im' }
+            ];
+            
+            let html = '';
+            
+            ais.forEach(ai => {
+                const connection = connectedClients.find(c => c.client_name.toLowerCase().includes(ai.id));
+                const isConnected = !!connection;
+                
+                let statusBadge = '';
+                let activeTimeStr = 'Never connected';
+                
+                if (isConnected) {
+                    const activeDate = new Date(connection.last_active);
+                    const diffMs = new Date() - activeDate;
+                    const diffMins = Math.max(0, Math.floor(diffMs / 60000));
+                    
+                    let timeStr = 'Just now';
+                    if (diffMins > 0) {
+                        timeStr = `${diffMins}m ago`;
+                    }
+                    
+                    statusBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; animation: pulse 1.5s infinite;"></span> Connected</span>`;
+                    activeTimeStr = `Active ${timeStr}`;
+                } else {
+                    statusBadge = `<span style="background: rgba(100, 116, 139, 0.1); color: #64748b; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500;">Offline</span>`;
+                }
+                
+                html += `
+                    <div style="background: rgba(255,255,255,0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=${ai.domain}" alt="${ai.name}" style="width: 36px; height: 36px; border-radius: 8px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">${ai.name}</div>
+                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">${activeTimeStr}</div>
+                            </div>
+                        </div>
+                        <div>${statusBadge}</div>
+                    </div>
+                `;
+            });
+            
+            if (!document.getElementById('pulse-keyframes')) {
+                const style = document.createElement('style');
+                style.id = 'pulse-keyframes';
+                style.innerHTML = `
+                    @keyframes pulse {
+                        0% { opacity: 0.4; transform: scale(0.9); }
+                        50% { opacity: 1; transform: scale(1.1); }
+                        100% { opacity: 0.4; transform: scale(0.9); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function selectAI(aiName) {
+            document.querySelectorAll('.ai-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.ai-panel').forEach(panel => panel.classList.remove('active'));
+            
+            document.getElementById('ai-card-' + aiName).classList.add('active');
+            document.getElementById('panel-' + aiName).classList.add('active');
         }
 
         function switchTab(tabId) {

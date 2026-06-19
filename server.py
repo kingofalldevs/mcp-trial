@@ -67,6 +67,16 @@ def init_db():
                         created_at TEXT NOT NULL
                     )
                 ''')
+                
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS client_connections (
+                        user_email TEXT NOT NULL,
+                        client_name TEXT NOT NULL,
+                        user_agent TEXT,
+                        last_active TEXT NOT NULL,
+                        PRIMARY KEY (user_email, client_name)
+                    )
+                ''')
             conn.commit()
     else:
         with sqlite3.connect(DB_PATH) as conn:
@@ -91,9 +101,66 @@ def init_db():
                     created_at TEXT NOT NULL
                 )
             ''')
+            
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS client_connections (
+                    user_email TEXT NOT NULL,
+                    client_name TEXT NOT NULL,
+                    user_agent TEXT,
+                    last_active TEXT NOT NULL,
+                    PRIMARY KEY (user_email, client_name)
+                )
+            ''')
             conn.commit()
 
 init_db()
+
+def record_client_activity(email: str, user_agent: str):
+    """Logs the client name and activity time."""
+    ua = (user_agent or "").lower()
+    client_name = "Generic AI"
+    
+    if "claude" in ua:
+        client_name = "Claude"
+    elif "chatgpt" in ua or "openai" in ua:
+        client_name = "ChatGPT"
+    elif "cursor" in ua:
+        client_name = "Cursor"
+    elif "windsurf" in ua:
+        client_name = "Windsurf"
+    elif "manus" in ua:
+        client_name = "Manus"
+    else:
+        # vscode and postman check
+        if "vscode" in ua:
+            client_name = "Cursor / Windsurf (VSCode)"
+        elif "postman" in ua:
+            client_name = "Postman / API Test"
+        elif "python" in ua:
+            client_name = "Python Client"
+            
+    timestamp = datetime.utcnow().isoformat() + "Z"
+    
+    if DATABASE_URL:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('''
+                    INSERT INTO client_connections (user_email, client_name, user_agent, last_active)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (user_email, client_name)
+                    DO UPDATE SET last_active = EXCLUDED.last_active, user_agent = EXCLUDED.user_agent
+                ''', (email, client_name, user_agent, timestamp))
+            conn.commit()
+    else:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO client_connections (user_email, client_name, user_agent, last_active)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(user_email, client_name)
+                DO UPDATE SET last_active = excluded.last_active, user_agent = excluded.user_agent
+            ''', (email, client_name, user_agent, timestamp))
+            conn.commit()
 
 def get_email_for_access_token(access_token: str):
     """Verifies the bearer token against the database."""
@@ -115,11 +182,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # We only protect the MCP streaming endpoints
         if request.url.path in ["/sse", "/messages/"]:
+            token = None
             auth_header = request.headers.get("Authorization")
-            if not auth_header or not auth_header.startswith("Bearer "):
-                return JSONResponse({"error": "Unauthorized", "details": "Missing Bearer token"}, status_code=401)
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+            else:
+                token = request.query_params.get("token")
+                
+            if not token:
+                return JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401)
             
-            token = auth_header.split(" ")[1]
             email = get_email_for_access_token(token)
             
             if not email:
@@ -127,6 +199,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
             
             # Save the email in context so the tools can magically read it
             user_email_var.set(email)
+            
+            # Record client connection activity
+            try:
+                user_agent = request.headers.get("user-agent", "")
+                record_client_activity(email, user_agent)
+            except Exception as e:
+                print(f"Error recording client activity: {e}")
             
         return await call_next(request)
 
@@ -362,6 +441,37 @@ async def api_generate_token(request: Request) -> JSONResponse:
                 conn.commit()
                 
         return JSONResponse({"status": "success", "token": access_token})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+@mcp.custom_route("/api/connected_clients", methods=["GET"])
+async def api_connected_clients(request: Request) -> JSONResponse:
+    """API endpoint for the dashboard to fetch the list of connected clients and their last active status."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        results = []
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                    cursor.execute('SELECT client_name, last_active, user_agent FROM client_connections WHERE user_email = %s ORDER BY last_active DESC', (email,))
+                    results = cursor.fetchall()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT client_name, last_active, user_agent FROM client_connections WHERE user_email = ? ORDER BY last_active DESC', (email,))
+                results = [{"client_name": row[0], "last_active": row[1], "user_agent": row[2]} for row in cursor.fetchall()]
+                
+        return JSONResponse({"status": "success", "results": results})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
