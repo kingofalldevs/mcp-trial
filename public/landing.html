@@ -71,11 +71,17 @@
             color: #ffffff;
             font-weight: 500;
             font-size: 0.95rem;
-            transition: color 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
         }
 
         .nav-links a:hover {
             color: rgba(255, 255, 255, 0.85);
+            transform: translateY(-1px);
+        }
+
+        .nav-links a:active {
+            transform: scale(0.95);
         }
 
         .nav-actions {
@@ -87,22 +93,27 @@
         .nav-actions .btn {
             background: #ffffff;
             color: var(--primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-actions .btn:hover {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
 
         .nav-actions .btn-outline {
             background: transparent;
-            border-color: rgba(255, 255, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
             color: #ffffff;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-actions .btn-outline:hover {
             background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.9);
             color: #ffffff;
+            transform: translateY(-2px);
         }
 
         .btn {
@@ -114,7 +125,7 @@
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
         }
@@ -122,19 +133,25 @@
         .btn:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
         }
 
         .btn-outline {
             background: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-outline:hover {
             background: rgba(16, 185, 129, 0.1);
             transform: translateY(-2px);
             box-shadow: none;
+        }
+
+        .btn:active, .btn-outline:active {
+            transform: scale(0.95) translateY(0);
+            transition: transform 0.05s ease;
         }
 
         /* Hero Section */
@@ -674,8 +691,8 @@
             <a href="#mcp">MCP</a>
         </div>
         <div class="nav-actions">
-            <a href="/signin" class="btn btn-outline" style="padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.85rem;">Sign In</a>
-            <a href="/signup" class="btn" style="padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.85rem;">Sign Up</a>
+            <a href="/signin" class="btn btn-outline" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign In</a>
+            <a href="/signup" class="btn" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign Up</a>
         </div>
     </nav>
 
