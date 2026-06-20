@@ -44,7 +44,8 @@
 
         /* Navigation */
         nav {
-            position: relative;
+            position: sticky;
+            top: 16px;
             margin: 16px 30px 0 30px;
             padding: 0.4rem 2rem;
             display: flex;
@@ -53,6 +54,17 @@
             border-radius: 24px 24px 0 0;
             z-index: 100;
             background-color: var(--primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+
+        nav.scrolled {
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background-color: rgba(30, 206, 139, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .logo {
@@ -1103,6 +1115,22 @@
                 }
             });
         });
+    })();
+
+    // Sticky Navigation Scroll Handler
+    (function() {
+        const nav = document.querySelector('nav');
+        if (nav) {
+            const handleScroll = () => {
+                if (window.scrollY > 10) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            };
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+        }
     })();
     </script>
 </body>
