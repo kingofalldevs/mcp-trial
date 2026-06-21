@@ -712,23 +712,26 @@
         }
 
         .faq-item {
-            background: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .faq-item:hover {
             background: rgba(255, 255, 255, 0.7);
-            border-color: var(--primary);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.03);
         }
 
         .faq-item.active {
             background: #ffffff;
-            border-color: var(--primary);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.04), 0 1px 3px rgba(0, 0, 0, 0.01);
         }
 
         .faq-question {
@@ -736,32 +739,45 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 1.5rem;
+            padding: 1.75rem 2rem;
             border: none;
             background: transparent;
             text-align: left;
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: -0.015em;
             color: #0f172a;
             cursor: pointer;
             gap: 1.5rem;
         }
 
         .faq-question i {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: #64748b;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s, background-color 0.4s, border-color 0.4s;
+            background: rgba(0, 0, 0, 0.03);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
         }
 
         .faq-item.active .faq-question i {
-            transform: rotate(180deg);
+            transform: rotate(135deg);
             color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
         }
 
         .faq-answer-wrapper {
             display: grid;
             grid-template-rows: 0fr;
-            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
 
@@ -771,10 +787,19 @@
 
         .faq-answer {
             min-height: 0;
-            padding: 0 1.5rem 1.5rem 1.5rem;
+            padding: 0 2rem 2rem 2rem;
             color: #475569;
-            font-size: 1rem;
-            line-height: 1.65;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.1s;
         }
     </style>
 </head>
@@ -955,7 +980,7 @@
             <div class="faq-item">
                 <button class="faq-question" id="faq-btn-connect">
                     <span>How does Rulip connect my AI tools?</span>
-                    <i class="ph ph-caret-down"></i>
+                    <i class="ph ph-plus"></i>
                 </button>
                 <div class="faq-answer-wrapper">
                     <div class="faq-answer">
@@ -966,7 +991,7 @@
             <div class="faq-item">
                 <button class="faq-question" id="faq-btn-security">
                     <span>Is my memory stored securely?</span>
-                    <i class="ph ph-caret-down"></i>
+                    <i class="ph ph-plus"></i>
                 </button>
                 <div class="faq-answer-wrapper">
                     <div class="faq-answer">
@@ -977,7 +1002,7 @@
             <div class="faq-item">
                 <button class="faq-question" id="faq-btn-platforms">
                     <span>What platforms are supported?</span>
-                    <i class="ph ph-caret-down"></i>
+                    <i class="ph ph-plus"></i>
                 </button>
                 <div class="faq-answer-wrapper">
                     <div class="faq-answer">
@@ -988,7 +1013,7 @@
             <div class="faq-item">
                 <button class="faq-question" id="faq-btn-manage">
                     <span>Can I search and manage my saved memories?</span>
-                    <i class="ph ph-caret-down"></i>
+                    <i class="ph ph-plus"></i>
                 </button>
                 <div class="faq-answer-wrapper">
                     <div class="faq-answer">
@@ -999,7 +1024,7 @@
             <div class="faq-item">
                 <button class="faq-question" id="faq-btn-pricing">
                     <span>Do I need a paid account to start?</span>
-                    <i class="ph ph-caret-down"></i>
+                    <i class="ph ph-plus"></i>
                 </button>
                 <div class="faq-answer-wrapper">
                     <div class="faq-answer">
