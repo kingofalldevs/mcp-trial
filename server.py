@@ -164,19 +164,28 @@ def record_client_activity(email: str, user_agent: str):
 
 def get_email_for_access_token(access_token: str):
     """Verifies the bearer token against the database."""
-    if not access_token: return None
-    if DATABASE_URL:
-        with psycopg2.connect(DATABASE_URL) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = %s', (access_token,))
+    if not access_token:
+        print("[AUTH] get_email_for_access_token: empty token")
+        return None
+    print(f"[AUTH] Looking up token: {access_token[:16]}... (db={'pg' if DATABASE_URL else 'sqlite'})")
+    try:
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = %s', (access_token,))
+                    row = cursor.fetchone()
+                    print(f"[AUTH] DB result: {row}")
+                    return row[0] if row else None
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = ?', (access_token,))
                 row = cursor.fetchone()
+                print(f"[AUTH] DB result: {row}")
                 return row[0] if row else None
-    else:
-        with sqlite3.connect(DB_PATH) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = ?', (access_token,))
-            row = cursor.fetchone()
-            return row[0] if row else None
+    except Exception as e:
+        print(f"[AUTH] DB error in get_email_for_access_token: {e}")
+        return None
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -704,8 +713,10 @@ async def token_endpoint(request: Request) -> JSONResponse:
             conn.commit()
             
     if not updated:
+        print(f"[TOKEN] No row found for auth_code: {code[:16] if code else 'None'}...")
         return JSONResponse({"error": "invalid_grant"}, status_code=400)
-        
+
+    print(f"[TOKEN] Stored access_token: {access_token[:16]}... for code: {code[:16] if code else 'None'}... (db={'pg' if DATABASE_URL else 'sqlite'})")
     return JSONResponse({
         "access_token": access_token,
         "token_type": "Bearer",
