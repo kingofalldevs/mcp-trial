@@ -590,7 +590,12 @@ async def authorize(request: Request) -> HTMLResponse:
                     uiShown: function() {{ document.getElementById('loader').style.display = 'none'; }}
                 }},
                 signInFlow: 'popup',
-                signInOptions: [ firebase.auth.GoogleAuthProvider.PROVIDER_ID ]
+                signInOptions: [ 
+                    {{
+                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        customParameters: {{ prompt: 'select_account' }}
+                    }}
+                ]
             }};
             ui.start('#firebaseui-auth-container', uiConfig);
         </script>
