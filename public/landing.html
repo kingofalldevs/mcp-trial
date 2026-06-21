@@ -672,6 +672,118 @@
             z-index: 10;
         }
 
+        /* How It Works Section Styles */
+        .how-it-works-section {
+            flex-direction: column;
+            padding: 5rem 2.5rem;
+            align-items: stretch !important;
+            min-height: auto;
+            gap: 3rem;
+            background: linear-gradient(180deg, #ffffff 0%, var(--bg-color) 100%);
+            margin: 16px 30px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .how-it-works-header {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .how-it-works-header h2 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 2.8rem;
+            font-weight: 500;
+            color: #0f172a;
+            letter-spacing: -0.015em;
+            margin-bottom: 1rem;
+        }
+
+        .how-it-works-header p {
+            color: #475569;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .how-it-works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .how-it-works-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+        }
+
+        .how-it-works-card:hover {
+            transform: translateY(-6px);
+            background: #ffffff;
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.05);
+        }
+
+        .step-number {
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 900;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(30, 206, 139, 0.3);
+        }
+
+        .step-title {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.01em;
+        }
+
+        .step-desc {
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .step-preview {
+            margin-top: 1.5rem;
+            background: rgba(15, 23, 42, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            width: 100%;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #312e81;
+            text-align: left;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
         /* FAQ Section Styles */
         .faq-section {
             flex-direction: column;
@@ -812,6 +924,7 @@
             </a>
         </div>
         <div class="nav-links">
+            <a href="#how-it-works">How It Works</a>
             <a href="#docs">Docs</a>
             <a href="/pricing">Pricing</a>
             <a href="#research">Research</a>
@@ -972,6 +1085,45 @@
         </div>
     </div>
 
+    <!-- How It Works Section -->
+    <div id="how-it-works" class="features how-it-works-section">
+        <div class="how-it-works-header">
+            <h2>How It Works</h2>
+            <p>Syncing memory across all your favorite AI assistants is simple, quick, and powerful.</p>
+        </div>
+        <div class="how-it-works-grid">
+            <div class="how-it-works-card">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Add Connectors</h3>
+                <p class="step-desc">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
+                <div class="step-preview" style="color: #0f766e;">
+                    <strong>Type:</strong> SSE<br>
+                    <strong>URL:</strong> https://rulip.com/sse
+                </div>
+            </div>
+            
+            <div class="how-it-works-card">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Test Activation</h3>
+                <p class="step-desc">Verify your connection by sending a quick prompt to confirm your assistant can interact with Rulip.</p>
+                <div class="step-preview" style="color: #4338ca;">
+                    <strong>User:</strong> save_memory: test connection<br>
+                    <strong>AI:</strong> Connection active!
+                </div>
+            </div>
+            
+            <div class="how-it-works-card">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Save & Sync</h3>
+                <p class="step-desc">After every chat, simply tell the AI to save key details. They instantly sync across all your tools.</p>
+                <div class="step-preview" style="color: #b45309;">
+                    <strong>User:</strong> Remember I like light theme.<br>
+                    <strong>AI:</strong> Memory saved successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- FAQ Section -->
     <div id="faq" class="features faq-section">
         <div class="faq-header">
@@ -1074,6 +1226,7 @@
             <div class="footer-column">
                 <h4>Product</h4>
                 <ul class="footer-links">
+                    <li><a href="#how-it-works">How It Works</a></li>
                     <li><a href="#features">Features</a></li>
                     <li><a href="/mcp">MCP / Integrations</a></li>
                     <li><a href="/pricing">Pricing</a></li>
