@@ -519,6 +519,32 @@ async def api_connected_clients(request: Request) -> JSONResponse:
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
+@mcp.custom_route("/.well-known/oauth-authorization-server", methods=["GET"])
+async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
+    """OAuth 2.0 Authorization Server Metadata (RFC 8414). Required by Claude.ai and other MCP clients."""
+    base_url = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": base_url,
+        "authorization_endpoint": f"{base_url}/authorize",
+        "token_endpoint": f"{base_url}/token",
+        "response_types_supported": ["code"],
+        "grant_types_supported": ["authorization_code"],
+        "code_challenge_methods_supported": ["S256"],
+        "token_endpoint_auth_methods_supported": ["none"],
+        "scopes_supported": ["mcp"],
+    })
+
+@mcp.custom_route("/.well-known/oauth-protected-resource", methods=["GET"])
+async def oauth_protected_resource_metadata(request: Request) -> JSONResponse:
+    """OAuth 2.0 Protected Resource Metadata (RFC 9728). Required by Claude.ai to discover the auth server."""
+    base_url = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "resource": base_url,
+        "authorization_servers": [base_url],
+        "bearer_methods_supported": ["header"],
+        "resource_documentation": f"{base_url}/mcp",
+    })
+
 @mcp.custom_route("/authorize", methods=["GET"])
 async def authorize(request: Request) -> HTMLResponse:
     """The OAuth 2.0 Authorization Endpoint. Displays the Firebase Login page."""
