@@ -100,7 +100,7 @@
             width: 100%;
             max-width: 500px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: none;
             transition: opacity 0.5s ease;
         }
 
@@ -234,16 +234,15 @@
             border: 1px solid var(--glass-border);
             border-radius: 16px;
             padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s, background-color 0.2s;
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
         .memory-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(0, 0, 0, 0.08);
         }
 
         .memory-date {
@@ -400,14 +399,13 @@
                         justify-content: center;
                     }
                     .ai-card:hover {
-                        transform: translateY(-2px);
                         border-color: rgba(16, 185, 129, 0.4);
                         background: rgba(255, 255, 255, 0.4);
                     }
                     .ai-card.active {
                         background: rgba(255, 255, 255, 0.5) !important;
                         border-color: var(--primary) !important;
-                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+                        box-shadow: none;
                     }
                     .ai-panel {
                         display: none;
