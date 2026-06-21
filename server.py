@@ -193,12 +193,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if request.url.path in ["/sse", "/messages/"]:
             token = None
             auth_header = request.headers.get("Authorization")
+            print(f"[MW] {request.method} {request.url.path} | Auth header: {repr(auth_header)} | Query params: {dict(request.query_params)}")
             if auth_header and auth_header.startswith("Bearer "):
                 token = auth_header.split(" ")[1]
             else:
-                token = request.query_params.get("token")
+                # Check common alternative token param names
+                token = (request.query_params.get("token") or
+                         request.query_params.get("access_token") or
+                         request.query_params.get("api_key"))
                 
             if not token:
+                print(f"[MW] All headers: { {k: v for k, v in request.headers.items()} }")
                 return JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401)
             
             email = get_email_for_access_token(token)
