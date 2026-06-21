@@ -410,8 +410,8 @@ async def serve_dashboard(request: Request) -> HTMLResponse:
 
 @mcp.custom_route("/", methods=["GET"])
 async def serve_root(request: Request) -> RedirectResponse:
-    """Redirects root to the dashboard."""
-    return RedirectResponse(url="/dashboard")
+    """Redirects root to the landing page."""
+    return RedirectResponse(url="/landing")
 
 
 @mcp.custom_route("/api/memories", methods=["GET"])
