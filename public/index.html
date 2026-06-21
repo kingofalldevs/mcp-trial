@@ -408,7 +408,7 @@
                     <div class="ai-card" onclick="selectAI('claude')" id="ai-card-claude">
                         <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
                         <div style="font-weight: 600; font-size: 0.95rem;">Claude</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">SSE Config</div>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">OAuth Flow</div>
                     </div>
                     <div class="ai-card" onclick="selectAI('cursor')" id="ai-card-cursor">
                         <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
@@ -468,13 +468,27 @@
                     <div id="panel-claude" class="ai-panel">
                         <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
                             <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to Claude Desktop (MCP Config)
+                            Connect to Claude (MCP Server)
                         </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Claude Desktop, edit your `claude_desktop_config.json` file and paste the following server configuration:</p>
+                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Claude, configure the custom MCP server with these exact parameters:</p>
                         
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; position: relative;">
-                            <pre id="claude-json" style="font-family: monospace; color: #4338ca; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 0; padding-right: 2rem;"></pre>
-                            <button onclick="copyText('claude-json')" class="copy-btn" style="position: absolute; top: 1rem; right: 1rem;" title="Copy"><i class="ph ph-copy"></i></button>
+                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">App Name:</strong> <span id="client-name-claude">Rulip</span></div>
+                                <button onclick="copyText('client-name-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">MCP URL:</strong> <span id="mcp-url-claude"></span></div>
+                                <button onclick="copyText('mcp-url-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <div><strong style="color: #0f172a;">OAuth Client ID:</strong> <span id="client-id-claude">memorie-client</span></div>
+                                <button onclick="copyText('client-id-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div><strong style="color: #0f172a;">OAuth Client Secret:</strong> <span id="client-secret-claude">secret-123</span></div>
+                                <button onclick="copyText('client-secret-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                            </div>
                         </div>
                     </div>
 
@@ -663,6 +677,7 @@
         document.getElementById('mcp-url-chatgpt').innerText = baseUrl + '/sse';
         document.getElementById('auth-url-chatgpt').innerText = baseUrl + '/authorize';
         document.getElementById('token-url-chatgpt').innerText = baseUrl + '/token';
+        document.getElementById('mcp-url-claude').innerText = baseUrl + '/sse';
         document.getElementById('mcp-url-manus').innerText = baseUrl + '/sse';
         
         // Use placeholders that server.py will replace during rendering
@@ -763,18 +778,7 @@
                     document.getElementById('manual-header-manus').innerText = `{"Authorization": "Bearer ${token}"}`;
                     document.getElementById('mcp-url-cursor').innerText = `${baseUrl}/sse?token=${token}`;
                     
-                    const claudeConfig = {
-                        "mcpServers": {
-                            "rulip": {
-                                "type": "sse",
-                                "url": `${baseUrl}/sse`,
-                                "headers": {
-                                    "Authorization": `Bearer ${token}`
-                                }
-                            }
-                        }
-                    };
-                    document.getElementById('claude-json').innerText = JSON.stringify(claudeConfig, null, 2);
+                    // Claude panel uses OAuth, so we don't need token headers here
 
                     const windsurfConfig = {
                         "mcpServers": {
