@@ -771,8 +771,8 @@
         }
 
         .step-preview {
-            flex: 0.8;
-            max-width: 320px;
+            flex: 1.2;
+            max-width: 480px;
             background: rgba(15, 23, 42, 0.05);
             border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 12px;
@@ -782,6 +782,21 @@
             overflow-x: auto;
             white-space: nowrap;
             align-self: center;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .copy-btn:hover {
+            background: rgba(0,0,0,0.06);
         }
 
         @media (max-width: 768px) {
@@ -1124,11 +1139,23 @@
                         <p class="step-desc">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
                     </div>
                 </div>
-                <div class="step-preview" style="color: #0f766e; font-size: 0.8rem; line-height: 1.5;">
-                    <strong>App Name:</strong> Rulip<br>
-                    <strong>MCP URL:</strong> https://mcp-trial-m3g4.onrender.com/sse<br>
-                    <strong>OAuth Client ID:</strong> memorie-client<br>
-                    <strong>OAuth Client Secret:</strong> secret-123
+                <div class="step-preview" style="color: #0f766e; display: flex; flex-direction: column; gap: 0.6rem; max-width: 480px; width: 100%; padding: 1.2rem 1.5rem; font-size: 0.85rem; line-height: 1.4; border-radius: 12px; white-space: normal;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">App Name:</strong> <span id="copy-app-name">Rulip</span></div>
+                        <button onclick="copyText('copy-app-name')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">MCP URL:</strong> <span id="copy-mcp-url">https://mcp-trial-m3g4.onrender.com/sse</span></div>
+                        <button onclick="copyText('copy-mcp-url')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">OAuth Client ID:</strong> <span id="copy-client-id">memorie-client</span></div>
+                        <button onclick="copyText('copy-client-id')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">OAuth Client Secret:</strong> <span id="copy-client-secret">secret-123</span></div>
+                        <button onclick="copyText('copy-client-secret')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
                 </div>
             </div>
             
@@ -1346,6 +1373,16 @@
             handleScroll();
         }
     })();
+
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i>';
+            setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+        });
+    }
     </script>
 </body>
 </html>
