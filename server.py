@@ -303,6 +303,50 @@ async def serve_landing(request: Request) -> HTMLResponse:
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading landing page: {str(e)}</h1>", status_code=500)
 
+@mcp.custom_route("/pricing", methods=["GET"])
+async def serve_pricing(request: Request) -> HTMLResponse:
+    """Serves the pricing page."""
+    try:
+        pricing_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "pricing.html")
+        with open(pricing_path, "r", encoding="utf-8") as f:
+            html = f.read()
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading pricing page: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/mcp", methods=["GET"])
+async def serve_mcp(request: Request) -> HTMLResponse:
+    """Serves the MCP page."""
+    try:
+        mcp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "mcp.html")
+        with open(mcp_path, "r", encoding="utf-8") as f:
+            html = f.read()
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading mcp page: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/privacy", methods=["GET"])
+async def serve_privacy(request: Request) -> HTMLResponse:
+    """Serves the privacy policy page."""
+    try:
+        privacy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "privacy.html")
+        with open(privacy_path, "r", encoding="utf-8") as f:
+            html = f.read()
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading privacy policy page: {str(e)}</h1>", status_code=500)
+
+@mcp.custom_route("/terms", methods=["GET"])
+async def serve_terms(request: Request) -> HTMLResponse:
+    """Serves the terms of service page."""
+    try:
+        terms_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "terms.html")
+        with open(terms_path, "r", encoding="utf-8") as f:
+            html = f.read()
+        return HTMLResponse(html)
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading terms of service page: {str(e)}</h1>", status_code=500)
+
 @mcp.custom_route("/signup", methods=["GET"])
 async def serve_signup(request: Request) -> HTMLResponse:
     """Serves the signup page."""

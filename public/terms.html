@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Terms of Service - Read the terms and conditions for using Rulip's persistent AI memory server.">
+    <title>Terms of Service - Rulip</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary: #1ece8b;
+            --primary-hover: #10b981;
+            --bg-color: #f2ebd9;
+            --text-color: #1e293b;
+            --glass-bg: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            margin: 0 30px 0 30px;
+            padding: 0.4rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+            z-index: 100;
+            background-color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        nav.scrolled {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #0f172a;
+            border: 2px solid #0f172a;
+        }
+
+        .btn-outline:hover {
+            background: rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Content Layout */
+        .legal-header {
+            background-color: var(--bg-color);
+            padding: 6rem 2rem 4rem 2rem;
+            text-align: center;
+            margin: 0 30px 2rem 30px;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .legal-header h1 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 3.5rem;
+            font-weight: 500;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+
+        .legal-header p {
+            color: #475569;
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .legal-content {
+            max-width: 800px;
+            width: calc(100% - 60px);
+            margin: 0 auto 6rem auto;
+            padding: 3rem 2.5rem;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);
+        }
+
+        .legal-content h2 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1rem 0;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+
+        .legal-content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .legal-content p {
+            color: #334155;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .legal-content ul {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            color: #334155;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--glass-border);
+            padding: 5rem 2rem 2rem 2rem;
+            width: 100%;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer-brand .logo {
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-item:hover {
+            color: var(--primary);
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-socials a {
+            color: #64748b;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-socials a:hover {
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            text-align: left;
+        }
+
+        .footer-column h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1e293b;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links a {
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-legal-links a {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-legal-links a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            .legal-header h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <a href="/landing">
+                <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="26" style="display:block;">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="/landing#docs">Docs</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/landing#research">Research</a>
+            <a href="/landing#blog">Blog</a>
+            <a href="/mcp">MCP</a>
+        </div>
+        <div class="nav-actions">
+            <a href="/signin" class="btn btn-outline" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign In</a>
+            <a href="/signup" class="btn" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign Up</a>
+        </div>
+    </nav>
+
+    <header class="legal-header">
+        <h1>Terms of Service</h1>
+        <p>Effective Date: June 21, 2026. Please read these terms carefully before using Rulip.</p>
+    </header>
+
+    <main class="legal-content">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By registering for a Rulip account or utilizing Rulip's Model Context Protocol (MCP) server endpoints, you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, you may not access or use Rulip's services.</p>
+
+        <h2>2. Service Description</h2>
+        <p>Rulip provides a centralized long-term memory server that developers can hook up to third-party AI agents (such as ChatGPT or Claude Desktop) using Model Context Protocol (MCP). The service stores, indexes, and queries text logs ("memories") at the user's direction.</p>
+
+        <h2>3. Accounts and Billing</h2>
+        <p>To use Rulip, you must create a secure account. You are responsible for all activity conducted through your account credentials and personal API keys.</p>
+        <ul>
+            <li><strong>Subscriptions:</strong> Rulip offers a free tier as well as paid monthly/annual subscriptions (Developer and Team plans).</li>
+            <li><strong>Fees:</strong> Subscription fees are charged automatically on a recurring basis. All payments are non-refundable.</li>
+            <li><strong>Cancellations:</strong> You can cancel your paid plan at any time through the Billing settings. Your access will remain active until the end of the current billing cycle.</li>
+        </ul>
+
+        <h2>4. Acceptable Use and API Conduct</h2>
+        <p>You agree not to use Rulip to store or transmit any content that is illegal, defamatory, invasive of another's privacy, or infringes intellectual property rights. You agree not to abuse Rulip's API or server infrastructure, including making excessive requests that disrupt system performance for other developers.</p>
+
+        <h2>5. Limitation of Liability</h2>
+        <p>Rulip is provided "as is" without warranties of any kind. Under no circumstances shall Rulip Inc. be liable for any direct, indirect, incidental, or consequential damages resulting from the loss of access to stored AI memories, system downtime, or third-party AI service changes.</p>
+
+        <h2>6. Termination</h2>
+        <p>We reserve the right to suspend or terminate your account and API access immediately if you violate these terms. Upon termination, all stored memories associated with your account will be permanently deleted.</p>
+
+        <h2>7. Governing Law</h2>
+        <p>These Terms of Service shall be governed by and construed in accordance with the laws of the State of California, without regard to its conflict of law principles.</p>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="/landing" class="logo">
+                    <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
+                </a>
+                <div class="footer-brand-contact">
+                    <a href="https://maps.google.com/?q=100+Pine+Street,+San+Francisco,+CA+94111" target="_blank" class="contact-item">
+                        <i class="ph ph-map-pin"></i> 100 Pine St, San Francisco, CA 94111
+                    </a>
+                    <a href="mailto:hello@rulip.com" class="contact-item">
+                        <i class="ph ph-envelope"></i> hello@rulip.com
+                    </a>
+                    <a href="tel:+14155550199" class="contact-item">
+                        <i class="ph ph-phone"></i> +1 (415) 555-0199
+                    </a>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://twitter.com/rulip" target="_blank" title="Twitter/X"><i class="ph ph-twitter-logo"></i></a>
+                    <a href="https://linkedin.com/company/rulip" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="https://instagram.com/rulip" target="_blank" title="Instagram"><i class="ph ph-instagram-logo"></i></a>
+                    <a href="https://facebook.com/rulip" target="_blank" title="Facebook"><i class="ph ph-facebook-logo"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#features">Features</a></li>
+                    <li><a href="/landing#integrations">Integrations</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/landing#faq">FAQ</a></li>
+                    <li><a href="/landing#changelog">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#about">About Us</a></li>
+                    <li><a href="/landing#security">Security</a></li>
+                    <li><a href="/landing#blog">Blog</a></li>
+                    <li><a href="/landing#testimonials">Testimonials</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#contact">Contact Us</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="footer-copyright">&copy; 2026 Rulip Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div style="width: 100%; text-align: center; background-color: var(--bg-color); padding: 0 2rem 6rem 2rem; overflow: hidden; user-select: none; box-sizing: border-box;">
+        <h2 style="font-size: 8.5vw; font-weight: 900; text-transform: uppercase; color: transparent; -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.07); letter-spacing: -0.02em; margin: 0; line-height: 1; pointer-events: none; font-family: 'Inter', sans-serif;">
+            one memory for all
+        </h2>
+    </div>
+
+    <script>
+        // Sticky Navigation Scroll Handler
+        (function() {
+            const nav = document.querySelector('nav');
+            if (nav) {
+                const handleScroll = () => {
+                    if (window.scrollY > 10) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', handleScroll);
+                handleScroll();
+            }
+        })();
+    </script>
+</body>
+</html>

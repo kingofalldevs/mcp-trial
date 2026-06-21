@@ -575,27 +575,46 @@
                 <div class="dashboard-header">
                     <div>
                         <h2 style="font-weight: 600; font-size: 2rem;">Billing & Subscription</h2>
-                        <p style="color: #000000; margin-top: 0.5rem;">Manage your plan and payment methods.</p>
+                        <p style="color: #000000; margin-top: 0.5rem;">Select a plan to unlock all unlimited features for yourself or your team.</p>
                     </div>
                 </div>
-                <div class="glass-container" style="max-width: 600px; padding: 2rem; text-align: left;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem;">
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 800px; width: 100%;">
+                    <!-- Normal Dev Plan -->
+                    <div class="glass-container" style="padding: 2.25rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; border-color: var(--glass-border); max-width: 100%;">
                         <div>
-                            <div style="color: #000000; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Current Plan</div>
-                            <div style="font-size: 1.5rem; color: #0f172a; font-weight: 600;">Free Tier</div>
+                            <div style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">For Individuals</div>
+                            <h3 style="font-size: 1.5rem; color: #0f172a; font-weight: 600; margin-bottom: 1rem;">Normal Dev</h3>
+                            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">Unlock complete, unlimited persistent memory sync for all your personal AI tools and editors.</p>
+                            <div style="font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 1.5rem;">
+                                $9.99 <span style="font-size: 0.95rem; color: #64748b; font-weight: 400;">/mo</span>
+                            </div>
+                            <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: #475569;">
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Unlimited memories saved</li>
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> ChatGPT, Claude, Cursor, Windsurf</li>
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Personal Access Token</li>
+                            </ul>
                         </div>
-                        <div style="font-size: 2rem; color: #0f172a; font-weight: 800;">
-                            $0 <span style="font-size: 1rem; color: #000000; font-weight: 400;">/mo</span>
-                        </div>
+                        <button onclick="window.open('/pricing')" style="background: #0f172a; color: white; border: none; padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.2s;">Upgrade Plan</button>
                     </div>
-                    
-                    <h3 style="font-size: 1.1rem; color: #1e293b; font-weight: 600; margin-bottom: 1rem;">Usage this month</h3>
-                    <div style="background: rgba(0,0,0,0.2); border-radius: 8px; height: 8px; width: 100%; margin-bottom: 0.5rem; overflow: hidden;">
-                        <div style="background: var(--primary); height: 100%; width: 15%; border-radius: 8px;"></div>
-                    </div>
-                    <div style="color: #000000; font-size: 0.85rem; margin-bottom: 2rem;">150 / 1000 Rulips saved</div>
 
-                    <button style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: transform 0.2s;">Upgrade to Pro</button>
+                    <!-- Teams Plan -->
+                    <div class="glass-container" style="padding: 2.25rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.03); max-width: 100%;">
+                        <div>
+                            <div style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">For Organizations</div>
+                            <h3 style="font-size: 1.5rem; color: #0f172a; font-weight: 600; margin-bottom: 1rem;">Teams</h3>
+                            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">Build a shared organizational brain. Sync memory collaboratively across all team members.</p>
+                            <div style="font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 1.5rem;">
+                                $19.99 <span style="font-size: 0.95rem; color: #64748b; font-weight: 400;">/mo</span>
+                            </div>
+                            <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: #475569;">
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Everything in Dev Plan</li>
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Collaborative team sync (soon)</li>
+                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Priority developer support</li>
+                            </ul>
+                        </div>
+                        <button onclick="window.open('/pricing')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.2s;">Start Free Trial</button>
+                    </div>
                 </div>
             </div>
 

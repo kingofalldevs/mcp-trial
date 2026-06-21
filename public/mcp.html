@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Model Context Protocol (MCP) - Learn how to connect Rulip long-term memory server to ChatGPT, Claude Desktop, Cursor, and Windsurf.">
+    <title>MCP Integration Guide - Rulip</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary: #1ece8b;
+            --primary-hover: #10b981;
+            --bg-color: #f2ebd9;
+            --text-color: #1e293b;
+            --glass-bg: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            margin: 0 30px 0 30px;
+            padding: 0.4rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+            z-index: 100;
+            background-color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        nav.scrolled {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #0f172a;
+            border: 2px solid #0f172a;
+        }
+
+        .btn-outline:hover {
+            background: rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Page Layout */
+        .mcp-header {
+            background-color: var(--bg-color);
+            padding: 6rem 2rem 4.5rem 2rem;
+            text-align: center;
+            margin: 0 30px 3rem 30px;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .mcp-header h1 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 3.5rem;
+            font-weight: 500;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .mcp-header p {
+            color: #475569;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .mcp-container {
+            max-width: 1000px;
+            width: calc(100% - 60px);
+            margin: 0 auto 6rem auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 3rem;
+        }
+
+        /* Sidebar Navigation Tabs */
+        .mcp-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #475569;
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 0, 0, 0.03);
+            color: #0f172a;
+        }
+
+        .tab-btn.active {
+            background: rgba(30, 206, 139, 0.1);
+            color: #059669;
+            border-color: rgba(30, 206, 139, 0.15);
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .mcp-content {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);
+            min-height: 480px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-panel h2 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 500;
+            color: #0f172a;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tab-panel h2 img {
+            border-radius: 6px;
+        }
+
+        .tab-panel p {
+            color: #475569;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Code Block Container */
+        .code-container {
+            background: #0f172a;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            margin: 1.5rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .code-container pre {
+            margin: 0;
+            font-family: monospace;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            padding-right: 3rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #475569;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        ol li {
+            margin-bottom: 0.75rem;
+        }
+
+        ol li strong {
+            color: #0f172a;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--glass-border);
+            padding: 5rem 2rem 2rem 2rem;
+            width: 100%;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer-brand .logo {
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-item:hover {
+            color: var(--primary);
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .footer-socials a {
+            color: #64748b;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-socials a:hover {
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            text-align: left;
+        }
+
+        .footer-column h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #1e293b;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links a {
+            color: #64748b;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 4rem auto 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-legal-links a {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-legal-links a:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .mcp-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .mcp-sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+                position: relative;
+                top: 0;
+                padding-bottom: 0.5rem;
+            }
+            .tab-btn {
+                white-space: nowrap;
+            }
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            .mcp-header h1 {
+                font-size: 2.4rem;
+            }
+            .mcp-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <a href="/landing">
+                <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="26" style="display:block;">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="/landing#docs">Docs</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/landing#research">Research</a>
+            <a href="/landing#blog">Blog</a>
+            <a href="/mcp">MCP</a>
+        </div>
+        <div class="nav-actions">
+            <a href="/signin" class="btn btn-outline" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign In</a>
+            <a href="/signup" class="btn" style="padding: 0.45rem 1.1rem; border-radius: 8px; font-size: 0.9rem;">Sign Up</a>
+        </div>
+    </nav>
+
+    <header class="mcp-header">
+        <h1>Model Context Protocol (MCP)</h1>
+        <p>Give your AI assistants, IDEs, and agents a single, secure, and persistent memory server using the open standard protocol.</p>
+    </header>
+
+    <main class="mcp-container">
+        <aside class="mcp-sidebar">
+            <button class="tab-btn active" onclick="switchPanel('mcp-intro')"><i class="ph ph-info"></i> What is MCP?</button>
+            <button class="tab-btn" onclick="switchPanel('mcp-claude')"><i class="ph ph-desktop"></i> Claude Desktop</button>
+            <button class="tab-btn" onclick="switchPanel('mcp-cursor')"><i class="ph ph-terminal-window"></i> Cursor IDE</button>
+            <button class="tab-btn" onclick="switchPanel('mcp-windsurf')"><i class="ph ph-code"></i> Windsurf IDE</button>
+            <button class="tab-btn" onclick="switchPanel('mcp-chatgpt')"><i class="ph ph-brain"></i> ChatGPT Actions</button>
+        </aside>
+
+        <section class="mcp-content">
+            <!-- Introduction Panel -->
+            <div id="panel-mcp-intro" class="tab-panel active">
+                <h2>Model Context Protocol</h2>
+                <p><strong>Model Context Protocol (MCP)</strong> is an open-source standard designed by Anthropic that allows local or remote servers to safely expose data tools and contexts to Large Language Models (LLMs) like Claude, GPT, and code assistants.</p>
+                <p>Rulip integrates natively as an MCP server. This means you do not need to install complex local databases or manually copy context files. Rulip spins up a secure SSE (Server-Sent Events) container and serves three simple, powerful tools to your AI:</p>
+                <ol>
+                    <li><strong><code>save_memory(content: str)</code></strong>: Automatically saves context, links, summaries, and structural facts to your private memory cloud.</li>
+                    <li><strong><code>search_memory(query: str)</code></strong>: Instantly queries your past logs across chats and IDE workspaces for context injection.</li>
+                    <li><strong><code>list_memories(limit: int)</code></strong>: Retrieves the most recent logs to construct a rolling short-term window of previous work.</li>
+                </ol>
+                <p>Select your preferred platform in the sidebar to get the configuration values and connect Rulip to your workflow in under 2 minutes.</p>
+            </div>
+
+            <!-- Claude Desktop Panel -->
+            <div id="panel-mcp-claude" class="tab-panel">
+                <h2>
+                    <img src="https://www.google.com/s2/favicons?sz=32&domain=claude.ai" alt="Claude" width="24" height="24">
+                    Claude Desktop
+                </h2>
+                <p>To connect Rulip memory to your Claude Desktop application, edit your local configuration file and add the Rulip MCP Server details.</p>
+                
+                <ol>
+                    <li>Open your Claude Desktop config file:
+                        <ul>
+                            <li><strong>macOS:</strong> <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+                            <li><strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+                        </ul>
+                    </li>
+                    <li>Paste the following JSON block into the <code>mcpServers</code> section:</li>
+                </ol>
+
+                <div class="code-container">
+                    <pre id="code-claude">{
+  "mcpServers": {
+    "rulip": {
+      "type": "sse",
+      "url": "https://mcp-trial-m3g4.onrender.com/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN"
+      }
+    }
+  }
+}</pre>
+                    <button class="copy-btn" onclick="copyText('code-claude')"><i class="ph ph-copy"></i></button>
+                </div>
+
+                <p><em>Note: Replace <code>YOUR_PERSONAL_ACCESS_TOKEN</code> with the token generated in your <a href="/dashboard">Rulip Developer Dashboard</a>.</em></p>
+                <p>Restart Claude Desktop, and Claude will automatically be able to save and retrieve memories.</p>
+            </div>
+
+            <!-- Cursor Panel -->
+            <div id="panel-mcp-cursor" class="tab-panel">
+                <h2>
+                    <img src="https://www.google.com/s2/favicons?sz=32&domain=cursor.com" alt="Cursor" width="24" height="24">
+                    Cursor IDE
+                </h2>
+                <p>Connect Rulip to Cursor's built-in Composer or Chat panel to remember your project decisions across sessions.</p>
+                
+                <ol>
+                    <li>Open Cursor and navigate to <strong>Cursor Settings > Features > MCP</strong>.</li>
+                    <li>Click <strong>+ Add New MCP Server</strong>.</li>
+                    <li>Configure the fields with these parameters:
+                        <ul>
+                            <li><strong>Name:</strong> <code>Rulip</code></li>
+                            <li><strong>Type:</strong> <code>SSE</code></li>
+                            <li><strong>URL:</strong> <code style="word-break: break-all;">https://mcp-trial-m3g4.onrender.com/sse?token=YOUR_PERSONAL_ACCESS_TOKEN</code></li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Save</strong>.</li>
+                </ol>
+                <p><em>Replace <code>YOUR_PERSONAL_ACCESS_TOKEN</code> with the Bearer token from your Rulip Dashboard.</em></p>
+            </div>
+
+            <!-- Windsurf Panel -->
+            <div id="panel-mcp-windsurf" class="tab-panel">
+                <h2>
+                    <img src="https://www.google.com/s2/favicons?sz=32&domain=codeium.com" alt="Windsurf" width="24" height="24">
+                    Windsurf IDE
+                </h2>
+                <p>Sync Rulip's persistent memory with the Windsurf IDE to let your AI coder access context from your web chat transcripts.</p>
+                
+                <ol>
+                    <li>Click the <strong>MCP</strong> button in the bottom status bar of Windsurf.</li>
+                    <li>Click the <strong>Settings</strong> icon to open the configuration editor.</li>
+                    <li>Add the following block under the <code>mcpServers</code> section:</li>
+                </ol>
+
+                <div class="code-container">
+                    <pre id="code-windsurf">{
+  "mcpServers": {
+    "rulip": {
+      "type": "sse",
+      "url": "https://mcp-trial-m3g4.onrender.com/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN"
+      }
+    }
+  }
+}</pre>
+                    <button class="copy-btn" onclick="copyText('code-windsurf')"><i class="ph ph-copy"></i></button>
+                </div>
+            </div>
+
+            <!-- ChatGPT Panel -->
+            <div id="panel-mcp-chatgpt" class="tab-panel">
+                <h2>
+                    <img src="https://www.google.com/s2/favicons?sz=32&domain=chatgpt.com" alt="ChatGPT" width="24" height="24">
+                    ChatGPT Custom Actions (OAuth)
+                </h2>
+                <p>For ChatGPT, Rulip supports full secure OAuth 2.0 authorization, letting you authorize GPTs in the browser without manually pasting keys.</p>
+                
+                <ol>
+                    <li>Create a Custom GPT in ChatGPT.</li>
+                    <li>Go to the <strong>Actions</strong> configuration section and add a new action.</li>
+                    <li>Import the OpenAPI schema from: <code style="word-break: break-all;">https://mcp-trial-m3g4.onrender.com/static/openapi.json</code> (or construct it from Rulip tools).</li>
+                    <li>Set the authentication type to <strong>OAuth</strong> with the following parameters:
+                        <ul>
+                            <li><strong>Client ID:</strong> <code>memorie-client</code></li>
+                            <li><strong>Client Secret:</strong> <code>secret-123</code></li>
+                            <li><strong>Authorization URL:</strong> <code>https://mcp-trial-m3g4.onrender.com/authorize</code></li>
+                            <li><strong>Token URL:</strong> <code>https://mcp-trial-m3g4.onrender.com/token</code></li>
+                        </ul>
+                    </li>
+                    <li>Save your Action and prompt the GPT to authorize.</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="/landing" class="logo">
+                    <img src="/static/rulip-logo.png?v=3" alt="Rulip" height="42" style="display:block;">
+                </a>
+                <div class="footer-brand-contact">
+                    <a href="https://maps.google.com/?q=100+Pine+Street,+San+Francisco,+CA+94111" target="_blank" class="contact-item">
+                        <i class="ph ph-map-pin"></i> 100 Pine St, San Francisco, CA 94111
+                    </a>
+                    <a href="mailto:hello@rulip.com" class="contact-item">
+                        <i class="ph ph-envelope"></i> hello@rulip.com
+                    </a>
+                    <a href="tel:+14155550199" class="contact-item">
+                        <i class="ph ph-phone"></i> +1 (415) 555-0199
+                    </a>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://twitter.com/rulip" target="_blank" title="Twitter/X"><i class="ph ph-twitter-logo"></i></a>
+                    <a href="https://linkedin.com/company/rulip" target="_blank" title="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+                    <a href="https://instagram.com/rulip" target="_blank" title="Instagram"><i class="ph ph-instagram-logo"></i></a>
+                    <a href="https://facebook.com/rulip" target="_blank" title="Facebook"><i class="ph ph-facebook-logo"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Product</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#features">Features</a></li>
+                    <li><a href="/landing#integrations">Integrations</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/landing#faq">FAQ</a></li>
+                    <li><a href="/landing#changelog">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#about">About Us</a></li>
+                    <li><a href="/landing#security">Security</a></li>
+                    <li><a href="/landing#blog">Blog</a></li>
+                    <li><a href="/landing#testimonials">Testimonials</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/landing#contact">Contact Us</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="footer-copyright">&copy; 2026 Rulip Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div style="width: 100%; text-align: center; background-color: var(--bg-color); padding: 0 2rem 6rem 2rem; overflow: hidden; user-select: none; box-sizing: border-box;">
+        <h2 style="font-size: 8.5vw; font-weight: 900; text-transform: uppercase; color: transparent; -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.07); letter-spacing: -0.02em; margin: 0; line-height: 1; pointer-events: none; font-family: 'Inter', sans-serif;">
+            one memory for all
+        </h2>
+    </div>
+
+    <script>
+        // Sticky Navigation Scroll Handler
+        (function() {
+            const nav = document.querySelector('nav');
+            if (nav) {
+                const handleScroll = () => {
+                    if (window.scrollY > 10) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                };
+                window.addEventListener('scroll', handleScroll);
+                handleScroll();
+            }
+        })();
+
+        // Tab Switcher
+        function switchPanel(panelId) {
+            // Remove active class from all buttons and panels
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to selected button and panel
+            const eventTarget = event ? event.currentTarget : null;
+            if (eventTarget) {
+                eventTarget.classList.add('active');
+            } else {
+                // Fallback search
+                document.querySelector(`button[onclick="switchPanel('${panelId}')"]`).classList.add('active');
+            }
+            document.getElementById('panel-' + panelId).classList.add('active');
+        }
+
+        // Copy Text Helper
+        function copyText(elementId) {
+            const pre = document.getElementById(elementId);
+            if (!pre) return;
+            const text = pre.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.currentTarget;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i>';
+                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
