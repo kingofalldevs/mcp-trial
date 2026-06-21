@@ -707,33 +707,12 @@
         }
 
         .how-it-works-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 900px;
             width: 100%;
             margin: 0 auto;
-        }
-
-        @media (max-width: 768px) {
-            .how-it-works-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-            }
-            .how-it-works-card {
-                padding: 1.5rem 0.75rem;
-            }
-            .step-title {
-                font-size: 1.1rem;
-            }
-            .step-desc {
-                font-size: 0.85rem;
-                line-height: 1.4;
-            }
-            .step-preview {
-                font-size: 0.75rem;
-                padding: 0.5rem;
-            }
         }
 
         .how-it-works-card {
@@ -741,22 +720,37 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 24px;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            border-radius: 20px;
+            padding: 1.5rem 2.5rem;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            position: relative;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
         }
 
         .how-it-works-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             background: #ffffff;
             border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.05);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.05);
+        }
+
+        .step-info-block {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1.2;
+        }
+
+        .step-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
 
         .step-number {
@@ -765,13 +759,13 @@
             font-weight: 900;
             background: var(--primary);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(30, 206, 139, 0.3);
         }
 
@@ -780,29 +774,45 @@
             font-size: 1.6rem;
             font-weight: 600;
             color: #0f172a;
-            margin-bottom: 0.8rem;
             letter-spacing: -0.01em;
         }
 
         .step-desc {
             color: #475569;
             font-size: 1rem;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .step-preview {
-            margin-top: 1.5rem;
+            flex: 0.8;
+            max-width: 320px;
             background: rgba(15, 23, 42, 0.05);
             border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 12px;
-            padding: 0.8rem 1rem;
-            width: 100%;
+            padding: 0.8rem 1.2rem;
             font-family: monospace;
             font-size: 0.85rem;
-            color: #312e81;
-            text-align: left;
             overflow-x: auto;
             white-space: nowrap;
+            align-self: center;
+        }
+
+        @media (max-width: 768px) {
+            .how-it-works-card {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1.5rem;
+                gap: 1.2rem;
+            }
+            .step-info-block {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .step-preview {
+                width: 100%;
+                max-width: 100%;
+            }
         }
 
         /* FAQ Section Styles */
@@ -1113,30 +1123,45 @@
             <p>Syncing memory across all your favorite AI assistants is simple, quick, and powerful.</p>
         </div>
         <div class="how-it-works-grid">
+            <!-- Step 1 -->
             <div class="how-it-works-card">
-                <div class="step-number">1</div>
-                <h3 class="step-title">Add Connectors</h3>
-                <p class="step-desc">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
+                <div class="step-info-block">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <h3 class="step-title">Add Connectors</h3>
+                        <p class="step-desc">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
+                    </div>
+                </div>
                 <div class="step-preview" style="color: #0f766e;">
                     <strong>Type:</strong> SSE<br>
                     <strong>URL:</strong> https://rulip.com/sse
                 </div>
             </div>
             
+            <!-- Step 2 -->
             <div class="how-it-works-card">
-                <div class="step-number">2</div>
-                <h3 class="step-title">Test Activation</h3>
-                <p class="step-desc">Verify your connection by sending a quick prompt to confirm your assistant can interact with Rulip.</p>
+                <div class="step-info-block">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <h3 class="step-title">Test Activation</h3>
+                        <p class="step-desc">Verify your connection by sending a quick prompt to confirm your assistant can interact with Rulip.</p>
+                    </div>
+                </div>
                 <div class="step-preview" style="color: #4338ca;">
                     <strong>User:</strong> save_memory: test connection<br>
                     <strong>AI:</strong> Connection active!
                 </div>
             </div>
             
+            <!-- Step 3 -->
             <div class="how-it-works-card">
-                <div class="step-number">3</div>
-                <h3 class="step-title">Save & Sync</h3>
-                <p class="step-desc">After every chat, simply tell the AI to save key details. They instantly sync across all your tools.</p>
+                <div class="step-info-block">
+                    <div class="step-number">3</div>
+                    <div class="step-text">
+                        <h3 class="step-title">Save & Sync</h3>
+                        <p class="step-desc">After every chat, simply tell the AI to save key details. They instantly sync across all your tools.</p>
+                    </div>
+                </div>
                 <div class="step-preview" style="color: #b45309;">
                     <strong>User:</strong> Remember I like light theme.<br>
                     <strong>AI:</strong> Memory saved successfully!
