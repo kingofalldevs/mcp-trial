@@ -309,6 +309,16 @@ async def serve_static(request: Request):
     if os.path.isfile(file_path):
         return FileResponse(file_path)
     return Response("Not found", status_code=404)
+def inject_firebase_config(html: str) -> str:
+    """Injects Firebase configuration from environment variables into HTML template."""
+    html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
+    html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
+    html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
+    html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
+    html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
+    html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
+    html = html.replace("{{FIREBASE_MEASUREMENT_ID}}", os.environ.get("FIREBASE_MEASUREMENT_ID", ""))
+    return html
 
 @mcp.custom_route("/landing", methods=["GET"])
 async def serve_landing(request: Request) -> HTMLResponse:
@@ -317,7 +327,7 @@ async def serve_landing(request: Request) -> HTMLResponse:
         landing_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "landing.html")
         with open(landing_path, "r", encoding="utf-8") as f:
             html = f.read()
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading landing page: {str(e)}</h1>", status_code=500)
 
@@ -328,7 +338,7 @@ async def serve_pricing(request: Request) -> HTMLResponse:
         pricing_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "pricing.html")
         with open(pricing_path, "r", encoding="utf-8") as f:
             html = f.read()
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading pricing page: {str(e)}</h1>", status_code=500)
 
@@ -339,7 +349,7 @@ async def serve_mcp(request: Request) -> HTMLResponse:
         mcp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "mcp.html")
         with open(mcp_path, "r", encoding="utf-8") as f:
             html = f.read()
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading mcp page: {str(e)}</h1>", status_code=500)
 
@@ -350,7 +360,7 @@ async def serve_privacy(request: Request) -> HTMLResponse:
         privacy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "privacy.html")
         with open(privacy_path, "r", encoding="utf-8") as f:
             html = f.read()
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading privacy policy page: {str(e)}</h1>", status_code=500)
 
@@ -361,7 +371,7 @@ async def serve_terms(request: Request) -> HTMLResponse:
         terms_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "terms.html")
         with open(terms_path, "r", encoding="utf-8") as f:
             html = f.read()
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading terms of service page: {str(e)}</h1>", status_code=500)
 
@@ -373,15 +383,7 @@ async def serve_signup(request: Request) -> HTMLResponse:
         with open(signup_path, "r", encoding="utf-8") as f:
             html = f.read()
             
-        # Inject Firebase config into the HTML
-        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
-        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
-        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
-        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
-        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
-        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
-        
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading signup page: {str(e)}</h1>", status_code=500)
 
@@ -393,15 +395,7 @@ async def serve_signin(request: Request) -> HTMLResponse:
         with open(signin_path, "r", encoding="utf-8") as f:
             html = f.read()
             
-        # Inject Firebase config into the HTML
-        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
-        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
-        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
-        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
-        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
-        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
-        
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading signin page: {str(e)}</h1>", status_code=500)
 
@@ -414,15 +408,7 @@ async def serve_dashboard(request: Request) -> HTMLResponse:
         with open(index_path, "r", encoding="utf-8") as f:
             html = f.read()
             
-        # Inject Firebase config into the HTML
-        html = html.replace("{{FIREBASE_API_KEY}}", os.environ.get("FIREBASE_API_KEY", ""))
-        html = html.replace("{{FIREBASE_AUTH_DOMAIN}}", os.environ.get("FIREBASE_AUTH_DOMAIN", ""))
-        html = html.replace("{{FIREBASE_PROJECT_ID}}", os.environ.get("FIREBASE_PROJECT_ID", ""))
-        html = html.replace("{{FIREBASE_STORAGE_BUCKET}}", os.environ.get("FIREBASE_STORAGE_BUCKET", ""))
-        html = html.replace("{{FIREBASE_MESSAGING_SENDER_ID}}", os.environ.get("FIREBASE_MESSAGING_SENDER_ID", ""))
-        html = html.replace("{{FIREBASE_APP_ID}}", os.environ.get("FIREBASE_APP_ID", ""))
-        
-        return HTMLResponse(html)
+        return HTMLResponse(inject_firebase_config(html))
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading dashboard: {str(e)}</h1>", status_code=500)
 

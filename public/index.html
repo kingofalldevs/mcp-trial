@@ -10,6 +10,7 @@
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
@@ -715,7 +716,8 @@
             projectId: "{{FIREBASE_PROJECT_ID}}",
             storageBucket: "{{FIREBASE_STORAGE_BUCKET}}",
             messagingSenderId: "{{FIREBASE_MESSAGING_SENDER_ID}}",
-            appId: "{{FIREBASE_APP_ID}}"
+            appId: "{{FIREBASE_APP_ID}}",
+            measurementId: "{{FIREBASE_MEASUREMENT_ID}}"
         };
         
         let pollTimer = null;
@@ -723,6 +725,7 @@
         // Only init if API key exists
         if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
             firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
             
             // Listen for auth state changes
             firebase.auth().onAuthStateChanged(function(user) {
