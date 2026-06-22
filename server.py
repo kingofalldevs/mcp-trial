@@ -572,16 +572,22 @@ async def authorize(request: Request) -> HTMLResponse:
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Authenticating...</title>
+        <title>Login - Connect AI</title>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+        <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
         <style>
-            body {{ font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f5f5f5; margin: 0; }}
-            .loader-text {{ color: #475569; font-size: 1.1rem; }}
+            body {{ font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f5f5f5; }}
+            .container {{ background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
         </style>
     </head>
     <body>
-        <div id="loader" class="loader-text">Please wait...</div>
+        <div class="container">
+            <h2>Authorize AI Access</h2>
+            <div id="firebaseui-auth-container"></div>
+            <div id="loader" style="display: none;">Authenticating...</div>
+        </div>
 
         <script>
             const firebaseConfig = {{
@@ -594,47 +600,64 @@ async def authorize(request: Request) -> HTMLResponse:
             }};
             firebase.initializeApp(firebaseConfig);
 
-            let isRedirecting = false;
             let oauthCompleted = false;
 
-            firebase.auth().getRedirectResult().catch(function(error) {{
-                document.getElementById('loader').innerText = 'Authentication error: ' + error.message;
-            }});
+            function approveOAuth(user) {{
+                if (oauthCompleted) return;
+                oauthCompleted = true;
+                
+                document.getElementById('firebaseui-auth-container').style.display = 'none';
+                document.getElementById('loader').style.display = 'block';
+                document.getElementById('loader').innerText = 'Returning to AI platform...';
+                
+                user.getIdToken().then(function(idToken) {{
+                    fetch('/oauth/verify_firebase_token', {{
+                        method: 'POST',
+                        headers: {{ 'Content-Type': 'application/json' }},
+                        body: JSON.stringify({{ idToken: idToken }})
+                    }})
+                    .then(response => response.json())
+                    .then(data => {{
+                        if(data.status === 'success') {{
+                            const sep = "{redirect_uri}".includes("?") ? "&" : "?";
+                            const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
+                            window.location.href = redirectUri;
+                        }} else {{
+                            document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
+                        }}
+                    }})
+                    .catch(err => {{
+                        document.getElementById('loader').innerText = 'Connection error: ' + err;
+                    }});
+                }});
+            }}
+
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
+            const uiConfig = {{
+                callbacks: {{
+                    signInSuccessWithAuthResult: function(authResult, redirectUrl) {{
+                        approveOAuth(authResult.user);
+                        return false;
+                    }},
+                    uiShown: function() {{
+                        document.getElementById('loader').style.display = 'none';
+                    }}
+                }},
+                signInFlow: 'popup',
+                signInOptions: [ 
+                    {{
+                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        customParameters: {{ prompt: 'select_account' }}
+                    }}
+                ]
+            }};
 
             firebase.auth().onAuthStateChanged(function(user) {{
                 if (user) {{
-                    if (oauthCompleted) return;
-                    oauthCompleted = true;
-                    document.getElementById('loader').innerText = 'Authenticating with AI platform...';
-                    
-                    user.getIdToken().then(function(idToken) {{
-                        fetch('/oauth/verify_firebase_token', {{
-                            method: 'POST',
-                            headers: {{ 'Content-Type': 'application/json' }},
-                            body: JSON.stringify({{ idToken: idToken }})
-                        }})
-                        .then(response => response.json())
-                        .then(data => {{
-                            if(data.status === 'success') {{
-                                const sep = "{redirect_uri}".includes("?") ? "&" : "?";
-                                const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
-                                window.location.href = redirectUri;
-                            }} else {{
-                                document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
-                            }}
-                        }})
-                        .catch(err => {{
-                            document.getElementById('loader').innerText = 'Connection error: ' + err;
-                        }});
-                    }});
+                    approveOAuth(user);
                 }} else {{
-                    if (!isRedirecting) {{
-                        isRedirecting = true;
-                        document.getElementById('loader').innerText = 'Redirecting to Google...';
-                        const provider = new firebase.auth.GoogleAuthProvider();
-                        provider.setCustomParameters({{ prompt: 'select_account' }});
-                        firebase.auth().signInWithRedirect(provider);
-                    }}
+                    document.getElementById('loader').style.display = 'none';
+                    ui.start('#firebaseui-auth-container', uiConfig);
                 }}
             }});
         </script>
