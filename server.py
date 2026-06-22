@@ -426,6 +426,74 @@ async def serve_dashboard(request: Request) -> HTMLResponse:
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading dashboard: {str(e)}</h1>", status_code=500)
 
+@mcp.custom_route("/robots.txt", methods=["GET"])
+async def serve_robots(request: Request):
+    """Serves the robots.txt file."""
+    content = """User-agent: *
+Allow: /
+Sitemap: https://www.rulip.co/sitemap.xml
+"""
+    return Response(content=content, media_type="text/plain")
+
+@mcp.custom_route("/sitemap.xml", methods=["GET"])
+async def serve_sitemap(request: Request):
+    """Serves the XML sitemap."""
+    content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.rulip.co/</loc>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/landing</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/pricing</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/mcp</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/signup</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/signin</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/privacy</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/terms</loc>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/signin</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://www.rulip.co/signup</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+</urlset>
+\"\"\"
+    return Response(content=content, media_type="application/xml")
+
 @mcp.custom_route("/", methods=["GET"])
 async def serve_root(request: Request) -> RedirectResponse:
     """Redirects root to the landing page."""
