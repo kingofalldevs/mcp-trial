@@ -204,12 +204,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 
             if not token:
                 print(f"[MW] All headers: { {k: v for k, v in request.headers.items()} }")
-                return JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401)
+                base_url = str(request.base_url).rstrip("/")
+                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource"'
+                return JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401, headers={"WWW-Authenticate": auth_header_val})
             
             email = get_email_for_access_token(token)
             
             if not email:
-                return JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401)
+                base_url = str(request.base_url).rstrip("/")
+                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource", error="invalid_token"'
+                return JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401, headers={"WWW-Authenticate": auth_header_val})
             
             # Save the email in context so the tools can magically read it
             user_email_var.set(email)
