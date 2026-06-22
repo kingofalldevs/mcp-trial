@@ -14,7 +14,7 @@ from firebase_admin import credentials, auth as firebase_auth
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
-from starlette.responses import JSONResponse, HTMLResponse, RedirectResponse
+from starlette.responses import JSONResponse, HTMLResponse, RedirectResponse, Response
 from starlette.requests import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
