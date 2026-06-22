@@ -572,25 +572,16 @@ async def authorize(request: Request) -> HTMLResponse:
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Login - Connect AI</title>
+        <title>Authenticating...</title>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
         <style>
-            body {{ font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f5f5f5; }}
-            .container {{ background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
+            body {{ font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f5f5f5; margin: 0; }}
+            .loader-text {{ color: #475569; font-size: 1.1rem; }}
         </style>
     </head>
     <body>
-        <div class="container">
-            <h2>Authorize AI Access</h2>
-            <div id="loader">Redirecting to Google...</div>
-            <div id="consent-container" style="display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 1rem;">
-                <p style="font-size: 1.05rem; color: #475569; margin: 0;">You are signed in as:</p>
-                <div style="font-weight: 600; color: #0f172a; font-size: 1.15rem;" id="user-email"></div>
-                <button onclick="approveOAuth()" style="background: #10b981; color: white; border: none; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1.05rem; width: 100%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">Authorize Access</button>
-                <a href="#" onclick="signOutAndSwitch()" style="color: #64748b; font-size: 0.9rem; text-decoration: none; font-weight: 500;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Use a different account</a>
-            </div>
-        </div>
+        <div id="loader" class="loader-text">Please wait...</div>
 
         <script>
             const firebaseConfig = {{
@@ -603,44 +594,8 @@ async def authorize(request: Request) -> HTMLResponse:
             }};
             firebase.initializeApp(firebaseConfig);
 
-            let currentUser = null;
             let isRedirecting = false;
-
-            function signOutAndSwitch() {{
-                firebase.auth().signOut().then(function() {{
-                    // onAuthStateChanged will handle redirecting to Google
-                }});
-            }}
-
-            function approveOAuth() {{
-                if (!currentUser) return;
-                
-                document.getElementById('consent-container').style.display = 'none';
-                document.getElementById('loader').style.display = 'block';
-                document.getElementById('loader').innerText = 'Verifying and redirecting...';
-                
-                currentUser.getIdToken().then(function(idToken) {{
-                    fetch('/oauth/verify_firebase_token', {{
-                        method: 'POST',
-                        headers: {{ 'Content-Type': 'application/json' }},
-                        body: JSON.stringify({{ idToken: idToken }})
-                    }})
-                    .then(response => response.json())
-                    .then(data => {{
-                        if(data.status === 'success') {{
-                            // Complete OAuth flow by redirecting back with code and state
-                            const sep = "{redirect_uri}".includes("?") ? "&" : "?";
-                            const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
-                            window.location.href = redirectUri;
-                        }} else {{
-                            document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
-                        }}
-                    }})
-                    .catch(err => {{
-                        document.getElementById('loader').innerText = 'Connection error: ' + err;
-                    }});
-                }});
-            }}
+            let oauthCompleted = false;
 
             firebase.auth().getRedirectResult().catch(function(error) {{
                 document.getElementById('loader').innerText = 'Authentication error: ' + error.message;
@@ -648,17 +603,34 @@ async def authorize(request: Request) -> HTMLResponse:
 
             firebase.auth().onAuthStateChanged(function(user) {{
                 if (user) {{
-                    currentUser = user;
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('user-email').innerText = user.email;
-                    document.getElementById('consent-container').style.display = 'flex';
+                    if (oauthCompleted) return;
+                    oauthCompleted = true;
+                    document.getElementById('loader').innerText = 'Authenticating with AI platform...';
+                    
+                    user.getIdToken().then(function(idToken) {{
+                        fetch('/oauth/verify_firebase_token', {{
+                            method: 'POST',
+                            headers: {{ 'Content-Type': 'application/json' }},
+                            body: JSON.stringify({{ idToken: idToken }})
+                        }})
+                        .then(response => response.json())
+                        .then(data => {{
+                            if(data.status === 'success') {{
+                                const sep = "{redirect_uri}".includes("?") ? "&" : "?";
+                                const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
+                                window.location.href = redirectUri;
+                            }} else {{
+                                document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
+                            }}
+                        }})
+                        .catch(err => {{
+                            document.getElementById('loader').innerText = 'Connection error: ' + err;
+                        }});
+                    }});
                 }} else {{
                     if (!isRedirecting) {{
                         isRedirecting = true;
-                        document.getElementById('consent-container').style.display = 'none';
-                        document.getElementById('loader').style.display = 'block';
                         document.getElementById('loader').innerText = 'Redirecting to Google...';
-                        
                         const provider = new firebase.auth.GoogleAuthProvider();
                         provider.setCustomParameters({{ prompt: 'select_account' }});
                         firebase.auth().signInWithRedirect(provider);
