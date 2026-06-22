@@ -242,13 +242,13 @@ def save_memory(content: str) -> str:
                     cursor.execute('INSERT INTO memories (timestamp, content, user_email) VALUES (%s, %s, %s) RETURNING id', (timestamp, content, user_email))
                     memory_id = cursor.fetchone()[0]
                 conn.commit()
-                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": memory_id, "user": user_email})
+                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 cursor.execute('INSERT INTO memories (timestamp, content, user_email) VALUES (?, ?, ?)', (timestamp, content, user_email))
                 conn.commit()
-                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid, "user": user_email})
+                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid})
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
