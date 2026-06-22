@@ -548,7 +548,7 @@ async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
         "response_types_supported": ["code"],
         "grant_types_supported": ["authorization_code"],
         "code_challenge_methods_supported": ["S256"],
-        "token_endpoint_auth_methods_supported": ["none"],
+        "token_endpoint_auth_methods_supported": ["none", "client_secret_post", "client_secret_basic"],
         "scopes_supported": ["mcp"],
     })
 
@@ -706,10 +706,6 @@ async def oauth_verify_firebase(request: Request) -> JSONResponse:
 @mcp.custom_route("/token", methods=["POST", "OPTIONS"])
 async def token_endpoint(request: Request) -> JSONResponse:
     """The OAuth 2.0 Token Endpoint. Exchanges an auth_code for an access_token."""
-    # Support CORS for browser-based OAuth flows if needed
-    if request.method == "OPTIONS":
-        return JSONResponse({}, headers={"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type"})
-        
     try:
         content_type = request.headers.get("content-type", "")
         if "application/x-www-form-urlencoded" in content_type:
