@@ -600,31 +600,44 @@ async def authorize(request: Request) -> HTMLResponse:
             }};
             firebase.initializeApp(firebaseConfig);
 
+            let oauthCompleted = false;
+
+            function completeOAuth(user) {{
+                if (oauthCompleted) return;
+                oauthCompleted = true;
+                
+                document.getElementById('firebaseui-auth-container').style.display = 'none';
+                document.getElementById('loader').style.display = 'block';
+                document.getElementById('loader').innerText = 'Verifying and redirecting...';
+                
+                user.getIdToken().then(function(idToken) {{
+                    fetch('/oauth/verify_firebase_token', {{
+                        method: 'POST',
+                        headers: {{ 'Content-Type': 'application/json' }},
+                        body: JSON.stringify({{ idToken: idToken }})
+                    }})
+                    .then(response => response.json())
+                    .then(data => {{
+                        if(data.status === 'success') {{
+                            // Complete OAuth flow by redirecting back with code and state
+                            const sep = "{redirect_uri}".includes("?") ? "&" : "?";
+                            const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
+                            window.location.href = redirectUri;
+                        }} else {{
+                            document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
+                        }}
+                    }})
+                    .catch(err => {{
+                        document.getElementById('loader').innerText = 'Connection error: ' + err;
+                    }});
+                }});
+            }}
+
             const ui = new firebaseui.auth.AuthUI(firebase.auth());
             const uiConfig = {{
                 callbacks: {{
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {{
-                        document.getElementById('firebaseui-auth-container').style.display = 'none';
-                        document.getElementById('loader').innerText = 'Verifying and redirecting...';
-                        
-                        authResult.user.getIdToken().then(function(idToken) {{
-                            fetch('/oauth/verify_firebase_token', {{
-                                method: 'POST',
-                                headers: {{ 'Content-Type': 'application/json' }},
-                                body: JSON.stringify({{ idToken: idToken }})
-                            }})
-                            .then(response => response.json())
-                            .then(data => {{
-                                if(data.status === 'success') {{
-                                    // Complete OAuth flow by redirecting back with code and state
-                                    const sep = "{redirect_uri}".includes("?") ? "&" : "?";
-                                    const redirectUri = "{redirect_uri}" + sep + "code=" + data.auth_code + "&state={state}";
-                                    window.location.href = redirectUri;
-                                }} else {{
-                                    document.getElementById('loader').innerText = 'Verification failed: ' + data.message;
-                                }}
-                            }});
-                        }});
+                        completeOAuth(authResult.user);
                         return false;
                     }},
                     uiShown: function() {{ document.getElementById('loader').style.display = 'none'; }}
@@ -637,7 +650,14 @@ async def authorize(request: Request) -> HTMLResponse:
                     }}
                 ]
             }};
-            ui.start('#firebaseui-auth-container', uiConfig);
+
+            firebase.auth().onAuthStateChanged(function(user) {{
+                if (user) {{
+                    completeOAuth(user);
+                }} else {{
+                    ui.start('#firebaseui-auth-container', uiConfig);
+                }}
+            }});
         </script>
     </body>
     </html>
