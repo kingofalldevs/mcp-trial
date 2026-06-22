@@ -587,6 +587,12 @@ async def authorize(request: Request) -> HTMLResponse:
             <h2>Authorize AI Access</h2>
             <div id="firebaseui-auth-container"></div>
             <div id="loader">Loading...</div>
+            <div id="consent-container" style="display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 1rem;">
+                <p style="font-size: 1.05rem; color: #475569; margin: 0;">You are signed in as:</p>
+                <div style="font-weight: 600; color: #0f172a; font-size: 1.15rem;" id="user-email"></div>
+                <button onclick="approveOAuth()" style="background: #10b981; color: white; border: none; padding: 0.8rem 2rem; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1.05rem; width: 100%; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">Authorize Access</button>
+                <a href="#" onclick="signOutAndSwitch()" style="color: #64748b; font-size: 0.9rem; text-decoration: none; font-weight: 500;" onmouseover="this.style.color='#0f172a'" onmouseout="this.style.color='#64748b'">Use a different account</a>
+            </div>
         </div>
 
         <script>
@@ -600,17 +606,24 @@ async def authorize(request: Request) -> HTMLResponse:
             }};
             firebase.initializeApp(firebaseConfig);
 
+            let currentUser = null;
+
+            function signOutAndSwitch() {{
+                firebase.auth().signOut().then(function() {{
+                    window.location.reload();
+                }});
+            }}
+
             let oauthCompleted = false;
 
-            function completeOAuth(user) {{
-                if (oauthCompleted) return;
-                oauthCompleted = true;
+            function approveOAuth() {{
+                if (!currentUser) return;
                 
-                document.getElementById('firebaseui-auth-container').style.display = 'none';
+                document.getElementById('consent-container').style.display = 'none';
                 document.getElementById('loader').style.display = 'block';
                 document.getElementById('loader').innerText = 'Verifying and redirecting...';
                 
-                user.getIdToken().then(function(idToken) {{
+                currentUser.getIdToken().then(function(idToken) {{
                     fetch('/oauth/verify_firebase_token', {{
                         method: 'POST',
                         headers: {{ 'Content-Type': 'application/json' }},
@@ -637,7 +650,8 @@ async def authorize(request: Request) -> HTMLResponse:
             const uiConfig = {{
                 callbacks: {{
                     signInSuccessWithAuthResult: function(authResult, redirectUrl) {{
-                        completeOAuth(authResult.user);
+                        currentUser = authResult.user;
+                        approveOAuth();
                         return false;
                     }},
                     uiShown: function() {{ document.getElementById('loader').style.display = 'none'; }}
@@ -653,8 +667,14 @@ async def authorize(request: Request) -> HTMLResponse:
 
             firebase.auth().onAuthStateChanged(function(user) {{
                 if (user) {{
-                    completeOAuth(user);
+                    currentUser = user;
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('firebaseui-auth-container').style.display = 'none';
+                    document.getElementById('user-email').innerText = user.email;
+                    document.getElementById('consent-container').style.display = 'flex';
                 }} else {{
+                    document.getElementById('consent-container').style.display = 'none';
+                    document.getElementById('loader').style.display = 'none';
                     ui.start('#firebaseui-auth-container', uiConfig);
                 }}
             }});
