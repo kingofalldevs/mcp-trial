@@ -491,7 +491,7 @@ async def serve_sitemap(request: Request):
         <priority>0.5</priority>
     </url>
 </urlset>
-\"\"\"
+"""
     return Response(content=content, media_type="application/xml")
 
 @mcp.custom_route("/", methods=["GET"])
