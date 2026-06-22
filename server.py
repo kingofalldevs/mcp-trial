@@ -575,8 +575,6 @@ async def authorize(request: Request) -> HTMLResponse:
         <title>Login - Connect AI</title>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
-        <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
         <style>
             body {{ font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f5f5f5; }}
             .container {{ background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
@@ -585,8 +583,7 @@ async def authorize(request: Request) -> HTMLResponse:
     <body>
         <div class="container">
             <h2>Authorize AI Access</h2>
-            <div id="firebaseui-auth-container"></div>
-            <div id="loader">Loading...</div>
+            <div id="loader">Redirecting to Google...</div>
             <div id="consent-container" style="display: none; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 1rem;">
                 <p style="font-size: 1.05rem; color: #475569; margin: 0;">You are signed in as:</p>
                 <div style="font-weight: 600; color: #0f172a; font-size: 1.15rem;" id="user-email"></div>
@@ -607,14 +604,13 @@ async def authorize(request: Request) -> HTMLResponse:
             firebase.initializeApp(firebaseConfig);
 
             let currentUser = null;
+            let isRedirecting = false;
 
             function signOutAndSwitch() {{
                 firebase.auth().signOut().then(function() {{
-                    window.location.reload();
+                    // onAuthStateChanged will handle redirecting to Google
                 }});
             }}
-
-            let oauthCompleted = false;
 
             function approveOAuth() {{
                 if (!currentUser) return;
@@ -646,36 +642,27 @@ async def authorize(request: Request) -> HTMLResponse:
                 }});
             }}
 
-            const ui = new firebaseui.auth.AuthUI(firebase.auth());
-            const uiConfig = {{
-                callbacks: {{
-                    signInSuccessWithAuthResult: function(authResult, redirectUrl) {{
-                        currentUser = authResult.user;
-                        approveOAuth();
-                        return false;
-                    }},
-                    uiShown: function() {{ document.getElementById('loader').style.display = 'none'; }}
-                }},
-                signInFlow: 'popup',
-                signInOptions: [ 
-                    {{
-                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                        customParameters: {{ prompt: 'select_account' }}
-                    }}
-                ]
-            }};
+            firebase.auth().getRedirectResult().catch(function(error) {{
+                document.getElementById('loader').innerText = 'Authentication error: ' + error.message;
+            }});
 
             firebase.auth().onAuthStateChanged(function(user) {{
                 if (user) {{
                     currentUser = user;
                     document.getElementById('loader').style.display = 'none';
-                    document.getElementById('firebaseui-auth-container').style.display = 'none';
                     document.getElementById('user-email').innerText = user.email;
                     document.getElementById('consent-container').style.display = 'flex';
                 }} else {{
-                    document.getElementById('consent-container').style.display = 'none';
-                    document.getElementById('loader').style.display = 'none';
-                    ui.start('#firebaseui-auth-container', uiConfig);
+                    if (!isRedirecting) {{
+                        isRedirecting = true;
+                        document.getElementById('consent-container').style.display = 'none';
+                        document.getElementById('loader').style.display = 'block';
+                        document.getElementById('loader').innerText = 'Redirecting to Google...';
+                        
+                        const provider = new firebase.auth.GoogleAuthProvider();
+                        provider.setCustomParameters({{ prompt: 'select_account' }});
+                        firebase.auth().signInWithRedirect(provider);
+                    }}
                 }}
             }});
         </script>
