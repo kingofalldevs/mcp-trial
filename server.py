@@ -190,7 +190,7 @@ def get_email_for_access_token(access_token: str):
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # We only protect the MCP streaming endpoints
-        if request.method != "OPTIONS" and request.url.path in ["/sse", "/messages", "/messages/"]:
+        if request.method != "OPTIONS" and request.url.path == "/sse":
             token = None
             auth_header = request.headers.get("Authorization")
             print(f"[MW] {request.method} {request.url.path} | Auth header: {repr(auth_header)} | Query params: {dict(request.query_params)}")
