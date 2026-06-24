@@ -150,8 +150,8 @@ dashboard_new = """<div id="dashboard-view" class="sidebar-layout" style="displa
                         <div style="margin-bottom: 0.5rem;"><strong style="color: #fff;">Authentication:</strong> OAuth</div>
                         <div style="margin-bottom: 0.5rem;"><strong style="color: #fff;">Authorization URL:</strong> <span id="auth-url"></span></div>
                         <div style="margin-bottom: 0.5rem;"><strong style="color: #fff;">Token URL:</strong> <span id="token-url"></span></div>
-                        <div style="margin-bottom: 0.5rem;"><strong style="color: #fff;">Client ID:</strong> memorie-client</div>
-                        <div style="margin-bottom: 0;"><strong style="color: #fff;">Client Secret:</strong> secret-123</div>
+                        <div style="margin-bottom: 0.5rem;"><strong>Client ID:</strong> rulip</div>
+                        <div style="margin-bottom: 0;"><strong>Client Secret:</strong> rulip</div>
                     </div>
                 </div>
             </div>

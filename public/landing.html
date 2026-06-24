@@ -176,7 +176,7 @@
         /* Hero Section */
         .hero {
             margin: 0 30px 16px 30px;
-            padding: 1.5rem 2rem 6rem 2rem;
+            padding: 6rem 2rem 6rem 2rem;
             height: auto;
             min-height: calc(100vh - 40px);
             box-sizing: border-box;
@@ -406,24 +406,24 @@
         
         /* CTA Section */
         .cta-section {
-            margin: 6rem auto 4rem auto;
-            max-width: 1200px;
-            width: calc(100% - 60px);
+            margin: 0;
+            max-width: none;
+            width: 100%;
             display: block;
         }
 
         .cta-card {
-            background: linear-gradient(to top, var(--bg-color), #ffffff);
+            background: linear-gradient(to bottom, var(--bg-color) 0%, var(--bg-color) 40%, rgba(255,255,255,0.8) 80%, #ffffff 100%);
             border: none;
-            border-radius: 24px;
-            padding: 4.5rem 2rem;
+            border-radius: 0;
+            padding: 8rem 2rem 6rem 2rem;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.04);
+            box-shadow: none;
         }
 
         .cta-icon-wrapper {
@@ -705,13 +705,13 @@
         /* How It Works Section Styles */
         .how-it-works-section {
             flex-direction: column;
-            padding: 5rem 2.5rem;
+            padding: 5rem 2.5rem 6rem 2.5rem;
             align-items: stretch !important;
             min-height: auto;
             gap: 3rem;
             background: linear-gradient(180deg, #ffffff 0%, var(--bg-color) 100%);
-            margin: 16px 30px;
-            border-radius: 24px;
+            margin: 0;
+            border-radius: 0;
             border: none;
         }
 
@@ -1021,46 +1021,64 @@
     <div class="hero">
         <div class="hero-content">
             <h1>Let <span id="dynamic-ai-name-1" style="color: var(--primary);">ChatGPT</span> Remember What <span id="dynamic-ai-name-2" style="color: var(--primary);">Claude</span> Said</h1>
-            
-            <div class="diagram-wrapper" id="diagram-wrapper">
-                <span class="diagram-label">one memory for all your ai tools</span>
-                <div class="diagram-platforms" id="diagram-platforms">
-                    <div class="platform-item" id="platform-chatgpt">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT">
-                        <span>ChatGPT</span>
+            <p style="font-size: 1.25rem; color: #475569; max-width: 600px; margin: 1rem auto 2rem auto; line-height: 1.6;">One unified memory layer for all your AI workspaces. No more repeating yourself—just connect and pick up right where you left off.</p>
+
+
+
+
+            <!-- AI Setup Cards Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; width: 100%; max-width: 900px; margin: 2rem auto 0 auto; z-index: 10; position: relative;">
+                <!-- Claude Card -->
+                <div style="background: transparent; border-radius: 16px; overflow: hidden; box-shadow: none; border: 1px solid rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; padding: 2rem 1.5rem; text-align: left; min-height: 180px;">
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" style="width:24px;height:24px;border-radius:6px;"> Setup with Claude</h3>
+                        <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
                     </div>
-                    <div class="platform-item" id="platform-claude">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude">
-                        <span>Claude</span>
-                    </div>
-                    <div class="platform-item" id="platform-cursor">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor">
-                        <span>Cursor</span>
-                    </div>
-                    <div class="platform-item" id="platform-manus">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus">
-                        <span>Manus</span>
-                    </div>
-                    <div class="platform-item" id="platform-windsurf">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf">
-                        <span>Windsurf</span>
-                    </div>
+                    <button onclick="copyText('prompt-claude')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <div style="display: none;" id="prompt-claude">Please configure an MCP server for this project with the following details:
+- App Name: Rulip
+- MCP URL: https://www.rulip.co/sse
+- OAuth Client ID: rulip
+- OAuth Client Secret: rulip
+
+I need help setting this up. Can you explain the exact step-by-step process I must follow to add this MCP server configuration to Claude so I can understand and do it myself?</div>
                 </div>
 
+                <!-- ChatGPT Card -->
+                <div style="background: transparent; border-radius: 16px; overflow: hidden; box-shadow: none; border: 1px solid rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; padding: 2rem 1.5rem; text-align: left; min-height: 180px;">
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" style="width:24px;height:24px;border-radius:6px;"> Setup with ChatGPT</h3>
+                        <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
+                    </div>
+                    <button onclick="copyText('prompt-chatgpt')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <div style="display: none;" id="prompt-chatgpt">Please configure an MCP server for this project with the following details:
+- App Name: Rulip
+- MCP URL: https://www.rulip.co/sse
+- OAuth Client ID: rulip
+- OAuth Client Secret: rulip
+
+I need help setting this up. Can you explain the exact step-by-step process I must follow to add this MCP server configuration to ChatGPT so I can understand and do it myself?</div>
+                </div>
+
+                <!-- Manus Card -->
+                <div style="background: transparent; border-radius: 16px; overflow: hidden; box-shadow: none; border: 1px solid rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; padding: 2rem 1.5rem; text-align: left; min-height: 180px;">
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" style="width:24px;height:24px;border-radius:6px;"> Setup with Manus</h3>
+                        <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
+                    </div>
+                    <button onclick="copyText('prompt-manus')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <div style="display: none;" id="prompt-manus">Please configure an MCP server for this project with the following details:
+- App Name: Rulip
+- MCP URL: https://www.rulip.co/sse
+- OAuth Client ID: rulip
+- OAuth Client Secret: rulip
+
+I need help setting this up. Can you explain the exact step-by-step process I must follow to add this MCP server configuration to Manus so I can understand and do it myself?</div>
+                </div>
             </div>
 
-            <div style="margin-top: 1.2rem; z-index: 10; position: relative;">
+            <div style="margin-top: 3rem; margin-bottom: 2rem; z-index: 10; position: relative; width: 100%; display: flex; justify-content: center;">
                 <a href="/signup" class="btn" style="padding: 1rem 3rem; font-size: 1.1rem; border-radius: 12px; font-weight: 700; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);">Get Started</a>
-            </div>
-
-            <!-- ChatGPT Screenshot Card -->
-            <div style="margin-top: 1.2rem; width: 100%; max-width: 800px; flex: 1; min-height: 0; background: #ffffff; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.1); border-bottom: none; display: flex; flex-direction: column; z-index: 10; position: relative;">
-
-                <div style="flex: 1; overflow: hidden; position: relative;">
-                    <video autoplay loop muted playsinline controls style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;">
-                        <source src="/static/demo.mp4" type="video/mp4">
-                    </video>
-                </div>
             </div>
 
             <script>
@@ -1254,7 +1272,8 @@
         </div>
     </div>
 
-    <div class="cta-section">
+    <div class="cover-div" style="margin-bottom: 2rem;">
+        <div class="cta-section">
         <div class="cta-card">
             <h2>Give all your AIs one memory to remember across platforms.</h2>
             <div class="cta-buttons">
@@ -1338,10 +1357,11 @@
         </div>
     </footer>
 
-    <div style="width: 100%; text-align: center; background-color: var(--bg-color); padding: 0 2rem 6rem 2rem; overflow: hidden; user-select: none; box-sizing: border-box;">
+    <div style="width: 100%; text-align: center; background: linear-gradient(to bottom, #ffffff 0%, var(--bg-color) 35%, var(--bg-color) 100%); padding: 4rem 2rem 6rem 2rem; overflow: hidden; user-select: none; box-sizing: border-box;">
         <h2 style="font-size: 8.5vw; font-weight: 900; text-transform: uppercase; color: transparent; -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.07); letter-spacing: -0.02em; margin: 0; line-height: 1; pointer-events: none; font-family: 'Inter', sans-serif;">
             one memory for all
         </h2>
+    </div>
     </div>
 
     <script>
@@ -1386,12 +1406,27 @@
     })();
 
     function copyText(elementId) {
-        const text = document.getElementById(elementId).innerText;
+        const text = document.getElementById(elementId).innerText || document.getElementById(elementId).textContent;
+        
+        // Capture the button element synchronously before the promise
+        let btnElement = null;
+        if (window.event) {
+            const el = window.event.currentTarget || window.event.target;
+            if (el) {
+                btnElement = el.closest ? (el.closest('button') || el) : el;
+            }
+        }
+
         navigator.clipboard.writeText(text).then(() => {
-            const btn = event.currentTarget;
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i>';
-            setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+            if (btnElement) {
+                const originalHTML = btnElement.innerHTML;
+                if (btnElement.textContent.trim().length > 0) {
+                    btnElement.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> Copied!';
+                } else {
+                    btnElement.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i>';
+                }
+                setTimeout(() => { btnElement.innerHTML = originalHTML; }, 2000);
+            }
         });
     }
     </script>
