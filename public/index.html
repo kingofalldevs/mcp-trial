@@ -121,7 +121,194 @@
             line-height: 1.6;
         }
 
-        
+        .glass-container-wide {
+            background: rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .panel-content-layout {
+            display: flex;
+            gap: 2.5rem;
+            align-items: stretch;
+            flex-direction: row;
+            margin-top: 1rem;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .panel-video-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .panel-details-col {
+            flex: 1.1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .video-guide-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            aspect-ratio: 16/9;
+            background: #000;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .video-guide-wrapper:hover {
+            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12), 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .parameter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .parameter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+        }
+
+        .parameter-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #57534e;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .parameter-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            font-family: monospace;
+            font-size: 0.95rem;
+            color: #1c1917;
+            transition: all 0.2s ease;
+            min-height: 46px;
+            gap: 1rem;
+        }
+
+        .parameter-box:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .parameter-value {
+            color: #1c1917;
+            word-break: break-all;
+            user-select: all;
+            font-weight: 500;
+        }
+
+        .copy-btn-new {
+            background: transparent;
+            border: none;
+            color: #78716c;
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .copy-btn-new:hover {
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .code-block-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+            flex-grow: 1;
+        }
+
+        .code-block-header {
+            background: #1e293b;
+            padding: 0.65rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .code-block-body {
+            background: #0f172a;
+            padding: 1.25rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            overflow: auto;
+            min-height: 120px;
+        }
+
+        .code-block-body pre {
+            font-family: monospace;
+            color: #38bdf8;
+            font-size: 0.85rem;
+            margin: 0;
+            width: 100%;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .panel-content-layout {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .panel-video-col, .panel-details-col {
+                width: 100%;
+            }
+        }
+
         /* Sidebar layout */
         .sidebar-layout {
             display: flex;
@@ -345,59 +532,91 @@
             </div>
             <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="tab-btn active" onclick="switchTab('connect')" id="btn-connect"><i class="ph ph-plug"></i> Connect AI</button>
-                <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Rulips</button>
-                <button class="tab-btn" onclick="switchTab('tutorials')" id="btn-tutorials"><i class="ph ph-book-open"></i> Tutorials</button>
-                <button class="tab-btn" onclick="switchTab('billing')" id="btn-billing"><i class="ph ph-credit-card"></i> Billing</button>
-                <button class="tab-btn" onclick="switchTab('account')" id="btn-account"><i class="ph ph-user"></i> Account</button>
+                <button class="tab-btn" onclick="switchTab('memories')" id="btn-memories"><i class="ph ph-grid-four"></i> Memories</button>
+                <button class="tab-btn" onclick="switchTab('support')" id="btn-support"><i class="ph ph-lifebuoy"></i> Support</button>
             </nav>
             <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
-                <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem;" title="Click to sign out" onclick="firebase.auth().signOut()">
+                <div style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem;" title="Go to Account Settings" onclick="switchTab('account')">
                     <img id="sidebar-avatar" src="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--glass-border);">
                     <i id="sidebar-icon" class="ph-fill ph-user-circle" style="font-size: 32px; color: #94a3b8; display: none;"></i>
                     <div style="overflow: hidden;">
                         <div id="sidebar-email" style="font-size: 0.85rem; color: #0f172a; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                        <div style="font-size: 0.7rem; color: #94a3b8;">Sign Out</div>
+                        <div style="font-size: 0.7rem; color: #94a3b8;">Manage Account</div>
                     </div>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content Area -->
-        <div style="flex: 1; padding: 3rem; overflow-y: auto; position: relative;">
+        <div style="flex: 1; padding: 2rem 3rem; overflow-y: hidden; position: relative; display: flex; flex-direction: column; height: 100%; min-height: 0;">
             
-            <!-- Theme Toggle -->
-            <div style="position: fixed; top: 2.5rem; right: 3rem; background: rgba(0, 0, 0, 0.05); border: 1px solid var(--glass-border); border-radius: 30px; padding: 0.3rem 0.8rem; display: flex; gap: 1rem; align-items: center; z-index: 100;">
-                <i class="ph ph-sun" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: color 0.2s;" onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#475569'"></i>
-                <i class="ph ph-coffee" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: color 0.2s;" onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#475569'"></i>
-                <i class="ph ph-moon" style="font-size: 1.2rem; cursor: pointer; color: #475569; transition: color 0.2s;" onmouseover="this.style.color='#000000'" onmouseout="this.style.color='#475569'"></i>
-            </div>
-            <!-- Rulips Tab -->
-            <div id="tab-memories" class="tab-content">
-                <div class="dashboard-header">
+
+            <!-- Memories Tab -->
+            <div id="tab-memories" class="tab-content" style="flex: 1; flex-direction: column; overflow: hidden; min-height: 0;">
+                <div class="dashboard-header" style="flex-shrink: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem;">
                     <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Your Rulips</h2>
-                        <p style="color: #000000; margin-top: 0.5rem;">Everything your AI has learned.</p>
+                        <h2 style="font-weight: 700; font-size: 1.85rem;">Your Memories</h2>
+                        <p style="color: #334155; margin-top: 0.4rem; font-size: 1rem;">Everything your AI has learned.</p>
                     </div>
                 </div>
-                <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px;"></div>
-                <div id="memories-container" class="memories-grid"></div>
+                <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px; flex-shrink: 0;"></div>
+                <div id="memories-container" class="memories-grid" style="flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; margin-top: 0.5rem;"></div>
+            </div>
+
+            <!-- Support Tab -->
+            <div id="tab-support" class="tab-content" style="flex: 1; flex-direction: column; overflow: hidden; min-height: 0;">
+                <div class="dashboard-header" style="flex-shrink: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem;">
+                    <div>
+                        <h2 style="font-weight: 700; font-size: 1.85rem;">Support</h2>
+                        <p style="color: #334155; margin-top: 0.4rem; font-size: 1rem;">Get help with your integrations and memory settings.</p>
+                    </div>
+                </div>
+                <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; margin-top: 0.5rem;">
+                    <div class="glass-container-wide" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.5rem;">Need Assistance?</h3>
+                        <p style="color: #334155; line-height: 1.6;">If you are experiencing issues connecting your AI agents or have questions about how memories are stored, please reach out to our team.</p>
+                        <a href="mailto:support@memorie.ai" style="display: inline-block; background: var(--primary); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; width: fit-content; margin-top: 1rem; transition: background 0.2s ease;">Contact Support</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Tab -->
+            <div id="tab-account" class="tab-content" style="flex: 1; flex-direction: column; overflow: hidden; min-height: 0;">
+                <div class="dashboard-header" style="flex-shrink: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem;">
+                    <div>
+                        <h2 style="font-weight: 700; font-size: 1.85rem;">Account Settings</h2>
+                        <p style="color: #334155; margin-top: 0.4rem; font-size: 1rem;">Manage your profile and authentication.</p>
+                    </div>
+                </div>
+                <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; margin-top: 0.5rem;">
+                    <div class="glass-container-wide" style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px;">
+                        <div>
+                            <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Email Address</label>
+                            <div id="account-email-display" style="padding: 0.8rem 1rem; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); border-radius: 8px; font-weight: 500; color: #1c1917;">Loading...</div>
+                        </div>
+                        <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem; margin-top: 0.5rem;">
+                            <button onclick="firebase.auth().signOut()" style="background: white; color: #ef4444; border: 1px solid #ef4444; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Connect Tab -->
-            <div id="tab-connect" class="tab-content active">
+             <div id="tab-connect" class="tab-content active">
                 <style>
                     .ai-card {
                         background: rgba(255, 255, 255, 0.2);
                         border: 2px solid var(--glass-border);
                         border-radius: 16px;
-                        padding: 1.25rem;
-                        text-align: center;
+                        padding: 1.4rem 1rem;
                         cursor: pointer;
                         transition: all 0.2s ease;
                         display: flex;
-                        flex-direction: column;
+                        flex-direction: row;
                         align-items: center;
-                        justify-content: center;
+                        gap: 0.85rem;
+                        text-align: left;
+                        justify-content: flex-start;
                     }
                     .ai-card:hover {
                         border-color: rgba(16, 185, 129, 0.4);
@@ -411,290 +630,311 @@
                     .ai-panel {
                         display: none;
                         animation: slideUp 0.3s ease;
+                        height: 100%;
                     }
                     .ai-panel.active {
-                        display: block;
+                        display: flex;
+                        flex-direction: column;
+                        height: 100%;
+                        overflow: hidden;
                     }
                     @keyframes slideUp {
                         from { opacity: 0; transform: translateY(8px); }
                         to { opacity: 1; transform: translateY(0); }
                     }
                 </style>
-                <div class="dashboard-header">
+
+                 <div class="dashboard-header" style="flex-shrink: 0; margin-bottom: 1.25rem; padding-bottom: 0.75rem;">
                     <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Connect Your AI</h2>
-                        <p style="color: #000000; margin-top: 0.5rem;">Give your agents access to your long-term memory.</p>
+                        <h2 style="font-weight: 700; font-size: 1.85rem;">Connect Your AI</h2>
+                        <p style="color: #334155; margin-top: 0.4rem; font-size: 1rem;">Give your agents access to your long-term memory.</p>
                     </div>
                 </div>
 
                 <!-- SELECTOR GRID -->
-                <div class="ai-selector-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="ai-selector-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 1.75rem; flex-shrink: 0;">
                     <div class="ai-card active" onclick="selectAI('chatgpt')" id="ai-card-chatgpt">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 0.95rem;">ChatGPT</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">OAuth Flow</div>
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ChatGPT</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-chatgpt" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-chatgpt" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-chatgpt">Offline</span>
+                                </div>
+                                <span id="ai-time-chatgpt" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="ai-card" onclick="selectAI('claude')" id="ai-card-claude">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 0.95rem;">Claude</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">OAuth Flow</div>
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Claude</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-claude" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-claude" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-claude">Offline</span>
+                                </div>
+                                <span id="ai-time-claude" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="ai-card" onclick="selectAI('cursor')" id="ai-card-cursor">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 0.95rem;">Cursor</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Custom MCP</div>
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cursor</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-cursor" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-cursor" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-cursor">Offline</span>
+                                </div>
+                                <span id="ai-time-cursor" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="ai-card" onclick="selectAI('windsurf')" id="ai-card-windsurf">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 0.95rem;">Windsurf</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Config File</div>
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Windsurf</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-windsurf" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-windsurf" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-windsurf">Offline</span>
+                                </div>
+                                <span id="ai-time-windsurf" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="ai-card" onclick="selectAI('manus')" id="ai-card-manus">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 40px; height: 40px; border-radius: 8px; margin-bottom: 0.5rem;">
-                        <div style="font-weight: 600; font-size: 0.95rem;">Manus</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">Custom Token</div>
-                    </div>
-                </div>
-
-                <!-- CONNECTION DETAIL PANELS -->
-                <div class="glass-container" style="max-width: 100%; margin-bottom: 2.5rem; text-align: left; padding: 2.25rem;">
-                    <!-- ChatGPT Panel -->
-                    <div id="panel-chatgpt" class="ai-panel active">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to ChatGPT (Custom Actions)
-                        </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect ChatGPT, create a GPT or Custom Action and configure OAuth authentication with these exact parameters:</p>
-                        
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Action SSE URL:</strong> <span id="mcp-url-chatgpt"></span></div>
-                                <button onclick="copyText('mcp-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Authentication Type:</strong> OAuth</div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Client ID:</strong> <span id="client-id-chatgpt">memorie-client</span></div>
-                                <button onclick="copyText('client-id-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Client Secret:</strong> <span id="client-secret-chatgpt">secret-123</span></div>
-                                <button onclick="copyText('client-secret-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Authorization URL:</strong> <span id="auth-url-chatgpt"></span></div>
-                                <button onclick="copyText('auth-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><strong style="color: #0f172a;">Token URL:</strong> <span id="token-url-chatgpt"></span></div>
-                                <button onclick="copyText('token-url-chatgpt')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Claude Panel -->
-                    <div id="panel-claude" class="ai-panel">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to Claude (MCP Server)
-                        </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Claude, configure the custom MCP server with these exact parameters:</p>
-                        
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">App Name:</strong> <span id="client-name-claude">Rulip</span></div>
-                                <button onclick="copyText('client-name-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">MCP URL:</strong> <span id="mcp-url-claude"></span></div>
-                                <button onclick="copyText('mcp-url-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">OAuth Client ID:</strong> <span id="client-id-claude">memorie-client</span></div>
-                                <button onclick="copyText('client-id-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><strong style="color: #0f172a;">OAuth Client Secret:</strong> <span id="client-secret-claude">secret-123</span></div>
-                                <button onclick="copyText('client-secret-claude')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cursor Panel -->
-                    <div id="panel-cursor" class="ai-panel">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to Cursor IDE (SSE Server)
-                        </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Cursor, go to <strong>Settings > Features > MCP</strong>, click <strong>+ Add New MCP Server</strong>, configure it as type <strong>SSE</strong>, and provide this URL:</p>
-                        
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Name:</strong> Rulip</div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">Type:</strong> SSE</div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><strong style="color: #0f172a;">URL:</strong> <span id="mcp-url-cursor"></span></div>
-                                <button onclick="copyText('mcp-url-cursor')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Windsurf Panel -->
-                    <div id="panel-windsurf" class="ai-panel">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to Windsurf IDE (SSE Server)
-                        </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">To connect Windsurf, click the <strong>MCP</strong> button in the bottom bar, click the <strong>Settings</strong> gear icon, and add this configuration:</p>
-                        
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; position: relative;">
-                            <pre id="windsurf-json" style="font-family: monospace; color: #4338ca; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; margin: 0; padding-right: 2rem;"></pre>
-                            <button onclick="copyText('windsurf-json')" class="copy-btn" style="position: absolute; top: 1rem; right: 1rem;" title="Copy"><i class="ph ph-copy"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Manus Panel -->
-                    <div id="panel-manus" class="ai-panel">
-                        <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 20px; height: 20px; border-radius: 4px;"> 
-                            Connect to Manus / Custom Client (Headers Token)
-                        </h3>
-                        <p style="color: #475569; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5;">For Manus and custom AI clients that don't support OAuth, use this static SSE url and authorization header:</p>
-                        
-                        <div style="background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.5rem; font-family: monospace; color: #4338ca; font-size: 0.95rem; display: flex; flex-direction: column; gap: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                <div><strong style="color: #0f172a;">SSE Endpoint:</strong> <span id="mcp-url-manus"></span></div>
-                                <button onclick="copyText('mcp-url-manus')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><strong style="color: #0f172a;">Custom Header:</strong> <span id="manual-header-manus">Loading...</span></div>
-                                <button onclick="copyText('manual-header-manus')" class="copy-btn" title="Copy"><i class="ph ph-copy"></i></button>
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Manus</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-manus" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-manus" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-manus">Offline</span>
+                                </div>
+                                <span id="ai-time-manus" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VERIFYING / CONNECTION STATUS GRID -->
-                <div class="glass-container" style="max-width: 100%; text-align: left; padding: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                        <div>
-                            <h3 style="font-size: 1.25rem; color: #1e293b; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                                <i class="ph-fill ph-shield-check" style="color: var(--primary);"></i> Verify Connected AIs
+                <!-- Flex layout container for side-by-side view -->
+                <div style="display: flex; gap: 2rem; align-items: stretch; width: 100%; flex: 1; min-height: 0; overflow: hidden;">
+                    <!-- CONNECTION DETAIL PANELS -->
+                    <div class="glass-container-wide" style="flex: 1; margin-bottom: 0; display: flex; flex-direction: column; overflow: hidden; padding: 2rem 2.5rem;">
+                        <!-- ChatGPT Panel -->
+                        <div id="panel-chatgpt" class="ai-panel active">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to ChatGPT (Custom MCP)
                             </h3>
-                            <p style="color: #475569; font-size: 0.85rem; margin-top: 0.25rem;">Real-time check of your active AI integrations.</p>
-                        </div>
-                        <button onclick="pollConnections(true)" class="copy-btn" style="background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
-                            <i class="ph ph-arrow-clockwise" id="poll-spinner"></i> Refresh
-                        </button>
-                    </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;" id="connections-status-list">
-                        <!-- Loaded dynamically -->
-                        <div style="grid-column: 1/-1; text-align: center; padding: 1.5rem; color: #64748b;">
-                            <div class="spinner" style="width: 20px; height: 20px; margin-bottom: 0.5rem;"></div>
-                            Checking active connections...
-                        </div>
-                    </div>
-
-                    <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--primary); padding: 1.25rem; border-radius: 0 12px 12px 0;">
-                        <h4 style="font-weight: 600; color: #065f46; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;">
-                            <i class="ph ph-info"></i> How to verify?
-                        </h4>
-                        <p style="color: #047857; font-size: 0.85rem; line-height: 1.5;">
-                            Open your connected AI client (Claude, Cursor, etc.) and type: 
-                            <code style="background: rgba(255,255,255,0.7); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: monospace; font-weight: 600; color: #0f172a; border: 1px solid rgba(0,0,0,0.05); margin: 0 0.2rem;">save_memory: test connection to Rulip</code> or just ask the AI to remember something. 
-                            The moment the AI queries your memory server, it will appear as <strong>Connected</strong> here immediately!
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Billing Tab -->
-            <div id="tab-billing" class="tab-content">
-                <div class="dashboard-header">
-                    <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Billing & Subscription</h2>
-                        <p style="color: #000000; margin-top: 0.5rem;">Select a plan to unlock all unlimited features for yourself or your team.</p>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 800px; width: 100%;">
-                    <!-- Normal Dev Plan -->
-                    <div class="glass-container" style="padding: 2.25rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; border-color: var(--glass-border); max-width: 100%;">
-                        <div>
-                            <div style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">For Individuals</div>
-                            <h3 style="font-size: 1.5rem; color: #0f172a; font-weight: 600; margin-bottom: 1rem;">Normal Dev</h3>
-                            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">Unlock complete, unlimited persistent memory sync for all your personal AI tools and editors.</p>
-                            <div style="font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 1.5rem;">
-                                $5.99 <span style="font-size: 0.95rem; color: #64748b; font-weight: 400;">/mo</span>
+                            
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Action SSE URL</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-chatgpt"></span>
+                                            <button onclick="copyText(this, 'mcp-url-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Authentication Type</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value">OAuth (Authorization Code Flow)</span>
+                                            <span style="font-size: 0.72rem; color: #10b981; font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 0.2rem 0.5rem; border-radius: 6px; flex-shrink: 0;">Recommended</span>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Client ID</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="client-id-chatgpt">memorie-client</span>
+                                            <button onclick="copyText(this, 'client-id-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Client Secret</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="client-secret-chatgpt">secret-123</span>
+                                            <button onclick="copyText(this, 'client-secret-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: #475569;">
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Unlimited memories saved</li>
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> ChatGPT, Claude, Cursor, Windsurf</li>
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Personal Access Token</li>
-                            </ul>
                         </div>
-                        <button onclick="window.open('/pricing')" style="background: #0f172a; color: white; border: none; padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.2s;">Upgrade Plan</button>
-                    </div>
 
-                    <!-- Teams Plan -->
-                    <div class="glass-container" style="padding: 2.25rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.03); max-width: 100%;">
-                        <div>
-                            <div style="color: var(--primary); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">For Organizations</div>
-                            <h3 style="font-size: 1.5rem; color: #0f172a; font-weight: 600; margin-bottom: 1rem;">Teams</h3>
-                            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">Build a shared organizational brain. Sync memory collaboratively across all team members.</p>
-                            <div style="font-size: 2.25rem; color: #0f172a; font-weight: 800; margin-bottom: 1.5rem;">
-                                $19.99 <span style="font-size: 0.95rem; color: #64748b; font-weight: 400;">/mo</span>
+                        <!-- Claude Panel -->
+                        <div id="panel-claude" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Claude (MCP Server)
+                            </h3>
+
+                            
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">App Name</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="client-name-claude">Memories</span>
+                                            <button onclick="copyText(this, 'client-name-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">MCP URL</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-claude"></span>
+                                            <button onclick="copyText(this, 'mcp-url-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">OAuth Client ID</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="client-id-claude">memorie-client</span>
+                                            <button onclick="copyText(this, 'client-id-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">OAuth Client Secret</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="client-secret-claude">secret-123</span>
+                                            <button onclick="copyText(this, 'client-secret-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: #475569;">
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Everything in Dev Plan</li>
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Collaborative team sync (soon)</li>
-                                <li style="display: flex; align-items: center; gap: 0.4rem;"><i class="ph ph-check" style="color: var(--primary); font-weight: 700;"></i> Priority developer support</li>
-                            </ul>
                         </div>
-                        <button onclick="window.open('/pricing')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.75rem; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; transition: transform 0.2s;">Start Free Trial</button>
+
+                        <!-- Cursor Panel -->
+                        <div id="panel-cursor" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Cursor IDE (SSE Server)
+                            </h3>
+
+                            
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Name</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value">Memories</span>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Type</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value">SSE</span>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">URL</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-cursor"></span>
+                                            <button onclick="copyText(this, 'mcp-url-cursor')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Windsurf Panel -->
+                        <div id="panel-windsurf" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Windsurf IDE (SSE Server)
+                            </h3>
+
+                            
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col">
+                                    <div class="code-block-container">
+                                        <div class="code-block-header">
+                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                                <i class="ph ph-file-code" style="font-size: 0.95rem;"></i>
+                                                <span>mcp.json</span>
+                                            </div>
+                                            <button onclick="copyText(this, 'windsurf-json')" class="copy-btn-new" title="Copy to clipboard"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                        <div class="code-block-body">
+                                            <pre id="windsurf-json"></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manus Panel -->
+                        <div id="panel-manus" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Manus / Custom Client (Headers Token)
+                            </h3>
+
+                            
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">SSE Endpoint</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-manus"></span>
+                                            <button onclick="copyText(this, 'mcp-url-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Custom Header</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="manual-header-manus">Loading...</span>
+                                            <button onclick="copyText(this, 'manual-header-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Account Tab -->
-            <div id="tab-account" class="tab-content">
-                <div class="dashboard-header">
-                    <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Account Profile</h2>
-                    </div>
-                </div>
-                <div class="glass-container" style="max-width: 400px; padding: 2rem; text-align: left; display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <img id="account-avatar" src="" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--primary);">
-                        <i id="account-icon" class="ph-fill ph-user-circle" style="font-size: 64px; color: #000000; display: none;"></i>
-                        <div>
-                            <div style="font-size: 0.9rem; color: #000000; margin-bottom: 0.25rem;">Signed in as</div>
-                            <div id="account-email" style="font-size: 1.1rem; color: #0f172a; font-weight: 500;"></div>
-                        </div>
-                    </div>
-                    <button style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; width: 100%;" onclick="firebase.auth().signOut()">Sign Out of Rulip</button>
-                </div>
-            </div>
 
-            <!-- Tutorials Tab -->
-            <div id="tab-tutorials" class="tab-content">
-                <div class="dashboard-header">
-                    <div>
-                        <h2 style="font-weight: 600; font-size: 2rem;">Tutorials</h2>
-                        <p style="color: #000000; margin-top: 0.5rem;">Learn how to get the most out of your AI.</p>
-                    </div>
-                </div>
-                <div class="glass-container" style="padding: 2rem; text-align: center;">
-                    <i class="ph ph-video" style="font-size: 48px; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                    <h3 style="font-size: 1.2rem; color: #1e293b; font-weight: 600; margin-bottom: 0.5rem;">Tutorials coming soon</h3>
-                    <p style="color: #000000; font-size: 0.95rem;">We're working on some great video guides and articles.</p>
-                </div>
-            </div>
 
         </div>
     </div>
@@ -704,8 +944,6 @@
         // Use the production domain URL
         const baseUrl = "https://www.rulip.co";
         document.getElementById('mcp-url-chatgpt').innerText = baseUrl + '/sse';
-        document.getElementById('auth-url-chatgpt').innerText = baseUrl + '/authorize';
-        document.getElementById('token-url-chatgpt').innerText = baseUrl + '/token';
         document.getElementById('mcp-url-claude').innerText = baseUrl + '/sse';
         document.getElementById('mcp-url-manus').innerText = baseUrl + '/sse';
         
@@ -739,24 +977,19 @@
                     
                     // Set sidebar account info
                     document.getElementById('sidebar-email').innerText = user.email;
-                    document.getElementById('account-email').innerText = user.email;
+                    if (document.getElementById('account-email-display')) {
+                        document.getElementById('account-email-display').innerText = user.email;
+                    }
                     if (user.photoURL) {
                         document.getElementById('sidebar-avatar').src = user.photoURL;
                         document.getElementById('sidebar-avatar').style.display = 'block';
                         document.getElementById('sidebar-icon').style.display = 'none';
-                        
-                        document.getElementById('account-avatar').src = user.photoURL;
-                        document.getElementById('account-avatar').style.display = 'block';
-                        document.getElementById('account-icon').style.display = 'none';
                     } else {
                         document.getElementById('sidebar-icon').style.display = 'block';
                         document.getElementById('sidebar-avatar').style.display = 'none';
-                        
-                        document.getElementById('account-icon').style.display = 'block';
-                        document.getElementById('account-avatar').style.display = 'none';
                     }
                     
-                    fetchRulips(user);
+                    fetchMemories(user);
                     fetchManualToken(user);
                     
                     // Initial poll for client connections
@@ -771,7 +1004,7 @@
             });
         }
 
-        async function fetchRulips(user) {
+        async function fetchMemories(user) {
             document.getElementById('memories-loading').style.display = 'block';
             document.getElementById('memories-container').innerHTML = '';
             
@@ -785,7 +1018,7 @@
                 document.getElementById('memories-loading').style.display = 'none';
                 
                 if (data.status === 'success') {
-                    renderRulips(data.results);
+                    renderMemories(data.results);
                 } else {
                     document.getElementById('memories-container').innerHTML = `<p style="color: #ef4444;">Error loading memories: ${data.message}</p>`;
                 }
@@ -813,7 +1046,7 @@
 
                     const windsurfConfig = {
                         "mcpServers": {
-                            "rulip": {
+                            "memories": {
                                 "type": "sse",
                                 "url": `${baseUrl}/sse`,
                                 "headers": {
@@ -863,25 +1096,16 @@
         }
 
         function renderConnectionsStatus(connectedClients) {
-            const container = document.getElementById('connections-status-list');
-            if (!container) return;
+            const ais = ['chatgpt', 'claude', 'cursor', 'windsurf', 'manus'];
             
-            const ais = [
-                { id: 'chatgpt', name: 'ChatGPT', domain: 'chatgpt.com' },
-                { id: 'claude', name: 'Claude', domain: 'claude.ai' },
-                { id: 'cursor', name: 'Cursor', domain: 'cursor.com' },
-                { id: 'windsurf', name: 'Windsurf', domain: 'codeium.com' },
-                { id: 'manus', name: 'Manus', domain: 'manus.im' }
-            ];
-            
-            let html = '';
-            
-            ais.forEach(ai => {
-                const connection = connectedClients.find(c => c.client_name.toLowerCase().includes(ai.id));
+            ais.forEach(id => {
+                const connection = connectedClients.find(c => c.client_name.toLowerCase().includes(id));
                 const isConnected = !!connection;
                 
-                let statusBadge = '';
-                let activeTimeStr = 'Never connected';
+                const dot = document.getElementById(`ai-dot-${id}`);
+                const text = document.getElementById(`ai-status-text-${id}`);
+                const badge = document.getElementById(`ai-status-badge-${id}`);
+                const time = document.getElementById(`ai-time-${id}`);
                 
                 if (isConnected) {
                     const activeDate = new Date(connection.last_active);
@@ -893,24 +1117,28 @@
                         timeStr = `${diffMins}m ago`;
                     }
                     
-                    statusBadge = `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block; animation: pulse 1.5s infinite;"></span> Connected</span>`;
-                    activeTimeStr = `Active ${timeStr}`;
+                    if (dot) {
+                        dot.style.background = '#10b981';
+                        dot.style.animation = 'pulse 1.5s infinite';
+                    }
+                    if (text) text.innerText = 'Connected';
+                    if (badge) {
+                        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+                        badge.style.color = '#10b981';
+                    }
+                    if (time) time.innerText = `Active ${timeStr}`;
                 } else {
-                    statusBadge = `<span style="background: rgba(100, 116, 139, 0.1); color: #64748b; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500;">Offline</span>`;
+                    if (dot) {
+                        dot.style.background = '#64748b';
+                        dot.style.animation = 'none';
+                    }
+                    if (text) text.innerText = 'Offline';
+                    if (badge) {
+                        badge.style.background = 'rgba(100, 116, 139, 0.08)';
+                        badge.style.color = '#64748b';
+                    }
+                    if (time) time.innerText = 'Never connected';
                 }
-                
-                html += `
-                    <div style="background: rgba(255,255,255,0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <img src="https://www.google.com/s2/favicons?sz=64&domain=${ai.domain}" alt="${ai.name}" style="width: 36px; height: 36px; border-radius: 8px;">
-                            <div>
-                                <div style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">${ai.name}</div>
-                                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">${activeTimeStr}</div>
-                            </div>
-                        </div>
-                        <div>${statusBadge}</div>
-                    </div>
-                `;
             });
             
             if (!document.getElementById('pulse-keyframes')) {
@@ -925,8 +1153,6 @@
                 `;
                 document.head.appendChild(style);
             }
-            
-            container.innerHTML = html;
         }
 
         function selectAI(aiName) {
@@ -949,17 +1175,16 @@
             document.getElementById('btn-' + tabId).classList.add('active');
         }
 
-        function copyText(elementId) {
+        function copyText(btn, elementId) {
             const text = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(text).then(() => {
-                const btn = event.currentTarget;
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> <span style="font-size: 0.75rem; margin-left: 0.3rem; font-weight: 500;">Copied!</span>';
+                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> <span style="font-size: 0.75rem; margin-left: 0.3rem; font-weight: 600; font-family: sans-serif; color: #10b981;">Copied!</span>';
                 setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
             });
         }
 
-        function renderRulips(memories) {
+        function renderMemories(memories) {
             const container = document.getElementById('memories-container');
             if (memories.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #000000; padding: 3rem;">Your AI hasn't saved any memories yet. Go chat with it!</p>`;
