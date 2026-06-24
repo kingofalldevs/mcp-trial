@@ -199,13 +199,13 @@
         }
 
         .hero h1 {
-            font-family: 'Inter', sans-serif;
+            font-family: 'EB Garamond', Georgia, serif;
             font-size: 3.8rem;
             font-weight: 500;
             line-height: 1.15;
             margin-bottom: 0.5rem;
             color: #0f172a;
-            letter-spacing: -0.025em;
+            letter-spacing: -0.015em;
             white-space: nowrap;
         }
 
@@ -1020,7 +1020,7 @@
     <div id="cover-div" class="cover-div">
     <div class="hero">
         <div class="hero-content">
-            <h1>Let <span id="dynamic-ai-name-1" style="color: var(--primary);">ChatGPT</span> Remember What <span id="dynamic-ai-name-2" style="color: var(--primary);">Claude</span> Said</h1>
+            <h1>Let <span id="dynamic-ai-name-1" style="color: var(--primary);">ChatGPT</span> remember your chat with <span id="dynamic-ai-name-2" style="color: var(--primary);">Claude</span></h1>
             <p style="font-size: 1.25rem; color: #475569; max-width: 600px; margin: 1rem auto 2rem auto; line-height: 1.6;">One unified memory layer for all your AI workspaces. No more repeating yourself—just connect and pick up right where you left off.</p>
 
 
@@ -1087,19 +1087,11 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
             (function() {
                 const pairs = [
                     { first: "ChatGPT", second: "Claude" },
-                    { first: "Claude", second: "it" },
                     { first: "Claude", second: "Manus" },
-                    { first: "Manus", second: "it" },
-                    { first: "Manus", second: "Gemini" },
-                    { first: "Gemini", second: "it" },
-                    { first: "Gemini", second: "ChatGPT" },
-                    { first: "ChatGPT", second: "it" },
-                    { first: "Cursor", second: "ChatGPT" },
-                    { first: "Cursor", second: "it" },
-                    { first: "ChatGPT", second: "Windsurf" },
-                    { first: "Windsurf", second: "it" },
+                    { first: "Manus", second: "ChatGPT" },
+                    { first: "ChatGPT", second: "Manus" },
                     { first: "Claude", second: "ChatGPT" },
-                    { first: "Gemini", second: "Claude" }
+                    { first: "Manus", second: "Claude" }
                 ];
                 let index = 0;
                 const target1 = document.getElementById("dynamic-ai-name-1");
