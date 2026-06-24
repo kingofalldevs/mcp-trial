@@ -156,16 +156,33 @@
             transition: transform 0.05s ease;
         }
 
+        .cover-div {
+            border: 2px solid var(--bg-color);
+            margin: 0 30px;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        .cover-div .hero {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .cover-div .features {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
         /* Hero Section */
         .hero {
             margin: 0 30px 16px 30px;
-            padding: 1.5rem 2rem 0 2rem;
-            height: calc(100vh - 76px);
-            min-height: calc(100vh - 76px);
+            padding: 1.5rem 2rem 6rem 2rem;
+            height: auto;
+            min-height: calc(100vh - 40px);
             box-sizing: border-box;
             border: none;
             border-radius: 0;
-            background: linear-gradient(180deg, #ffffff 0%, var(--bg-color) 100%);
+            background: linear-gradient(180deg, var(--bg-color) 0%, #ffffff 100%);
             display: flex;
             justify-content: center;
             align-items: stretch;
@@ -332,7 +349,7 @@
             margin: 16px 30px;
             border: none;
             border-radius: 24px;
-            background: linear-gradient(180deg, #ffffff 0%, var(--bg-color) 100%);
+            background: #ffffff;
             display: flex;
             min-height: 480px;
             overflow: hidden;
@@ -505,7 +522,7 @@
 
         /* Footer styling */
         footer {
-            background-color: var(--bg-color);
+            background-color: #ffffff;
             border-top: 1px solid var(--glass-border);
             padding: 5rem 2rem 2rem 2rem;
             margin-top: 2rem;
@@ -822,6 +839,8 @@
             align-items: stretch !important;
             min-height: auto;
             gap: 2.5rem;
+            background: var(--bg-color);
+            border: none;
         }
 
         .faq-header {
@@ -998,6 +1017,7 @@
         </div>
     </nav>
 
+    <div id="cover-div" class="cover-div">
     <div class="hero">
         <div class="hero-content">
             <h1>Let <span id="dynamic-ai-name-1" style="color: var(--primary);">ChatGPT</span> Remember What <span id="dynamic-ai-name-2" style="color: var(--primary);">Claude</span> Said</h1>
@@ -1034,15 +1054,12 @@
             </div>
 
             <!-- ChatGPT Screenshot Card -->
-            <div style="margin-top: 1.2rem; width: 100%; max-width: 800px; flex: 1; min-height: 0; background: #0d0d0d; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.3); border: 1.5px solid rgba(255,255,255,0.15); border-bottom: none; display: flex; flex-direction: column; z-index: 10; position: relative;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); background: #0d0d0d; text-align: left; flex-shrink: 0;">
-                    <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 24px; height: 24px; border-radius: 6px;">
-                    <span style="font-weight: 700; font-size: 1.1rem; color: #ffffff;">ChatGPT</span>
-                </div>
+            <div style="margin-top: 1.2rem; width: 100%; max-width: 800px; flex: 1; min-height: 0; background: #ffffff; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.1); border-bottom: none; display: flex; flex-direction: column; z-index: 10; position: relative;">
+
                 <div style="flex: 1; overflow: hidden; position: relative;">
-                    <img src="/static/chatgpt-integration.png" alt="ChatGPT Integration" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;">
-                    <!-- Bottom fade out overlay -->
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, transparent, #0d0d0d); pointer-events: none;"></div>
+                    <video autoplay loop muted playsinline controls style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;">
+                        <source src="/static/demo.mp4" type="video/mp4">
+                    </video>
                 </div>
             </div>
 
@@ -1091,8 +1108,8 @@
     </div>
 
     <div id="features" class="features">
-        <div class="feature-half bg-white" style="padding: 0;">
-            <img src="/static/connect-ai-feature.png" alt="Connect Your AI" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        <div class="feature-half bg-white" style="padding: 0; display: flex; align-items: center; justify-content: center;">
+            <img src="/static/person-working-v2.png" alt="Person Working" style="width: 100%; max-height: 100%; object-fit: contain; padding: 2rem; display: block;">
         </div>
         <div class="feature-half">
             <div style="display: flex; flex-direction: column; align-items: flex-start; text-align: left; max-width: 440px; width: 100%;">
@@ -1119,32 +1136,12 @@
                 </a>
             </div>
         </div>
-        <div class="feature-half bg-white" style="padding: 0;">
-            <img src="/static/portable-memory-feature.png" alt="Portable Memory Dashboard" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        <div class="feature-half bg-white" style="padding: 0; display: flex; align-items: center; justify-content: center;">
+            <img src="/static/collab-illustration.png" alt="Collab Illustration" style="width: 100%; max-height: 100%; object-fit: contain; padding: 2rem; display: block;">
         </div>
     </div>
 
-    <div class="features" style="flex-direction: column; padding: 4rem 2rem; align-items: center; justify-content: center; min-height: auto; gap: 3rem;">
-        <div style="display: flex; gap: 2rem; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap;">
-            <div class="zoom-card" style="flex: 1; max-width: 640px; background: #0d0d0d; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.25); border: 1.5px solid rgba(255,255,255,0.12); display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); background: #0d0d0d;">
-                    <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 24px; height: 24px; border-radius: 6px;">
-                    <span style="font-weight: 700; font-size: 1.1rem; color: #ffffff;">ChatGPT</span>
-                </div>
-                <img src="/static/chatgpt-integration.png" alt="ChatGPT Integration" style="width: 100%; display: block; object-fit: contain;">
-            </div>
-            <div class="zoom-card" style="flex: 1; max-width: 640px; background: #191919; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.25); border: 1.5px solid rgba(255,255,255,0.12); display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); background: #191919;">
-                    <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 24px; height: 24px; border-radius: 6px;">
-                    <span style="font-weight: 700; font-size: 1.1rem; color: #e6e5e3;">Claude</span>
-                </div>
-                <img src="/static/claude-integration.png" alt="Claude Integration" style="width: 100%; display: block; object-fit: contain;">
-            </div>
-        </div>
-        <div style="text-align: center; max-width: 700px; width: 100%;">
-            <h3 style="font-size: 2.2rem; line-height: 1.25; color: #0f172a; margin: 0;">never lose context when you switch platforms</h3>
-        </div>
-    </div>
+
 
     <!-- How It Works Section -->
     <div id="how-it-works" class="features how-it-works-section">
@@ -1158,70 +1155,38 @@
                 <p style="color: #64748b; font-size: 0.85rem; margin: 0; font-weight: 500;">Go to Claude → Settings → Connectors → Add Connectors and Add Records → Click Connect</p>
             </div>
         </div>
-        <div class="how-it-works-grid-2x2">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 2rem 0; width: 100%;">
             <!-- Step 1 -->
-            <div class="how-it-works-card" style="flex-direction: column; align-items: stretch; gap: 1rem; padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+            <div class="how-it-works-card" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                 <div class="step-info-block" style="padding: 0;">
                     <div class="step-text">
-                        <h3 class="step-title" style="font-size: 1.4rem; margin-bottom: 0.25rem;">Add Connectors</h3>
-                        <p class="step-desc" style="font-size: 0.95rem; line-height: 1.4; margin: 0;">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
-                    </div>
-                </div>
-                <div class="step-preview" style="color: #0f766e; display: flex; flex-direction: column; gap: 0.6rem; max-width: 100%; width: 100%; padding: 1.2rem 1.5rem; font-size: 0.85rem; line-height: 1.4; border-radius: 12px; white-space: normal; background: rgba(15, 118, 110, 0.03); border: 1px solid rgba(15, 118, 110, 0.08);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
-                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">App Name:</strong> <span id="copy-app-name">Rulip</span></div>
-                        <button onclick="copyText('copy-app-name')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
-                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">MCP URL:</strong> <span id="copy-mcp-url">https://www.rulip.co/sse</span></div>
-                        <button onclick="copyText('copy-mcp-url')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(15, 118, 110, 0.15); padding-bottom: 0.5rem; gap: 1rem;">
-                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">OAuth Client ID:</strong> <span id="copy-client-id">memorie-client</span></div>
-                        <button onclick="copyText('copy-client-id')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #115e59;">OAuth Client Secret:</strong> <span id="copy-client-secret">secret-123</span></div>
-                        <button onclick="copyText('copy-client-secret')" class="copy-btn" style="color: #0f766e;" title="Copy"><i class="ph ph-copy"></i></button>
+                        <h3 class="step-title" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Add Connectors</h3>
+                        <p class="step-desc" style="font-size: 1.05rem; line-height: 1.5; margin: 0; color: #475569;">Go to settings in your AI client, click Add MCP Server, and input your Rulip connection details.</p>
                     </div>
                 </div>
             </div>
             
             <!-- Step 2 -->
-            <div class="how-it-works-card" style="flex-direction: column; align-items: stretch; gap: 1rem; padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+            <div class="how-it-works-card" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                 <div class="step-info-block" style="padding: 0;">
                     <div class="step-text">
-                        <h3 class="step-title" style="font-size: 1.4rem; margin-bottom: 0.25rem;">Test Activation</h3>
-                        <p class="step-desc" style="font-size: 0.95rem; line-height: 1.4; margin: 0;">Verify your connection by sending a quick prompt to confirm your assistant can interact with Rulip.</p>
+                        <h3 class="step-title" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Test Activation</h3>
+                        <p class="step-desc" style="font-size: 1.05rem; line-height: 1.5; margin: 0; color: #475569;">Verify your connection by sending a quick prompt to confirm your assistant can interact with Rulip.</p>
                     </div>
-                </div>
-                <div class="step-preview" style="color: #4338ca; display: flex; justify-content: space-between; align-items: center; max-width: 100%; width: 100%; padding: 0.8rem 1.2rem; font-size: 0.85rem; line-height: 1.4; border-radius: 12px; gap: 1rem; background: rgba(67, 56, 202, 0.03); border: 1px solid rgba(67, 56, 202, 0.08);">
-                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #3730a3;">Test Prompt:</strong> <span id="copy-test-prompt">Can you check if Rulip is connected?</span></div>
-                    <button onclick="copyText('copy-test-prompt')" class="copy-btn" style="color: #4338ca;" title="Copy"><i class="ph ph-copy"></i></button>
                 </div>
             </div>
             
             <!-- Step 3 -->
-            <div class="how-it-works-card" style="flex-direction: column; align-items: stretch; gap: 1rem; padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+            <div class="how-it-works-card" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
                 <div class="step-info-block" style="padding: 0;">
                     <div class="step-text">
-                        <h3 class="step-title" style="font-size: 1.4rem; margin-bottom: 0.25rem;">Save & Sync</h3>
-                        <p class="step-desc" style="font-size: 0.95rem; line-height: 1.4; margin: 0;">After every chat, simply tell the AI to save key details. They instantly sync across all your tools.</p>
+                        <h3 class="step-title" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Save & Sync</h3>
+                        <p class="step-desc" style="font-size: 1.05rem; line-height: 1.5; margin: 0; color: #475569;">After every chat, simply tell the AI to save key details. They instantly sync across all your tools.</p>
                     </div>
-                </div>
-                <div class="step-preview" style="color: #b45309; display: flex; justify-content: space-between; align-items: center; max-width: 100%; width: 100%; padding: 0.8rem 1.2rem; font-size: 0.85rem; line-height: 1.4; border-radius: 12px; gap: 1rem; background: rgba(180, 83, 9, 0.03); border: 1px solid rgba(180, 83, 9, 0.08);">
-                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #9a3412;">User Prompt:</strong> <span id="copy-save-prompt">save our chat to rulip</span></div>
-                    <button onclick="copyText('copy-save-prompt')" class="copy-btn" style="color: #b45309;" title="Copy"><i class="ph ph-copy"></i></button>
-                </div>
-            </div>
-            
-            <!-- Video Card -->
-            <div class="how-it-works-card" style="flex-direction: column; align-items: stretch; gap: 1.5rem; padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 10px 30px rgba(0,0,0,0.02); justify-content: center; min-height: 320px;">
-                <div style="position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.05); background: #f8fafc; margin: auto 0;">
-                    <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0; pointer-events: none;"></iframe>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- FAQ Section -->
