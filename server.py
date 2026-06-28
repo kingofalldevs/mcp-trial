@@ -432,6 +432,79 @@ def list_memories(limit: int = 10, client_name: str = None) -> str:
         return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
+
+@mcp.tool()
+def update_memory(id: int, content: str) -> str:
+    """Updates the content of an existing memory. This should be used when the user explicitly requests to change, edit, correct, or update a stored memory.
+    
+    Args:
+        id: The database ID of the memory to update.
+        content: The new text content for the memory.
+    """
+    user_email = user_email_var.get()
+    if not user_email:
+        return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
+        
+    encrypted_content = encrypt_content(content)
+    try:
+        updated = False
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('UPDATE memories SET content = %s WHERE id = %s AND user_email = %s', (encrypted_content, id, user_email))
+                    if cursor.rowcount > 0:
+                        updated = True
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('UPDATE memories SET content = ? WHERE id = ? AND user_email = ?', (encrypted_content, id, user_email))
+                if cursor.rowcount > 0:
+                    updated = True
+                conn.commit()
+                
+        if updated:
+            return json.dumps({"status": "success", "message": f"Memory with ID {id} has been updated successfully."})
+        else:
+            return json.dumps({"status": "error", "message": f"Memory with ID {id} not found or not owned by you."})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)})
+
+@mcp.tool()
+def delete_memory(id: int) -> str:
+    """Deletes an existing memory. This should be used when the user explicitly requests to forget, delete, remove, or clear a stored memory.
+    
+    Args:
+        id: The database ID of the memory to delete.
+    """
+    user_email = user_email_var.get()
+    if not user_email:
+        return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
+        
+    try:
+        deleted = False
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('DELETE FROM memories WHERE id = %s AND user_email = %s', (id, user_email))
+                    if cursor.rowcount > 0:
+                        deleted = True
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('DELETE FROM memories WHERE id = ? AND user_email = ?', (id, user_email))
+                if cursor.rowcount > 0:
+                    deleted = True
+                conn.commit()
+                
+        if deleted:
+            return json.dumps({"status": "success", "message": f"Memory with ID {id} has been deleted successfully."})
+        else:
+            return json.dumps({"status": "error", "message": f"Memory with ID {id} not found or not owned by you."})
+    except Exception as e:
+        return json.dumps({"status": "error", "message": str(e)})
+
 @mcp.custom_route("/static/{filename}", methods=["GET"])
 async def serve_static(request: Request):
     """Serves static files from the public directory."""
@@ -956,6 +1029,143 @@ async def api_memories(request: Request) -> JSONResponse:
         return JSONResponse({"status": "success", "results": results})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=401)
+
+@mcp.custom_route("/api/memories", methods=["POST"])
+async def api_create_memory(request: Request) -> JSONResponse:
+    """Creates a new memory for the authenticated user from the dashboard."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        body = await request.json()
+        content = body.get("content")
+        client_name = body.get("client_name", "Manual")
+        
+        if not content:
+            return JSONResponse({"status": "error", "message": "Missing content"}, status_code=400)
+            
+        encrypted_content = encrypt_content(content)
+        timestamp = datetime.utcnow().isoformat() + "Z"
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, encrypted_content, email, client_name))
+                    memory_id = cursor.fetchone()[0]
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, encrypted_content, email, client_name))
+                memory_id = cursor.lastrowid
+                conn.commit()
+                
+        return JSONResponse({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@mcp.custom_route("/api/memories/{memory_id:int}", methods=["PUT"])
+async def api_update_memory(request: Request) -> JSONResponse:
+    """Updates an existing memory after verifying ownership."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    memory_id = request.path_params.get("memory_id")
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        body = await request.json()
+        content = body.get("content")
+        client_name = body.get("client_name")
+        
+        if not content:
+            return JSONResponse({"status": "error", "message": "Missing content"}, status_code=400)
+            
+        encrypted_content = encrypt_content(content)
+        updated = False
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    if client_name:
+                        cursor.execute('UPDATE memories SET content = %s, client_name = %s WHERE id = %s AND user_email = %s', (encrypted_content, client_name, memory_id, email))
+                    else:
+                        cursor.execute('UPDATE memories SET content = %s WHERE id = %s AND user_email = %s', (encrypted_content, memory_id, email))
+                    if cursor.rowcount > 0:
+                        updated = True
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                if client_name:
+                    cursor.execute('UPDATE memories SET content = ?, client_name = ? WHERE id = ? AND user_email = ?', (encrypted_content, client_name, memory_id, email))
+                else:
+                    cursor.execute('UPDATE memories SET content = ? WHERE id = ? AND user_email = ?', (encrypted_content, memory_id, email))
+                if cursor.rowcount > 0:
+                    updated = True
+                conn.commit()
+                
+        if updated:
+            return JSONResponse({"status": "success", "message": "Memory updated successfully."})
+        else:
+            return JSONResponse({"status": "error", "message": "Memory not found or not owned by you."}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@mcp.custom_route("/api/memories/{memory_id:int}", methods=["DELETE"])
+async def api_delete_memory(request: Request) -> JSONResponse:
+    """Deletes an existing memory after verifying ownership."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    memory_id = request.path_params.get("memory_id")
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        deleted = False
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('DELETE FROM memories WHERE id = %s AND user_email = %s', (memory_id, email))
+                    if cursor.rowcount > 0:
+                        deleted = True
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('DELETE FROM memories WHERE id = ? AND user_email = ?', (memory_id, email))
+                if cursor.rowcount > 0:
+                    deleted = True
+                conn.commit()
+                
+        if deleted:
+            return JSONResponse({"status": "success", "message": "Memory deleted successfully."})
+        else:
+            return JSONResponse({"status": "error", "message": "Memory not found or not owned by you."}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
 @mcp.custom_route("/api/generate_token", methods=["POST"])
 async def api_generate_token(request: Request) -> JSONResponse:
