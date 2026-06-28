@@ -317,8 +317,8 @@ def save_memory(content: str) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def search_memory(query: str) -> str:
-    """Searches past memories based on a text query for the authenticated user."""
+def search_memory(query: str, client_name: str = None) -> str:
+    """Searches past memories based on a text query for the authenticated user. Optionally filter by client_name (e.g. 'Claude', 'ChatGPT', 'Cursor', etc.)."""
     user_email = user_email_var.get()
     if not user_email:
         return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
@@ -327,21 +327,27 @@ def search_memory(query: str) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s ORDER BY timestamp DESC', (f'%{query}%', user_email))
+                    if client_name:
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC', (f'%{query}%', user_email, f'%{client_name}%'))
+                    else:
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s ORDER BY timestamp DESC', (f'%{query}%', user_email))
                     results = cursor.fetchall()
                     return json.dumps({"status": "success", "results": results}, indent=2)
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? ORDER BY timestamp DESC', (f'%{query}%', user_email))
+                if client_name:
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC', (f'%{query}%', user_email, f'%{client_name}%'))
+                else:
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? ORDER BY timestamp DESC', (f'%{query}%', user_email))
                 results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def list_memories(limit: int = 10) -> str:
-    """Lists the most recent memories for the authenticated user."""
+def list_memories(limit: int = 10, client_name: str = None) -> str:
+    """Lists the most recent memories for the authenticated user. Optionally filter by client_name (e.g. 'Claude', 'ChatGPT', 'Cursor', etc.)."""
     user_email = user_email_var.get()
     if not user_email:
         return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
@@ -350,13 +356,19 @@ def list_memories(limit: int = 10) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
+                    if client_name:
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC LIMIT %s', (user_email, f'%{client_name}%', limit))
+                    else:
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
                     results = cursor.fetchall()
                     return json.dumps({"status": "success", "results": results}, indent=2)
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
+                if client_name:
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC LIMIT ?', (user_email, f'%{client_name}%', limit))
+                else:
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
                 results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
