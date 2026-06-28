@@ -387,7 +387,8 @@
         }
 
         .tab-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes fadeIn {
@@ -637,7 +638,7 @@
                     </button>
                 </div>
                 <div id="memories-loading" class="spinner" style="margin-top: 3rem; width: 40px; height: 40px; flex-shrink: 0;"></div>
-                <div style="flex: 1; overflow-y: auto; padding-bottom: 2rem; margin-top: 0.5rem; min-height: 0;">
+                <div style="flex: 1; overflow-y: auto; padding-bottom: 2rem; margin-top: 0.5rem; min-height: 0; display: flex; flex-direction: column;">
                     <div id="memories-container" class="memories-grid"></div>
                 </div>
             </div>
