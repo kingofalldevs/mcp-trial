@@ -980,6 +980,53 @@
                 gap: 2rem;
             }
         }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+                white-space: normal;
+                line-height: 1.25;
+                padding: 0 1rem;
+            }
+            .hero p {
+                font-size: 1.1rem !important;
+                padding: 0 1rem;
+            }
+            .cover-div {
+                padding: 10px;
+                border-width: 4px;
+                border-radius: 20px;
+                margin-bottom: 2rem !important;
+            }
+            nav {
+                flex-wrap: wrap;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            .how-it-works-header h2 {
+                font-size: 2.2rem;
+                padding: 0 1rem;
+            }
+            .how-it-works-header p {
+                font-size: 1.05rem;
+                padding: 0 1rem;
+            }
+            .cta-section {
+                margin: 3rem auto 0 auto !important;
+            }
+            .cta-section h2 {
+                font-size: 14vw !important;
+            }
+            .nav-actions {
+                margin-left: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1034,7 +1081,7 @@
                         <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" style="width:24px;height:24px;border-radius:6px;"> Setup with Claude</h3>
                         <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
                     </div>
-                    <button onclick="copyText('prompt-claude')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <button onclick="copyText('prompt-claude', event)" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
                     <div style="display: none;" id="prompt-claude">Please configure an MCP server for this project with the following details:
 - App Name: Rulip
 - MCP URL: https://www.rulip.co/sse
@@ -1050,7 +1097,7 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
                         <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" style="width:24px;height:24px;border-radius:6px;"> Setup with ChatGPT</h3>
                         <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
                     </div>
-                    <button onclick="copyText('prompt-chatgpt')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <button onclick="copyText('prompt-chatgpt', event)" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
                     <div style="display: none;" id="prompt-chatgpt">Please configure an MCP server for this project with the following details:
 - App Name: Rulip
 - MCP URL: https://www.rulip.co/sse
@@ -1066,7 +1113,7 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
                         <h3 style="font-size: 1.15rem; color: #1e293b; font-family: 'Inter', sans-serif; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin: 0;"><img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" style="width:24px;height:24px;border-radius:6px;"> Setup with Manus</h3>
                         <span style="font-size: 0.85rem; color: #64748b; font-family: 'Inter', sans-serif; font-weight: 500;">- 1min setup</span>
                     </div>
-                    <button onclick="copyText('prompt-manus')" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
+                    <button onclick="copyText('prompt-manus', event)" style="padding: 0.6rem 1rem; font-size: 0.9rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 0.4rem; width: 100%; background: #f1f5f9; color: #1e293b; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease;"><i class="ph ph-copy"></i> Copy Prompt</button>
                     <div style="display: none;" id="prompt-manus">Please configure an MCP server for this project with the following details:
 - App Name: Rulip
 - MCP URL: https://www.rulip.co/sse
@@ -1397,13 +1444,89 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
         }
     })();
 
-    function copyText(elementId) {
+    // Visitor Session & Interaction Analytics
+    let sessionId = 'unknown';
+    try {
+        sessionId = sessionStorage.getItem('rulip_session_id');
+        if (!sessionId) {
+            sessionId = 'sess-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            sessionStorage.setItem('rulip_session_id', sessionId);
+        }
+    } catch (e) {
+        console.warn('Session storage not available:', e);
+        sessionId = 'sess-nocookies-' + Math.random().toString(36).substring(2, 15);
+    }
+    window.userEmail = '';
+
+    // Async Fetch Visitor Location
+    let visitorLocation = { country: 'Unknown', region: 'Unknown', city: 'Unknown', ip: 'Unknown' };
+    try {
+        const cachedLoc = sessionStorage.getItem('rulip_visitor_location');
+        if (cachedLoc) {
+            visitorLocation = JSON.parse(cachedLoc);
+        } else {
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    visitorLocation = {
+                        country: data.country_name || 'Unknown',
+                        region: data.region || 'Unknown',
+                        city: data.city || 'Unknown',
+                        ip: data.ip || 'Unknown'
+                    };
+                    sessionStorage.setItem('rulip_visitor_location', JSON.stringify(visitorLocation));
+                })
+                .catch(err => console.warn('GeoIP fetch failed:', err));
+        }
+    } catch (e) {
+        console.warn('Location tracking init failed:', e);
+    }
+
+    function logAnalyticsEvent(eventType, targetName) {
+        const url = window.location.origin + '/api/analytics/event';
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                user_email: window.userEmail || '',
+                event_type: eventType,
+                target_name: targetName,
+                referrer: document.referrer || 'Direct',
+                ip_address: visitorLocation.ip || '',
+                location: (visitorLocation.city && visitorLocation.city !== 'Unknown') ? `${visitorLocation.city}, ${visitorLocation.region}, ${visitorLocation.country}` : 'Unknown'
+            })
+        }).catch(err => console.error('Error logging analytics:', err));
+    }
+
+    // Capture clicks on elements
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('a, button');
+        if (!target) return;
+        
+        // Skip copy buttons as copyText explicitly captures prompt copies
+        const onclickAttr = target.getAttribute('onclick');
+        const isCopyBtn = onclickAttr && typeof onclickAttr === 'string' && onclickAttr.includes('copyText');
+        if (isCopyBtn) return;
+        
+        let targetName = target.id || target.getAttribute('href') || target.textContent.trim().substring(0, 30) || 'unnamed';
+        targetName = targetName.replace(/\s+/g, '-').toLowerCase();
+        
+        const eventType = target.tagName.toLowerCase() === 'a' ? 'click_link' : 'click_button';
+        logAnalyticsEvent(eventType, targetName);
+    }, true);
+
+    function copyText(elementId, event) {
         const text = document.getElementById(elementId).innerText || document.getElementById(elementId).textContent;
         
-        // Capture the button element synchronously before the promise
+        // Log prompt copy
+        logAnalyticsEvent('copy_prompt', elementId);
+        
+        // Capture the button element synchronously
         let btnElement = null;
-        if (window.event) {
-            const el = window.event.currentTarget || window.event.target;
+        const ev = event || window.event;
+        if (ev) {
+            const el = ev.currentTarget || ev.target;
             if (el) {
                 btnElement = el.closest ? (el.closest('button') || el) : el;
             }
@@ -1419,12 +1542,22 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
                 }
                 setTimeout(() => { btnElement.innerHTML = originalHTML; }, 2000);
             }
+        }).catch(err => {
+            console.error('Clipboard copy failed:', err);
+            // Fallback for non-secure context or blocked permissions:
+            // Just simulate copy action success feedback
+            if (btnElement) {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="ph ph-warning" style="color: #f59e0b;"></i> Copied (Select manually if needed)';
+                setTimeout(() => { btnElement.innerHTML = originalHTML; }, 2500);
+            }
         });
     }
     </script>
     <!-- Firebase App & Analytics -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "{{FIREBASE_API_KEY}}",
@@ -1437,6 +1570,12 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
         };
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                window.userEmail = user.email || '';
+            }
+        });
     </script>
 </body>
 </html>

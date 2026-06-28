@@ -24,6 +24,7 @@ load_dotenv()
 
 # We use a ContextVar to store the user's email securely across the async call chain
 user_email_var = contextvars.ContextVar("user_email", default=None)
+client_name_var = contextvars.ContextVar("client_name", default="Generic AI")
 
 mcp = FastMCP(
     "ai-memory-server",
@@ -32,6 +33,10 @@ mcp = FastMCP(
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "memory.db")
+
+# Admin emails configuration
+ADMIN_EMAILS_RAW = os.environ.get("ADMIN_EMAILS", "")
+ADMIN_EMAILS = [email.strip().lower() for email in ADMIN_EMAILS_RAW.split(",") if email.strip()]
 
 # Initialize Firebase Admin
 firebase_sa_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
@@ -59,6 +64,10 @@ def init_db():
                 if not cursor.fetchone():
                     cursor.execute("ALTER TABLE memories ADD COLUMN user_email TEXT DEFAULT ''")
                 
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='memories' AND column_name='client_name'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE memories ADD COLUMN client_name TEXT DEFAULT 'Generic AI'")
+                
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS oauth_sessions (
                         auth_code TEXT PRIMARY KEY,
@@ -77,6 +86,31 @@ def init_db():
                         PRIMARY KEY (user_email, client_name)
                     )
                 ''')
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS landing_events (
+                        id SERIAL PRIMARY KEY,
+                        session_id TEXT NOT NULL,
+                        user_email TEXT DEFAULT '',
+                        event_type TEXT NOT NULL,
+                        target_name TEXT NOT NULL,
+                        timestamp TEXT NOT NULL,
+                        user_agent TEXT,
+                        referrer TEXT DEFAULT 'Direct',
+                        ip_address TEXT DEFAULT '',
+                        location TEXT DEFAULT 'Unknown'
+                    )
+                ''')
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='landing_events' AND column_name='referrer'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE landing_events ADD COLUMN referrer TEXT DEFAULT 'Direct'")
+                
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='landing_events' AND column_name='ip_address'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE landing_events ADD COLUMN ip_address TEXT DEFAULT ''")
+                
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='landing_events' AND column_name='location'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE landing_events ADD COLUMN location TEXT DEFAULT 'Unknown'")
             conn.commit()
     else:
         with sqlite3.connect(DB_PATH) as conn:
@@ -92,6 +126,8 @@ def init_db():
             columns = [info[1] for info in cursor.fetchall()]
             if 'user_email' not in columns:
                 cursor.execute("ALTER TABLE memories ADD COLUMN user_email TEXT DEFAULT ''")
+            if 'client_name' not in columns:
+                cursor.execute("ALTER TABLE memories ADD COLUMN client_name TEXT DEFAULT 'Generic AI'")
                 
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS oauth_sessions (
@@ -111,34 +147,57 @@ def init_db():
                     PRIMARY KEY (user_email, client_name)
                 )
             ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS landing_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    session_id TEXT NOT NULL,
+                    user_email TEXT DEFAULT '',
+                    event_type TEXT NOT NULL,
+                    target_name TEXT NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    user_agent TEXT,
+                    referrer TEXT DEFAULT 'Direct',
+                    ip_address TEXT DEFAULT '',
+                    location TEXT DEFAULT 'Unknown'
+                )
+            ''')
+            cursor.execute("PRAGMA table_info(landing_events)")
+            le_columns = [info[1] for info in cursor.fetchall()]
+            if 'referrer' not in le_columns:
+                cursor.execute("ALTER TABLE landing_events ADD COLUMN referrer TEXT DEFAULT 'Direct'")
+            if 'ip_address' not in le_columns:
+                cursor.execute("ALTER TABLE landing_events ADD COLUMN ip_address TEXT DEFAULT ''")
+            if 'location' not in le_columns:
+                cursor.execute("ALTER TABLE landing_events ADD COLUMN location TEXT DEFAULT 'Unknown'")
             conn.commit()
 
 init_db()
 
+def get_client_name_from_user_agent(user_agent: str) -> str:
+    """Classifies a user agent string to identify the client name."""
+    ua = (user_agent or "").lower()
+    if "claude" in ua:
+        return "Claude"
+    elif "chatgpt" in ua or "openai" in ua:
+        return "ChatGPT"
+    elif "cursor" in ua:
+        return "Cursor"
+    elif "windsurf" in ua:
+        return "Windsurf"
+    elif "manus" in ua:
+        return "Manus"
+    else:
+        if "vscode" in ua:
+            return "Cursor / Windsurf (VSCode)"
+        elif "postman" in ua:
+            return "Postman / API Test"
+        elif "python" in ua:
+            return "Python Client"
+    return "Generic AI"
+
 def record_client_activity(email: str, user_agent: str):
     """Logs the client name and activity time."""
-    ua = (user_agent or "").lower()
-    client_name = "Generic AI"
-    
-    if "claude" in ua:
-        client_name = "Claude"
-    elif "chatgpt" in ua or "openai" in ua:
-        client_name = "ChatGPT"
-    elif "cursor" in ua:
-        client_name = "Cursor"
-    elif "windsurf" in ua:
-        client_name = "Windsurf"
-    elif "manus" in ua:
-        client_name = "Manus"
-    else:
-        # vscode and postman check
-        if "vscode" in ua:
-            client_name = "Cursor / Windsurf (VSCode)"
-        elif "postman" in ua:
-            client_name = "Postman / API Test"
-        elif "python" in ua:
-            client_name = "Python Client"
-            
+    client_name = get_client_name_from_user_agent(user_agent)
     timestamp = datetime.utcnow().isoformat() + "Z"
     
     if DATABASE_URL:
@@ -218,9 +277,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # Save the email in context so the tools can magically read it
             user_email_var.set(email)
             
+            user_agent = request.headers.get("user-agent", "")
+            client_name = get_client_name_from_user_agent(user_agent)
+            client_name_var.set(client_name)
+            
             # Record client connection activity
             try:
-                user_agent = request.headers.get("user-agent", "")
                 record_client_activity(email, user_agent)
             except Exception as e:
                 print(f"Error recording client activity: {e}")
@@ -234,19 +296,21 @@ def save_memory(content: str) -> str:
     if not user_email:
         return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
+    client_name = client_name_var.get()
+
     try:
         timestamp = datetime.utcnow().isoformat() + "Z"
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO memories (timestamp, content, user_email) VALUES (%s, %s, %s) RETURNING id', (timestamp, content, user_email))
+                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, content, user_email, client_name))
                     memory_id = cursor.fetchone()[0]
                 conn.commit()
                 return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO memories (timestamp, content, user_email) VALUES (?, ?, ?)', (timestamp, content, user_email))
+                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, content, user_email, client_name))
                 conn.commit()
                 return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid})
     except Exception as e:
@@ -263,14 +327,14 @@ def search_memory(query: str) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content FROM memories WHERE content ILIKE %s AND user_email = %s ORDER BY timestamp DESC', (f'%{query}%', user_email))
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s ORDER BY timestamp DESC', (f'%{query}%', user_email))
                     results = cursor.fetchall()
                     return json.dumps({"status": "success", "results": results}, indent=2)
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content FROM memories WHERE content LIKE ? AND user_email = ? ORDER BY timestamp DESC', (f'%{query}%', user_email))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? ORDER BY timestamp DESC', (f'%{query}%', user_email))
+                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
@@ -286,14 +350,14 @@ def list_memories(limit: int = 10) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
                     results = cursor.fetchall()
                     return json.dumps({"status": "success", "results": results}, indent=2)
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
+                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
                 return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
@@ -412,6 +476,310 @@ async def serve_dashboard(request: Request) -> HTMLResponse:
     except Exception as e:
         return HTMLResponse(f"<h1>Error loading dashboard: {str(e)}</h1>", status_code=500)
 
+
+@mcp.custom_route("/meadmin", methods=["GET"])
+async def serve_meadmin(request: Request) -> HTMLResponse:
+    """Serves the admin dashboard UI."""
+    try:
+        meadmin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "meadmin.html")
+        with open(meadmin_path, "r", encoding="utf-8") as f:
+            html = f.read()
+            
+        return HTMLResponse(inject_firebase_config(html))
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error loading admin dashboard: {str(e)}</h1>", status_code=500)
+
+
+@mcp.custom_route("/api/admin/stats", methods=["GET"])
+async def api_admin_stats(request: Request) -> JSONResponse:
+    """API endpoint for the admin dashboard to fetch overall statistics."""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse({"status": "error", "message": "Missing Bearer token"}, status_code=401)
+        
+    id_token = auth_header.split(" ")[1]
+    
+    try:
+        decoded_token = firebase_auth.verify_id_token(id_token)
+        email = decoded_token.get("email")
+        if not email:
+            return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
+            
+        email_lower = email.strip().lower()
+        
+        # Check authorization
+        is_dev_mode = len(ADMIN_EMAILS) == 0
+        if not is_dev_mode and email_lower not in ADMIN_EMAILS:
+            return JSONResponse({"status": "error", "message": f"User {email} is not authorized as an administrator."}, status_code=403)
+            
+        db_engine = "PostgreSQL" if DATABASE_URL else "SQLite"
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    # 1. Total memories
+                    cursor.execute("SELECT COUNT(*) FROM memories")
+                    total_memories = cursor.fetchone()[0]
+                    
+                    # 2. Total sessions
+                    cursor.execute("SELECT COUNT(*) FROM oauth_sessions")
+                    total_sessions = cursor.fetchone()[0]
+                    
+                    # 3. All emails
+                    cursor.execute("""
+                        SELECT DISTINCT user_email FROM oauth_sessions WHERE user_email IS NOT NULL AND user_email != ''
+                        UNION
+                        SELECT DISTINCT user_email FROM client_connections WHERE user_email IS NOT NULL AND user_email != ''
+                        UNION
+                        SELECT DISTINCT user_email FROM memories WHERE user_email IS NOT NULL AND user_email != ''
+                    """)
+                    all_emails = [row[0] for row in cursor.fetchall()]
+                    total_users = len(all_emails)
+                    
+                    # 4. Client connections
+                    cursor.execute("SELECT user_email, client_name, last_active, user_agent FROM client_connections")
+                    connections_rows = cursor.fetchall()
+                    
+                    # 5. Client breakdown
+                    cursor.execute("SELECT client_name, COUNT(*) FROM memories GROUP BY client_name ORDER BY COUNT(*) DESC")
+                    breakdown_rows = cursor.fetchall()
+                    
+                    # 6. Recent memories
+                    cursor.execute("SELECT user_email, client_name, timestamp, content FROM memories ORDER BY timestamp DESC LIMIT 20")
+                    recent_memories_rows = cursor.fetchall()
+
+                    # 7. Landing Page Analytics Counts
+                    cursor.execute("SELECT COUNT(*) FROM landing_events")
+                    landing_total_events = cursor.fetchone()[0]
+                    
+                    cursor.execute("SELECT COUNT(*) FROM landing_events WHERE event_type = 'copy_prompt'")
+                    landing_total_copies = cursor.fetchone()[0]
+                    
+                    cursor.execute("SELECT COUNT(DISTINCT session_id) FROM landing_events")
+                    landing_total_sessions = cursor.fetchone()[0]
+                    
+                    # 8. Prompts copies breakdown
+                    cursor.execute("SELECT target_name, COUNT(*) FROM landing_events WHERE event_type = 'copy_prompt' GROUP BY target_name ORDER BY COUNT(*) DESC")
+                    landing_prompt_rows = cursor.fetchall()
+                    
+                    # 9. Clicks breakdown
+                    cursor.execute("SELECT target_name, COUNT(*) FROM landing_events WHERE event_type IN ('click_button', 'click_link') GROUP BY target_name ORDER BY COUNT(*) DESC")
+                    landing_clicks_rows = cursor.fetchall()
+                    
+                    # 10. Recent landing events
+                    cursor.execute("SELECT session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location FROM landing_events ORDER BY timestamp DESC LIMIT 30")
+                    landing_recent_rows = cursor.fetchall()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                # 1. Total memories
+                cursor.execute("SELECT COUNT(*) FROM memories")
+                total_memories = cursor.fetchone()[0]
+                
+                # 2. Total sessions
+                cursor.execute("SELECT COUNT(*) FROM oauth_sessions")
+                total_sessions = cursor.fetchone()[0]
+                
+                # 3. All emails
+                cursor.execute("""
+                    SELECT DISTINCT user_email FROM oauth_sessions WHERE user_email IS NOT NULL AND user_email != ''
+                    UNION
+                    SELECT DISTINCT user_email FROM client_connections WHERE user_email IS NOT NULL AND user_email != ''
+                    UNION
+                    SELECT DISTINCT user_email FROM memories WHERE user_email IS NOT NULL AND user_email != ''
+                """)
+                all_emails = [row[0] for row in cursor.fetchall()]
+                total_users = len(all_emails)
+                
+                # 4. Client connections
+                cursor.execute("SELECT user_email, client_name, last_active, user_agent FROM client_connections")
+                connections_rows = cursor.fetchall()
+                
+                # 5. Client breakdown
+                cursor.execute("SELECT client_name, COUNT(*) FROM memories GROUP BY client_name ORDER BY COUNT(*) DESC")
+                breakdown_rows = cursor.fetchall()
+                
+                # 6. Recent memories
+                cursor.execute("SELECT user_email, client_name, timestamp, content FROM memories ORDER BY timestamp DESC LIMIT 20")
+                recent_memories_rows = cursor.fetchall()
+
+                # 7. Landing Page Analytics Counts
+                cursor.execute("SELECT COUNT(*) FROM landing_events")
+                landing_total_events = cursor.fetchone()[0]
+                
+                cursor.execute("SELECT COUNT(*) FROM landing_events WHERE event_type = 'copy_prompt'")
+                landing_total_copies = cursor.fetchone()[0]
+                
+                cursor.execute("SELECT COUNT(DISTINCT session_id) FROM landing_events")
+                landing_total_sessions = cursor.fetchone()[0]
+                
+                # 8. Prompts copies breakdown
+                cursor.execute("SELECT target_name, COUNT(*) FROM landing_events WHERE event_type = 'copy_prompt' GROUP BY target_name ORDER BY COUNT(*) DESC")
+                landing_prompt_rows = cursor.fetchall()
+                
+                # 9. Clicks breakdown
+                cursor.execute("SELECT target_name, COUNT(*) FROM landing_events WHERE event_type IN ('click_button', 'click_link') GROUP BY target_name ORDER BY COUNT(*) DESC")
+                landing_clicks_rows = cursor.fetchall()
+                
+                # 10. Recent landing events
+                cursor.execute("SELECT session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location FROM landing_events ORDER BY timestamp DESC LIMIT 30")
+                landing_recent_rows = cursor.fetchall()
+                
+        # Post-process data
+        from datetime import datetime
+        
+        def parse_iso_datetime(dt_str):
+            try:
+                clean_str = dt_str.replace("Z", "")
+                if "." in clean_str:
+                    clean_str = clean_str.split(".")[0]
+                return datetime.fromisoformat(clean_str)
+            except:
+                return None
+
+        now = datetime.utcnow()
+        active_users_24h_set = set()
+        
+        user_connections_map = {}
+        for email_addr in all_emails:
+            user_connections_map[email_addr] = {
+                "email": email_addr,
+                "clients": [],
+                "last_active": None,
+                "last_client": None
+            }
+            
+        for row in connections_rows:
+            user_email, client_name, last_active_str, user_agent = row
+            if not user_email:
+                continue
+            if user_email in user_connections_map:
+                user_connections_map[user_email]["clients"].append(client_name)
+                dt = parse_iso_datetime(last_active_str)
+                if dt:
+                    if (now - dt).total_seconds() <= 86400:
+                        active_users_24h_set.add(user_email)
+                    current_last_active = user_connections_map[user_email]["last_active"]
+                    if not current_last_active or last_active_str > current_last_active:
+                        user_connections_map[user_email]["last_active"] = last_active_str
+                        user_connections_map[user_email]["last_client"] = client_name
+                        
+        users_list = []
+        for email_addr, udata in user_connections_map.items():
+            unique_clients = sorted(list(set(udata["clients"])))
+            users_list.append({
+                "email": email_addr,
+                "clients": ", ".join(unique_clients),
+                "last_active": udata["last_active"],
+                "last_client": udata["last_client"]
+            })
+            
+        users_list.sort(key=lambda u: u["last_active"] or "", reverse=True)
+        
+        client_breakdown = []
+        for row in breakdown_rows:
+            client_breakdown.append({
+                "client_name": row[0] or "Generic AI",
+                "memories_count": row[1]
+            })
+            
+        recent_memories = []
+        for row in recent_memories_rows:
+            recent_memories.append({
+                "user_email": row[0],
+                "client_name": row[1] or "Generic AI",
+                "timestamp": row[2],
+                "content": row[3]
+            })
+
+        landing_prompt_breakdown = [{"target_name": r[0], "count": r[1]} for r in landing_prompt_rows]
+        landing_clicks_breakdown = [{"target_name": r[0], "count": r[1]} for r in landing_clicks_rows]
+        landing_recent_events = [{
+            "session_id": r[0],
+            "user_email": r[1],
+            "event_type": r[2],
+            "target_name": r[3],
+            "timestamp": r[4],
+            "user_agent": r[5],
+            "referrer": r[6] if len(r) > 6 else 'Direct',
+            "ip_address": r[7] if len(r) > 7 else '',
+            "location": r[8] if len(r) > 8 else 'Unknown'
+        } for r in landing_recent_rows]
+            
+        results = {
+            "total_memories": total_memories,
+            "total_sessions": total_sessions,
+            "total_users": total_users,
+            "active_users_24h": len(active_users_24h_set),
+            "client_breakdown": client_breakdown,
+            "users": users_list,
+            "recent_memories": recent_memories,
+            "db_engine": db_engine,
+            "dev_mode": is_dev_mode,
+            "landing_analytics": {
+                "total_events": landing_total_events,
+                "total_copies": landing_total_copies,
+                "total_sessions": landing_total_sessions,
+                "prompt_breakdown": landing_prompt_breakdown,
+                "clicks_breakdown": landing_clicks_breakdown,
+                "recent_events": landing_recent_events
+            }
+        }
+        
+        return JSONResponse({"status": "success", "results": results})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@mcp.custom_route("/api/analytics/event", methods=["POST"])
+async def api_analytics_event(request: Request) -> JSONResponse:
+    """Logs a user interaction event from the landing page."""
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "unknown")
+        user_email = body.get("user_email", "")
+        event_type = body.get("event_type")
+        target_name = body.get("target_name")
+        
+        if not event_type or not target_name:
+            return JSONResponse({"status": "error", "message": "Missing event_type or target_name"}, status_code=400)
+            
+        user_agent = request.headers.get("user-agent", "")
+        timestamp = datetime.utcnow().isoformat() + "Z"
+        
+        referrer = body.get("referrer") or request.headers.get("referer") or "Direct"
+        
+        # Get IP address from headers or connection
+        x_forwarded_for = request.headers.get("x-forwarded-for")
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(",")[0].strip()
+        else:
+            ip_address = request.headers.get("x-real-ip") or (request.client.host if request.client else "")
+            
+        ip_address = body.get("ip_address") or ip_address or "127.0.0.1"
+        location = body.get("location") or "Unknown"
+        
+        if DATABASE_URL:
+            with psycopg2.connect(DATABASE_URL) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute('''
+                        INSERT INTO landing_events (session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ''', (session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location))
+                conn.commit()
+        else:
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO landing_events (session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (session_id, user_email, event_type, target_name, timestamp, user_agent, referrer, ip_address, location))
+                conn.commit()
+                
+        return JSONResponse({"status": "success", "message": "Event recorded successfully"})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
 @mcp.custom_route("/robots.txt", methods=["GET"])
 async def serve_robots(request: Request):
     """Serves the robots.txt file."""
@@ -504,13 +872,13 @@ async def api_memories(request: Request) -> JSONResponse:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (email,))
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (email,))
                     results = cursor.fetchall()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (email,))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2]} for row in cursor.fetchall()]
+                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (email,))
+                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
                 
         return JSONResponse({"status": "success", "results": results})
     except Exception as e:

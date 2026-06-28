@@ -1184,6 +1184,60 @@
             });
         }
 
+        function getClientBadgeHTML(clientName) {
+            const name = (clientName || "Generic AI").trim();
+            let bg = "rgba(100, 116, 139, 0.08)";
+            let color = "#475569";
+            let iconUrl = "";
+            let displayName = name;
+            
+            const lower = name.toLowerCase();
+            if (lower.includes("chatgpt")) {
+                bg = "rgba(16, 185, 129, 0.1)";
+                color = "#059669";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com";
+                displayName = "ChatGPT";
+            } else if (lower.includes("claude")) {
+                bg = "rgba(217, 119, 6, 0.1)";
+                color = "#d97706";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=claude.ai";
+                displayName = "Claude";
+            } else if (lower.includes("cursor")) {
+                bg = "rgba(99, 102, 241, 0.1)";
+                color = "#4f46e5";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=cursor.com";
+                displayName = "Cursor";
+            } else if (lower.includes("windsurf")) {
+                bg = "rgba(139, 92, 246, 0.1)";
+                color = "#7c3aed";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=codeium.com";
+                displayName = "Windsurf";
+            } else if (lower.includes("manus")) {
+                bg = "rgba(236, 72, 153, 0.1)";
+                color = "#db2777";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=manus.im";
+                displayName = "Manus";
+            } else if (lower.includes("postman")) {
+                bg = "rgba(249, 115, 22, 0.1)";
+                color = "#ea580c";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=postman.com";
+                displayName = "Postman";
+            } else if (lower.includes("python")) {
+                bg = "rgba(59, 130, 246, 0.1)";
+                color = "#2563eb";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=python.org";
+                displayName = "Python";
+            }
+            
+            const imgHtml = iconUrl ? `<img src="${iconUrl}" style="width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;" />` : `<i class="ph ph-cpu" style="font-size: 12px;"></i>`;
+            return `
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; background: ${bg}; color: ${color}; padding: 0.25rem 0.6rem; border-radius: 20px; border: 1px solid rgba(0,0,0,0.02);">
+                    ${imgHtml}
+                    ${displayName}
+                </span>
+            `;
+        }
+
         function renderMemories(memories) {
             const container = document.getElementById('memories-container');
             if (memories.length === 0) {
@@ -1199,7 +1253,10 @@
                 const card = document.createElement('div');
                 card.className = 'memory-card';
                 card.innerHTML = `
-                    <div class="memory-date"><i class="ph ph-clock"></i> ${date}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
+                        <div class="memory-date"><i class="ph ph-clock"></i> ${date}</div>
+                        ${getClientBadgeHTML(mem.client_name)}
+                    </div>
                     <div class="memory-content">${mem.content}</div>
                 `;
                 container.appendChild(card);
