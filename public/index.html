@@ -1252,6 +1252,7 @@
             
             container.innerHTML = '';
             memories.forEach(mem => {
+                const memIdx = mem.user_memory_index || mem.memory_number || mem.id;
                 const date = new Date(mem.timestamp).toLocaleDateString('en-US', { 
                     month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' 
                 });
@@ -1260,13 +1261,16 @@
                 card.className = 'memory-card';
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; margin-bottom: 0.25rem;">
-                        <div class="memory-date"><i class="ph ph-clock"></i> ${date}</div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span style="font-size: 0.72rem; font-weight: 700; color: #10b981; background: rgba(16,185,129,0.08); border-radius: 6px; padding: 0.15rem 0.5rem;">Memory #${memIdx}</span>
+                            <div class="memory-date"><i class="ph ph-clock"></i> ${date}</div>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             ${getClientBadgeHTML(mem.client_name)}
-                            <button onclick="openEditMemoryModal(${mem.id})" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0.25rem; font-size: 1rem; display: flex; align-items: center; transition: color 0.15s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='#64748b'" title="Edit Memory">
+                            <button onclick="openEditMemoryModal(${memIdx})" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0.25rem; font-size: 1rem; display: flex; align-items: center; transition: color 0.15s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='#64748b'" title="Edit Memory">
                                 <i class="ph ph-pencil-simple"></i>
                             </button>
-                            <button onclick="deleteMemory(${mem.id})" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0.25rem; font-size: 1rem; display: flex; align-items: center; transition: color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'" title="Delete Memory">
+                            <button onclick="deleteMemory(${memIdx})" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0.25rem; font-size: 1rem; display: flex; align-items: center; transition: color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'" title="Delete Memory">
                                 <i class="ph ph-trash"></i>
                             </button>
                         </div>
@@ -1285,11 +1289,11 @@
             document.getElementById('memory-modal').style.display = 'flex';
         }
 
-        function openEditMemoryModal(id) {
-            const mem = window.activeMemories.find(m => m.id === id);
+        function openEditMemoryModal(memIdx) {
+            const mem = window.activeMemories.find(m => (m.user_memory_index || m.memory_number || m.id) === memIdx);
             if (mem) {
-                document.getElementById('modal-title').innerText = 'Edit Memory';
-                document.getElementById('modal-memory-id').value = mem.id;
+                document.getElementById('modal-title').innerText = `Edit Memory #${memIdx}`;
+                document.getElementById('modal-memory-id').value = memIdx;
                 document.getElementById('modal-memory-content').value = mem.content;
                 document.getElementById('modal-memory-client').value = mem.client_name;
                 document.getElementById('memory-modal').style.display = 'flex';

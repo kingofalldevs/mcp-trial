@@ -342,16 +342,27 @@ def save_memory(content: str) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, encrypted_content, user_email, client_name))
-                    memory_id = cursor.fetchone()[0]
+                    # Compute the next per-user index
+                    cursor.execute('SELECT COALESCE(MAX(user_memory_index), 0) + 1 FROM memories WHERE user_email = %s', (user_email,))
+                    next_index = cursor.fetchone()[0]
+                    cursor.execute(
+                        'INSERT INTO memories (timestamp, content, user_email, client_name, user_memory_index) VALUES (%s, %s, %s, %s, %s) RETURNING id',
+                        (timestamp, encrypted_content, user_email, client_name, next_index)
+                    )
+                    cursor.fetchone()  # consume RETURNING id
                 conn.commit()
-                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
+                return json.dumps({"status": "success", "message": f"Memory #{next_index} saved successfully.", "memory_number": next_index})
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, encrypted_content, user_email, client_name))
+                cursor.execute('SELECT COALESCE(MAX(user_memory_index), 0) + 1 FROM memories WHERE user_email = ?', (user_email,))
+                next_index = cursor.fetchone()[0]
+                cursor.execute(
+                    'INSERT INTO memories (timestamp, content, user_email, client_name, user_memory_index) VALUES (?, ?, ?, ?, ?)',
+                    (timestamp, encrypted_content, user_email, client_name, next_index)
+                )
                 conn.commit()
-                return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid})
+                return json.dumps({"status": "success", "message": f"Memory #{next_index} saved successfully.", "memory_number": next_index})
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
@@ -368,17 +379,17 @@ def search_memory(query: str, client_name: str = None) -> str:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
                     if client_name:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC', (user_email, f'%{client_name}%'))
+                        cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY user_memory_index DESC', (user_email, f'%{client_name}%'))
                     else:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (user_email,))
+                        cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY user_memory_index DESC', (user_email,))
                     rows = cursor.fetchall()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 if client_name:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC', (user_email, f'%{client_name}%'))
+                    cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY user_memory_index DESC', (user_email, f'%{client_name}%'))
                 else:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (user_email,))
+                    cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY user_memory_index DESC', (user_email,))
                 rows = cursor.fetchall()
                 
         # Decrypt content and filter by query in-memory
@@ -387,7 +398,7 @@ def search_memory(query: str, client_name: str = None) -> str:
             decrypted = decrypt_content(r[2])
             if not query or query.lower() in decrypted.lower():
                 results.append({
-                    "id": r[0],
+                    "memory_number": r[0],
                     "timestamp": r[1],
                     "content": decrypted,
                     "client_name": r[3]
@@ -408,23 +419,23 @@ def list_memories(limit: int = 10, client_name: str = None) -> str:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
                     if client_name:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC LIMIT %s', (user_email, f'%{client_name}%', limit))
+                        cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY user_memory_index DESC LIMIT %s', (user_email, f'%{client_name}%', limit))
                     else:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
+                        cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY user_memory_index DESC LIMIT %s', (user_email, limit))
                     rows = cursor.fetchall()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 if client_name:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC LIMIT ?', (user_email, f'%{client_name}%', limit))
+                    cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY user_memory_index DESC LIMIT ?', (user_email, f'%{client_name}%', limit))
                 else:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
+                    cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY user_memory_index DESC LIMIT ?', (user_email, limit))
                 rows = cursor.fetchall()
 
         results = []
         for r in rows:
             results.append({
-                "id": r[0],
+                "memory_number": r[0],
                 "timestamp": r[1],
                 "content": decrypt_content(r[2]),
                 "client_name": r[3]
@@ -434,11 +445,11 @@ def list_memories(limit: int = 10, client_name: str = None) -> str:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def update_memory(id: int, content: str) -> str:
+def update_memory(memory_number: int, content: str) -> str:
     """Updates the content of an existing memory. This should be used when the user explicitly requests to change, edit, correct, or update a stored memory.
     
     Args:
-        id: The database ID of the memory to update.
+        memory_number: The user's personal memory number (e.g. Memory #3 → pass 3).
         content: The new text content for the memory.
     """
     user_email = user_email_var.get()
@@ -451,31 +462,31 @@ def update_memory(id: int, content: str) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('UPDATE memories SET content = %s WHERE id = %s AND user_email = %s', (encrypted_content, id, user_email))
+                    cursor.execute('UPDATE memories SET content = %s WHERE user_memory_index = %s AND user_email = %s', (encrypted_content, memory_number, user_email))
                     if cursor.rowcount > 0:
                         updated = True
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('UPDATE memories SET content = ? WHERE id = ? AND user_email = ?', (encrypted_content, id, user_email))
+                cursor.execute('UPDATE memories SET content = ? WHERE user_memory_index = ? AND user_email = ?', (encrypted_content, memory_number, user_email))
                 if cursor.rowcount > 0:
                     updated = True
                 conn.commit()
                 
         if updated:
-            return json.dumps({"status": "success", "message": f"Memory with ID {id} has been updated successfully."})
+            return json.dumps({"status": "success", "message": f"Memory #{memory_number} has been updated successfully."})
         else:
-            return json.dumps({"status": "error", "message": f"Memory with ID {id} not found or not owned by you."})
+            return json.dumps({"status": "error", "message": f"Memory #{memory_number} not found or not owned by you."})
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
 @mcp.tool()
-def delete_memory(id: int) -> str:
+def delete_memory(memory_number: int) -> str:
     """Deletes an existing memory. This should be used when the user explicitly requests to forget, delete, remove, or clear a stored memory.
     
     Args:
-        id: The database ID of the memory to delete.
+        memory_number: The user's personal memory number (e.g. Memory #3 → pass 3).
     """
     user_email = user_email_var.get()
     if not user_email:
@@ -486,22 +497,22 @@ def delete_memory(id: int) -> str:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('DELETE FROM memories WHERE id = %s AND user_email = %s', (id, user_email))
+                    cursor.execute('DELETE FROM memories WHERE user_memory_index = %s AND user_email = %s', (memory_number, user_email))
                     if cursor.rowcount > 0:
                         deleted = True
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('DELETE FROM memories WHERE id = ? AND user_email = ?', (id, user_email))
+                cursor.execute('DELETE FROM memories WHERE user_memory_index = ? AND user_email = ?', (memory_number, user_email))
                 if cursor.rowcount > 0:
                     deleted = True
                 conn.commit()
                 
         if deleted:
-            return json.dumps({"status": "success", "message": f"Memory with ID {id} has been deleted successfully."})
+            return json.dumps({"status": "success", "message": f"Memory #{memory_number} has been deleted successfully."})
         else:
-            return json.dumps({"status": "error", "message": f"Memory with ID {id} not found or not owned by you."})
+            return json.dumps({"status": "error", "message": f"Memory #{memory_number} not found or not owned by you."})
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
@@ -1016,15 +1027,15 @@ async def api_memories(request: Request) -> JSONResponse:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (email,))
+                    cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY user_memory_index DESC', (email,))
                     results = cursor.fetchall()
                     for r in results:
                         r["content"] = decrypt_content(r["content"])
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (email,))
-                results = [{"id": row[0], "timestamp": row[1], "content": decrypt_content(row[2]), "client_name": row[3]} for row in cursor.fetchall()]
+                cursor.execute('SELECT user_memory_index, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY user_memory_index DESC', (email,))
+                results = [{"user_memory_index": row[0], "timestamp": row[1], "content": decrypt_content(row[2]), "client_name": row[3]} for row in cursor.fetchall()]
                 
         return JSONResponse({"status": "success", "results": results})
     except Exception as e:
@@ -1057,17 +1068,19 @@ async def api_create_memory(request: Request) -> JSONResponse:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, encrypted_content, email, client_name))
-                    memory_id = cursor.fetchone()[0]
+                    cursor.execute('SELECT COALESCE(MAX(user_memory_index), 0) + 1 FROM memories WHERE user_email = %s', (email,))
+                    next_index = cursor.fetchone()[0]
+                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name, user_memory_index) VALUES (%s, %s, %s, %s, %s)', (timestamp, encrypted_content, email, client_name, next_index))
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, encrypted_content, email, client_name))
-                memory_id = cursor.lastrowid
+                cursor.execute('SELECT COALESCE(MAX(user_memory_index), 0) + 1 FROM memories WHERE user_email = ?', (email,))
+                next_index = cursor.fetchone()[0]
+                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name, user_memory_index) VALUES (?, ?, ?, ?, ?)', (timestamp, encrypted_content, email, client_name, next_index))
                 conn.commit()
                 
-        return JSONResponse({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
+        return JSONResponse({"status": "success", "message": f"Memory #{next_index} saved successfully.", "memory_number": next_index})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -1102,9 +1115,9 @@ async def api_update_memory(request: Request) -> JSONResponse:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
                     if client_name:
-                        cursor.execute('UPDATE memories SET content = %s, client_name = %s WHERE id = %s AND user_email = %s', (encrypted_content, client_name, memory_id, email))
+                        cursor.execute('UPDATE memories SET content = %s, client_name = %s WHERE user_memory_index = %s AND user_email = %s', (encrypted_content, client_name, memory_id, email))
                     else:
-                        cursor.execute('UPDATE memories SET content = %s WHERE id = %s AND user_email = %s', (encrypted_content, memory_id, email))
+                        cursor.execute('UPDATE memories SET content = %s WHERE user_memory_index = %s AND user_email = %s', (encrypted_content, memory_id, email))
                     if cursor.rowcount > 0:
                         updated = True
                 conn.commit()
@@ -1112,9 +1125,9 @@ async def api_update_memory(request: Request) -> JSONResponse:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 if client_name:
-                    cursor.execute('UPDATE memories SET content = ?, client_name = ? WHERE id = ? AND user_email = ?', (encrypted_content, client_name, memory_id, email))
+                    cursor.execute('UPDATE memories SET content = ?, client_name = ? WHERE user_memory_index = ? AND user_email = ?', (encrypted_content, client_name, memory_id, email))
                 else:
-                    cursor.execute('UPDATE memories SET content = ? WHERE id = ? AND user_email = ?', (encrypted_content, memory_id, email))
+                    cursor.execute('UPDATE memories SET content = ? WHERE user_memory_index = ? AND user_email = ?', (encrypted_content, memory_id, email))
                 if cursor.rowcount > 0:
                     updated = True
                 conn.commit()
@@ -1148,14 +1161,14 @@ async def api_delete_memory(request: Request) -> JSONResponse:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('DELETE FROM memories WHERE id = %s AND user_email = %s', (memory_id, email))
+                    cursor.execute('DELETE FROM memories WHERE user_memory_index = %s AND user_email = %s', (memory_id, email))
                     if cursor.rowcount > 0:
                         deleted = True
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('DELETE FROM memories WHERE id = ? AND user_email = ?', (memory_id, email))
+                cursor.execute('DELETE FROM memories WHERE user_memory_index = ? AND user_email = ?', (memory_id, email))
                 if cursor.rowcount > 0:
                     deleted = True
                 conn.commit()
