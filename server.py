@@ -6,6 +6,7 @@ import psycopg2
 from datetime import datetime
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+from cryptography.fernet import Fernet
 
 import contextvars
 
@@ -19,9 +20,46 @@ from starlette.requests import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 import uvicorn
-
 load_dotenv()
 
+# Set up symmetric encryption key for secure user memories at rest
+ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
+if not ENCRYPTION_KEY:
+    try:
+        ENCRYPTION_KEY = Fernet.generate_key().decode()
+        env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+        if os.path.exists(env_path):
+            with open(env_path, "a") as f:
+                f.write(f"\nENCRYPTION_KEY={ENCRYPTION_KEY}\n")
+        else:
+            with open(env_path, "w") as f:
+                f.write(f"ENCRYPTION_KEY={ENCRYPTION_KEY}\n")
+        print("Generated new ENCRYPTION_KEY and saved to .env")
+    except Exception as e:
+        print(f"Error auto-generating ENCRYPTION_KEY: {e}")
+        ENCRYPTION_KEY = ""
+
+def encrypt_content(plain_text: str) -> str:
+    """Encrypts text using the server-wide Fernet key."""
+    if not plain_text or not ENCRYPTION_KEY:
+        return plain_text or ""
+    try:
+        f = Fernet(ENCRYPTION_KEY.encode())
+        return f.encrypt(plain_text.encode()).decode("utf-8")
+    except Exception as e:
+        print(f"[CRYPTO] Encryption error: {e}")
+        return plain_text
+
+def decrypt_content(encrypted_text: str) -> str:
+    """Decrypts text. Falls back to plain text if decryption fails (for legacy memories)."""
+    if not encrypted_text or not ENCRYPTION_KEY:
+        return encrypted_text or ""
+    try:
+        f = Fernet(ENCRYPTION_KEY.encode())
+        return f.decrypt(encrypted_text.encode()).decode("utf-8")
+    except Exception:
+        # Fallback to plain text for legacy memories
+        return encrypted_text
 # We use a ContextVar to store the user's email securely across the async call chain
 user_email_var = contextvars.ContextVar("user_email", default=None)
 client_name_var = contextvars.ContextVar("client_name", default="Generic AI")
@@ -297,20 +335,21 @@ def save_memory(content: str) -> str:
         return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
     client_name = client_name_var.get()
+    encrypted_content = encrypt_content(content)
 
     try:
         timestamp = datetime.utcnow().isoformat() + "Z"
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, content, user_email, client_name))
+                    cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (%s, %s, %s, %s) RETURNING id', (timestamp, encrypted_content, user_email, client_name))
                     memory_id = cursor.fetchone()[0]
                 conn.commit()
                 return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": memory_id})
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, content, user_email, client_name))
+                cursor.execute('INSERT INTO memories (timestamp, content, user_email, client_name) VALUES (?, ?, ?, ?)', (timestamp, encrypted_content, user_email, client_name))
                 conn.commit()
                 return json.dumps({"status": "success", "message": "Memory saved successfully.", "id": cursor.lastrowid})
     except Exception as e:
@@ -324,24 +363,36 @@ def search_memory(query: str, client_name: str = None) -> str:
         return json.dumps({"status": "error", "message": "Unauthorized. Cannot determine user."})
 
     try:
+        # Fetch all user memories from db to perform in-memory decryption and search
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                with conn.cursor() as cursor:
                     if client_name:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC', (f'%{query}%', user_email, f'%{client_name}%'))
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC', (user_email, f'%{client_name}%'))
                     else:
-                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content ILIKE %s AND user_email = %s ORDER BY timestamp DESC', (f'%{query}%', user_email))
-                    results = cursor.fetchall()
-                    return json.dumps({"status": "success", "results": results}, indent=2)
+                        cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (user_email,))
+                    rows = cursor.fetchall()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 if client_name:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC', (f'%{query}%', user_email, f'%{client_name}%'))
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC', (user_email, f'%{client_name}%'))
                 else:
-                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE content LIKE ? AND user_email = ? ORDER BY timestamp DESC', (f'%{query}%', user_email))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
-                return json.dumps({"status": "success", "results": results}, indent=2)
+                    cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (user_email,))
+                rows = cursor.fetchall()
+                
+        # Decrypt content and filter by query in-memory
+        results = []
+        for r in rows:
+            decrypted = decrypt_content(r[2])
+            if not query or query.lower() in decrypted.lower():
+                results.append({
+                    "id": r[0],
+                    "timestamp": r[1],
+                    "content": decrypted,
+                    "client_name": r[3]
+                })
+        return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 
@@ -355,13 +406,12 @@ def list_memories(limit: int = 10, client_name: str = None) -> str:
     try:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
-                with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                with conn.cursor() as cursor:
                     if client_name:
                         cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s AND client_name ILIKE %s ORDER BY timestamp DESC LIMIT %s', (user_email, f'%{client_name}%', limit))
                     else:
                         cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC LIMIT %s', (user_email, limit))
-                    results = cursor.fetchall()
-                    return json.dumps({"status": "success", "results": results}, indent=2)
+                    rows = cursor.fetchall()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
@@ -369,8 +419,17 @@ def list_memories(limit: int = 10, client_name: str = None) -> str:
                     cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? AND client_name LIKE ? ORDER BY timestamp DESC LIMIT ?', (user_email, f'%{client_name}%', limit))
                 else:
                     cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC LIMIT ?', (user_email, limit))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
-                return json.dumps({"status": "success", "results": results}, indent=2)
+                rows = cursor.fetchall()
+
+        results = []
+        for r in rows:
+            results.append({
+                "id": r[0],
+                "timestamp": r[1],
+                "content": decrypt_content(r[2]),
+                "client_name": r[3]
+            })
+        return json.dumps({"status": "success", "results": results}, indent=2)
     except Exception as e:
         return json.dumps({"status": "error", "message": str(e)})
 @mcp.custom_route("/static/{filename}", methods=["GET"])
