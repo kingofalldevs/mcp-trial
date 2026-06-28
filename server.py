@@ -945,11 +945,13 @@ async def api_memories(request: Request) -> JSONResponse:
                 with conn.cursor(cursor_factory=RealDictCursor) as cursor:
                     cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = %s ORDER BY timestamp DESC', (email,))
                     results = cursor.fetchall()
+                    for r in results:
+                        r["content"] = decrypt_content(r["content"])
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
                 cursor.execute('SELECT id, timestamp, content, client_name FROM memories WHERE user_email = ? ORDER BY timestamp DESC', (email,))
-                results = [{"id": row[0], "timestamp": row[1], "content": row[2], "client_name": row[3]} for row in cursor.fetchall()]
+                results = [{"id": row[0], "timestamp": row[1], "content": decrypt_content(row[2]), "client_name": row[3]} for row in cursor.fetchall()]
                 
         return JSONResponse({"status": "success", "results": results})
     except Exception as e:
