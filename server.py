@@ -222,7 +222,7 @@ def get_client_name_from_user_agent(user_agent: str) -> str:
         return "Cursor"
     elif "windsurf" in ua:
         return "Windsurf"
-    elif "manus" in ua:
+    elif "manus" in ua or "go-http-client" in ua:
         return "Manus"
     else:
         if "vscode" in ua:
@@ -233,9 +233,10 @@ def get_client_name_from_user_agent(user_agent: str) -> str:
             return "Python Client"
     return "Generic AI"
 
-def record_client_activity(email: str, user_agent: str):
+def record_client_activity(email: str, user_agent: str, client_name: str = None):
     """Logs the client name and activity time."""
-    client_name = get_client_name_from_user_agent(user_agent)
+    if not client_name:
+        client_name = get_client_name_from_user_agent(user_agent)
     timestamp = datetime.utcnow().isoformat() + "Z"
     
     if DATABASE_URL:
@@ -315,13 +316,31 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # Save the email in context so the tools can magically read it
             user_email_var.set(email)
             
+            client_name_param = (request.query_params.get("client") or 
+                                 request.query_params.get("client_name") or
+                                 request.headers.get("x-client-name") or
+                                 request.headers.get("client-name"))
+            
             user_agent = request.headers.get("user-agent", "")
-            client_name = get_client_name_from_user_agent(user_agent)
+            
+            if client_name_param:
+                param_lower = client_name_param.lower()
+                if "manus" in param_lower:
+                    client_name = "Manus"
+                elif "claude" in param_lower:
+                    client_name = "Claude"
+                elif "chatgpt" in param_lower or "openai" in param_lower:
+                    client_name = "ChatGPT"
+                else:
+                    client_name = client_name_param.title()
+            else:
+                client_name = get_client_name_from_user_agent(user_agent)
+                
             client_name_var.set(client_name)
             
             # Record client connection activity
             try:
-                record_client_activity(email, user_agent)
+                record_client_activity(email, user_agent, client_name)
             except Exception as e:
                 print(f"Error recording client activity: {e}")
             
@@ -1195,7 +1214,7 @@ async def api_generate_token(request: Request) -> JSONResponse:
         if not email:
             return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
             
-        access_token = "memorie-" + str(uuid.uuid4())
+        access_token = "rulip-" + str(uuid.uuid4())
         auth_code = "pat-" + str(uuid.uuid4())
         created_at = datetime.utcnow().isoformat()
         

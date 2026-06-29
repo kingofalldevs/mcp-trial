@@ -262,32 +262,7 @@ if dashboard_html_start != -1 and dashboard_html_end != -1:
                             </div>
                         </div>
                     </div>
-                    <div class="ai-card" onclick="selectAI('cursor')" id="ai-card-cursor">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
-                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Cursor</div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                                <div id="ai-status-badge-cursor" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
-                                    <span id="ai-dot-cursor" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
-                                    <span id="ai-status-text-cursor">Offline</span>
-                                </div>
-                                <span id="ai-time-cursor" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ai-card" onclick="selectAI('windsurf')" id="ai-card-windsurf">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
-                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Windsurf</div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                                <div id="ai-status-badge-windsurf" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
-                                    <span id="ai-dot-windsurf" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
-                                    <span id="ai-status-text-windsurf">Offline</span>
-                                </div>
-                                <span id="ai-time-windsurf" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="ai-card" onclick="selectAI('manus')" id="ai-card-manus">
                         <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
                         <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
@@ -405,78 +380,7 @@ if dashboard_html_start != -1 and dashboard_html_end != -1:
                             </div>
                         </div>
 
-                        <!-- Cursor Panel -->
-                        <div id="panel-cursor" class="ai-panel">
-                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
-                                <img src="https://www.google.com/s2/favicons?sz=64&domain=cursor.com" alt="Cursor" style="width: 24px; height: 24px; border-radius: 6px;"> 
-                                Connect to Cursor IDE (SSE Server)
-                            </h3>
 
-                            
-                            <div class="panel-content-layout">
-                                <!-- Left side: video -->
-                                <div class="panel-video-col">
-                                    <div class="video-guide-wrapper">
-                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
-                                    </div>
-                                </div>
-                                <!-- Right side: details -->
-                                <div class="panel-details-col">
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">Name</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value">Memories</span>
-                                        </div>
-                                    </div>
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">Type</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value">SSE</span>
-                                        </div>
-                                    </div>
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">URL</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value" id="mcp-url-cursor"></span>
-                                            <button onclick="copyText(this, 'mcp-url-cursor')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Windsurf Panel -->
-                        <div id="panel-windsurf" class="ai-panel">
-                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
-                                <img src="https://www.google.com/s2/favicons?sz=64&domain=codeium.com" alt="Windsurf" style="width: 24px; height: 24px; border-radius: 6px;"> 
-                                Connect to Windsurf IDE (SSE Server)
-                            </h3>
-
-                            
-                            <div class="panel-content-layout">
-                                <!-- Left side: video -->
-                                <div class="panel-video-col">
-                                    <div class="video-guide-wrapper">
-                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
-                                    </div>
-                                </div>
-                                <!-- Right side: details -->
-                                <div class="panel-details-col">
-                                    <div class="code-block-container">
-                                        <div class="code-block-header">
-                                            <div style="display: flex; align-items: center; gap: 0.4rem;">
-                                                <i class="ph ph-file-code" style="font-size: 0.95rem;"></i>
-                                                <span>mcp.json</span>
-                                            </div>
-                                            <button onclick="copyText(this, 'windsurf-json')" class="copy-btn-new" title="Copy to clipboard"><i class="ph ph-copy"></i></button>
-                                        </div>
-                                        <div class="code-block-body">
-                                            <pre id="windsurf-json"></pre>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Manus Panel -->
                         <div id="panel-manus" class="ai-panel">
