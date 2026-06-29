@@ -438,20 +438,18 @@
             align-items: center;
             gap: 1.25rem;
             padding: 1.1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: var(--bg-color);
             border: 1px solid rgba(15, 23, 42, 0.05);
             border-radius: 16px;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
         }
 
         .memory-row:hover {
-            background: #ffffff;
+            background: var(--bg-color);
+            opacity: 0.95;
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
             border-color: rgba(16, 185, 129, 0.25);
         }
 
