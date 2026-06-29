@@ -950,9 +950,16 @@
                                         </div>
                                     </div>
                                     <div class="parameter-group">
-                                        <span class="parameter-label">Custom Header</span>
+                                        <span class="parameter-label">Header Name</span>
                                         <div class="parameter-box">
-                                            <span class="parameter-value" id="manual-header-manus">Loading...</span>
+                                            <span class="parameter-value" id="header-name-manus">Authorization</span>
+                                            <button onclick="copyText(this, 'header-name-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Header Value</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="manual-header-manus" style="word-break: break-all;">Loading...</span>
                                             <button onclick="copyText(this, 'manual-header-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
                                         </div>
                                     </div>
@@ -1070,7 +1077,7 @@
                     const token = data.token;
                     window.mcpToken = token;
                     
-                    document.getElementById('manual-header-manus').innerText = `{"Authorization": "Bearer ${token}"}`;
+                    document.getElementById('manual-header-manus').innerText = `Bearer ${token}`;
                 } else {
                     document.getElementById('manual-header-manus').innerText = "Error generating token";
                 }
