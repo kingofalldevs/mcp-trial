@@ -1399,8 +1399,9 @@
         }
 
         function copyCardPrompt(event, aiName) {
-            event.stopPropagation(); // Prevent selecting the card
+            event.stopPropagation();
             
+            const btn = event.currentTarget; // capture synchronously before async
             const token = window.mcpToken || "YOUR_PERSONAL_ACCESS_TOKEN";
             let promptText = "";
             
@@ -1412,14 +1413,12 @@
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
             }
             
-            navigator.clipboard.writeText(promptText).then(() => {
-                const btn = event.currentTarget;
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="ph ph-check"></i> Copied!';
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                }, 3000);
-            });
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = 'Copied!';
+            navigator.clipboard.writeText(promptText).catch(() => {});
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+            }, 3000);
         }
     </script>
 
