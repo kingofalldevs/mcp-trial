@@ -1196,8 +1196,8 @@
             const text = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(text).then(() => {
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> <span style="font-size: 0.75rem; margin-left: 0.3rem; font-weight: 600; font-family: sans-serif; color: #10b981;">Copied!</span>';
-                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+                btn.innerHTML = '<i class="ph ph-check"></i> <span style="font-size: 0.75rem; margin-left: 0.3rem; font-weight: 600; font-family: sans-serif;">Copied!</span>';
+                setTimeout(() => { btn.innerHTML = originalHTML; }, 3000);
             });
         }
 
@@ -1417,16 +1417,10 @@
             navigator.clipboard.writeText(promptText).then(() => {
                 const btn = event.currentTarget;
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="ph ph-check" style="color: #10b981;"></i> Copied!';
-                btn.style.borderColor = '#10b981';
-                btn.style.background = 'rgba(16, 185, 129, 0.08)';
-                btn.style.color = '#10b981';
+                btn.innerHTML = '<i class="ph ph-check"></i> Copied!';
                 setTimeout(() => {
                     btn.innerHTML = originalHTML;
-                    btn.style.borderColor = '';
-                    btn.style.background = '';
-                    btn.style.color = '';
-                }, 2000);
+                }, 3000);
             });
         }
     </script>
