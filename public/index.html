@@ -852,27 +852,8 @@
                                             <button onclick="copyText(this, 'mcp-url-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
                                         </div>
                                     </div>
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">Authentication Type</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value">OAuth (Authorization Code Flow)</span>
-                                            <span style="font-size: 0.72rem; color: #10b981; font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 0.2rem 0.5rem; border-radius: 6px; flex-shrink: 0;">Recommended</span>
-                                        </div>
-                                    </div>
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">Client ID</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value" id="client-id-chatgpt">rulip</span>
-                                            <button onclick="copyText(this, 'client-id-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="parameter-group">
-                                        <span class="parameter-label">Client Secret</span>
-                                        <div class="parameter-box">
-                                            <span class="parameter-value" id="client-secret-chatgpt">rulip</span>
-                                            <button onclick="copyText(this, 'client-secret-chatgpt')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
-                                        </div>
-                                    </div>
+
+
                                 </div>
                             </div>
                         </div>
@@ -883,7 +864,7 @@
                         <div id="panel-manus" class="ai-panel">
                             <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
                                 <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 24px; height: 24px; border-radius: 6px;"> 
-                                Connect to Manus / Custom Client (Headers Token)
+                                Connect to Manus (Native OAuth)
                             </h3>
 
                             
@@ -897,7 +878,7 @@
                                 <!-- Right side: details -->
                                 <div class="panel-details-col" style="flex: 1;">
                                     <div class="parameter-group">
-                                        <span class="parameter-label">SSE Endpoint</span>
+                                        <span class="parameter-label">Action SSE URL</span>
                                         <div class="parameter-box">
                                             <span class="parameter-value" id="mcp-url-manus"></span>
                                             <button onclick="copyText(this, 'mcp-url-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
@@ -917,6 +898,8 @@
                                             <button onclick="copyText(this, 'manual-header-manus')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
                                         </div>
                                     </div>
+
+
                                 </div>
                             </div>
                         </div>
