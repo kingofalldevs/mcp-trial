@@ -311,14 +311,26 @@ class AuthMiddleware:
                 
             if not token:
                 print(f"[MW] Missing token. Headers: { {k: v for k, v in request.headers.items()} }")
-                response = JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401)
+                base_url = str(request.base_url).rstrip("/")
+                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource"'
+                response = JSONResponse(
+                    {"error": "Unauthorized", "details": "Missing access token"}, 
+                    status_code=401, 
+                    headers={"WWW-Authenticate": auth_header_val}
+                )
                 return await response(scope, receive, send)
             
             email = get_email_for_access_token(token)
             
             if not email:
                 print(f"[MW] Invalid token: {token[:10]}...")
-                response = JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401)
+                base_url = str(request.base_url).rstrip("/")
+                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource", error="invalid_token"'
+                response = JSONResponse(
+                    {"error": "Unauthorized", "details": "Invalid access token"}, 
+                    status_code=401, 
+                    headers={"WWW-Authenticate": auth_header_val}
+                )
                 return await response(scope, receive, send)
             
             # Save the email in context so the tools can magically read it
@@ -1290,6 +1302,7 @@ async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
         "issuer": base_url,
         "authorization_endpoint": f"{base_url}/authorize",
         "token_endpoint": f"{base_url}/token",
+        "registration_endpoint": f"{base_url}/register",
         "response_types_supported": ["code"],
         "grant_types_supported": ["authorization_code"],
         "code_challenge_methods_supported": ["S256"],
@@ -1306,6 +1319,20 @@ async def oauth_protected_resource_metadata(request: Request) -> JSONResponse:
         "authorization_servers": [base_url],
         "bearer_methods_supported": ["header", "query"],
         "resource_documentation": f"{base_url}/mcp",
+    })
+
+@mcp.custom_route("/register", methods=["POST", "OPTIONS"])
+async def register_client(request: Request) -> JSONResponse:
+    """Dynamic Client Registration (RFC 7591). Required by some MCP clients before authorizing."""
+    # We allow any client to register and give them a random client_id.
+    client_id = f"client_{uuid.uuid4().hex[:12]}"
+    import time
+    return JSONResponse({
+        "client_id": client_id,
+        "client_id_issued_at": int(time.time()),
+        "token_endpoint_auth_method": "none",
+        "grant_types": ["authorization_code"],
+        "response_types": ["code"]
     })
 
 @mcp.custom_route("/authorize", methods=["GET"])
