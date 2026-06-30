@@ -819,6 +819,22 @@
                             <i class="ph ph-copy"></i> Copy Prompt
                         </button>
                     </div>
+
+                    <div class="ai-card" onclick="selectAI('claude-desktop')" id="ai-card-claude-desktop">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude Desktop" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Claude Desktop</div>
+                                <span style="font-size: 0.6rem; font-weight: 700; color: #10b981; background: rgba(16,185,129,0.1); padding: 0.1rem 0.45rem; border-radius: 8px; white-space: nowrap; flex-shrink: 0;">Free</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <span style="font-size: 0.65rem; color: #64748b;">Mac &amp; Windows app</span>
+                            </div>
+                        </div>
+                        <button class="card-copy-btn" id="desktop-config-copy-btn" onclick="copyDesktopConfig(event)" title="Copy Config">
+                            <i class="ph ph-copy"></i> Copy Config
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Flex layout container for side-by-side view -->
@@ -1004,6 +1020,76 @@
                         </div>
                     </div>
 
+                        <!-- Claude Desktop Panel -->
+                        <div id="panel-claude-desktop" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude Desktop" style="width: 24px; height: 24px; border-radius: 6px;">
+                                Connect Claude Desktop
+                                <span style="font-size: 0.65rem; font-weight: 700; color: #10b981; background: rgba(16,185,129,0.1); padding: 0.2rem 0.6rem; border-radius: 8px; flex-shrink: 0;">Free plan ✓</span>
+                            </h3>
+
+                            <div class="panel-content-layout">
+                                <!-- Left: steps -->
+                                <div class="panel-video-col" style="overflow-y: auto;">
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+
+                                        <!-- OS toggle -->
+                                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                            <button id="os-btn-mac" onclick="switchOS('mac')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid #10b981; background: #10b981; color: white; cursor: pointer; transition: all 0.2s;">Mac</button>
+                                            <button id="os-btn-win" onclick="switchOS('win')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid rgba(0,0,0,0.1); background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s;">Windows</button>
+                                        </div>
+
+                                        <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Download Claude Desktop</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">Get the free app from <a href="https://claude.ai/download" target="_blank" style="color: #10b981; font-weight: 600;">claude.ai/download</a>. Works on Mac and Windows.</div>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Open the config file</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5; margin-bottom: 0.4rem;">Navigate to this file on your computer (create it if it doesn't exist):</div>
+                                                    <div id="config-path-display" style="font-family: monospace; font-size: 0.75rem; background: rgba(15,23,42,0.05); border: 1px solid rgba(15,23,42,0.08); border-radius: 8px; padding: 0.5rem 0.75rem; color: #0f172a; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                                                        <span id="config-path-text" style="word-break: break-all;">~/Library/Application Support/Claude/claude_desktop_config.json</span>
+                                                        <button onclick="copyPathText()" style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0; flex-shrink: 0;" title="Copy path"><i class="ph ph-copy" style="font-size: 0.9rem;"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
+                                                <div style="width: 100%;">
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Paste this config &amp; restart</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5; margin-bottom: 0.5rem;">Copy the block on the right, paste it into the file, save, then <strong>fully quit and relaunch</strong> Claude Desktop. That's it!</div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right: config block -->
+                                <div class="panel-details-col" style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                            <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Config JSON</span>
+                                            <button id="copy-desktop-config-btn" onclick="copyDesktopConfig(event)" style="display: flex; align-items: center; gap: 0.35rem; background: #10b981; color: white; border: none; padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                                                <i class="ph ph-copy"></i> Copy All
+                                            </button>
+                                        </div>
+                                        <pre id="desktop-config-block" style="background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; font-size: 0.75rem; line-height: 1.7; overflow-x: auto; margin: 0; white-space: pre-wrap; word-break: break-all; font-family: 'Courier New', monospace;">Loading your config...</pre>
+                                    </div>
+                                    <p style="font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.5;">⚠️ If you already have a <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">mcpServers</code> key, just add the <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">"rulip"</code> block inside it.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -1114,6 +1200,25 @@
                     window.mcpToken = token;
                     
                     document.getElementById('manual-header-manus').innerText = `Bearer ${token}`;
+
+                    // Populate Claude Desktop config block
+                    window.desktopConfigJson = JSON.stringify({
+                        mcpServers: {
+                            rulip: {
+                                command: "npx",
+                                args: [
+                                    "-y",
+                                    "mcp-remote",
+                                    baseUrl + "/sse",
+                                    "--header",
+                                    `Authorization: Bearer ${token}`
+                                ]
+                            }
+                        }
+                    }, null, 2);
+                    const block = document.getElementById('desktop-config-block');
+                    if (block) block.textContent = window.desktopConfigJson;
+
                 } else {
                     document.getElementById('manual-header-manus').innerText = "Error generating token";
                 }
@@ -1220,6 +1325,54 @@
             document.getElementById('ai-card-' + aiName).classList.add('active');
             document.getElementById('panel-' + aiName).classList.add('active');
         }
+
+        // OS paths for Claude Desktop config file
+        const osPaths = {
+            mac: '~/Library/Application Support/Claude/claude_desktop_config.json',
+            win: '%APPDATA%\\Claude\\claude_desktop_config.json'
+        };
+
+        function switchOS(os) {
+            const pathEl = document.getElementById('config-path-text');
+            const macBtn = document.getElementById('os-btn-mac');
+            const winBtn = document.getElementById('os-btn-win');
+            if (!pathEl) return;
+
+            pathEl.textContent = osPaths[os];
+
+            const activeStyle = 'border: 1.5px solid #10b981; background: #10b981; color: white;';
+            const inactiveStyle = 'border: 1.5px solid rgba(0,0,0,0.1); background: transparent; color: #64748b;';
+            macBtn.style.cssText = macBtn.style.cssText.replace(/border:[^;]+;|background:[^;]+;|color:[^;]+;/g, '') + (os === 'mac' ? activeStyle : inactiveStyle);
+            winBtn.style.cssText = winBtn.style.cssText.replace(/border:[^;]+;|background:[^;]+;|color:[^;]+;/g, '') + (os === 'win' ? activeStyle : inactiveStyle);
+        }
+
+        function copyDesktopConfig(event) {
+            if (event) event.stopPropagation();
+            const config = window.desktopConfigJson;
+            if (!config) return;
+            navigator.clipboard.writeText(config).then(() => {
+                const btns = [document.getElementById('copy-desktop-config-btn'), document.getElementById('desktop-config-copy-btn')];
+                btns.forEach(btn => {
+                    if (!btn) return;
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '<i class="ph ph-check"></i> Copied!';
+                    setTimeout(() => { btn.innerHTML = orig; }, 2500);
+                });
+            });
+        }
+
+        function copyPathText() {
+            const path = document.getElementById('config-path-text')?.textContent;
+            if (!path) return;
+            navigator.clipboard.writeText(path);
+        }
+
+        // Auto-detect OS and set the right path on load
+        (function detectOS() {
+            const isWin = navigator.userAgent.toLowerCase().includes('win');
+            // We'll call switchOS once the panel exists — defer slightly
+            setTimeout(() => switchOS(isWin ? 'win' : 'mac'), 100);
+        })();
 
         function switchTab(tabId) {
             // Hide all contents
