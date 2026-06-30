@@ -114,6 +114,16 @@ def init_db():
                         created_at TEXT NOT NULL
                     )
                 ''')
+                cursor.execute("SELECT column_name FROM information_schema.columns WHERE table_name='oauth_sessions' AND column_name='client_name'")
+                if not cursor.fetchone():
+                    cursor.execute("ALTER TABLE oauth_sessions ADD COLUMN client_name TEXT DEFAULT 'Generic AI'")
+                
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS oauth_clients (
+                        client_id TEXT PRIMARY KEY,
+                        client_name TEXT NOT NULL
+                    )
+                ''')
                 
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS client_connections (
@@ -173,6 +183,17 @@ def init_db():
                     access_token TEXT,
                     user_email TEXT NOT NULL,
                     created_at TEXT NOT NULL
+                )
+            ''')
+            cursor.execute("PRAGMA table_info(oauth_sessions)")
+            columns = [info[1] for info in cursor.fetchall()]
+            if 'client_name' not in columns:
+                cursor.execute("ALTER TABLE oauth_sessions ADD COLUMN client_name TEXT DEFAULT 'Generic AI'")
+                
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS oauth_clients (
+                    client_id TEXT PRIMARY KEY,
+                    client_name TEXT NOT NULL
                 )
             ''')
             
@@ -260,30 +281,25 @@ def record_client_activity(email: str, user_agent: str, client_name: str = None)
             ''', (email, client_name, user_agent, timestamp))
             conn.commit()
 
-def get_email_for_access_token(access_token: str):
-    """Verifies the bearer token against the database."""
+def get_session_for_access_token(access_token: str):
+    """Verifies the bearer token against the database and returns (email, client_name)."""
     if not access_token:
-        print("[AUTH] get_email_for_access_token: empty token")
-        return None
-    print(f"[AUTH] Looking up token: {access_token[:16]}... (db={'pg' if DATABASE_URL else 'sqlite'})")
+        return None, None
     try:
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = %s', (access_token,))
+                    cursor.execute('SELECT user_email, client_name FROM oauth_sessions WHERE access_token = %s', (access_token,))
                     row = cursor.fetchone()
-                    print(f"[AUTH] DB result: {row}")
-                    return row[0] if row else None
+                    return (row[0], row[1]) if row else (None, None)
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('SELECT user_email FROM oauth_sessions WHERE access_token = ?', (access_token,))
+                cursor.execute('SELECT user_email, client_name FROM oauth_sessions WHERE access_token = ?', (access_token,))
                 row = cursor.fetchone()
-                print(f"[AUTH] DB result: {row}")
-                return row[0] if row else None
+                return (row[0], row[1]) if row else (None, None)
     except Exception as e:
-        print(f"[AUTH] DB error in get_email_for_access_token: {e}")
-        return None
+        return None, None
 
 class AuthMiddleware:
     def __init__(self, app):
@@ -320,7 +336,7 @@ class AuthMiddleware:
                 )
                 return await response(scope, receive, send)
             
-            email = get_email_for_access_token(token)
+            email, db_client_name = get_session_for_access_token(token)
             
             if not email:
                 print(f"[MW] Invalid token: {token[:10]}...")
@@ -1324,8 +1340,25 @@ async def oauth_protected_resource_metadata(request: Request) -> JSONResponse:
 @mcp.custom_route("/register", methods=["POST", "OPTIONS"])
 async def register_client(request: Request) -> JSONResponse:
     """Dynamic Client Registration (RFC 7591). Required by some MCP clients before authorizing."""
-    # We allow any client to register and give them a random client_id.
+    try:
+        body = await request.json()
+        client_name = body.get("client_name", "Generic AI")
+    except:
+        client_name = "Generic AI"
+        
     client_id = f"client_{uuid.uuid4().hex[:12]}"
+    
+    if DATABASE_URL:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute('INSERT INTO oauth_clients (client_id, client_name) VALUES (%s, %s)', (client_id, client_name))
+            conn.commit()
+    else:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO oauth_clients (client_id, client_name) VALUES (?, ?)', (client_id, client_name))
+            conn.commit()
+            
     import time
     return JSONResponse({
         "client_id": client_id,
@@ -1448,6 +1481,7 @@ async def oauth_verify_firebase(request: Request) -> JSONResponse:
     try:
         body = await request.json()
         id_token = body.get("idToken")
+        client_id = body.get("client_id")
         
         if not id_token:
             return JSONResponse({"status": "error", "message": "Missing idToken"}, status_code=400)
@@ -1457,18 +1491,33 @@ async def oauth_verify_firebase(request: Request) -> JSONResponse:
         if not email:
             return JSONResponse({"status": "error", "message": "No email found in token"}, status_code=400)
             
+        client_name = "Generic AI"
+        if client_id:
+            if DATABASE_URL:
+                with psycopg2.connect(DATABASE_URL) as conn:
+                    with conn.cursor() as cursor:
+                        cursor.execute('SELECT client_name FROM oauth_clients WHERE client_id = %s', (client_id,))
+                        row = cursor.fetchone()
+                        if row: client_name = row[0]
+            else:
+                with sqlite3.connect(DB_PATH) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute('SELECT client_name FROM oauth_clients WHERE client_id = ?', (client_id,))
+                    row = cursor.fetchone()
+                    if row: client_name = row[0]
+            
         auth_code = str(uuid.uuid4())
         created_at = datetime.utcnow().isoformat()
         
         if DATABASE_URL:
             with psycopg2.connect(DATABASE_URL) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at) VALUES (%s, %s, %s)', (auth_code, email, created_at))
+                    cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at, client_name) VALUES (%s, %s, %s, %s)', (auth_code, email, created_at, client_name))
                 conn.commit()
         else:
             with sqlite3.connect(DB_PATH) as conn:
                 cursor = conn.cursor()
-                cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at) VALUES (?, ?, ?)', (auth_code, email, created_at))
+                cursor.execute('INSERT INTO oauth_sessions (auth_code, user_email, created_at, client_name) VALUES (?, ?, ?, ?)', (auth_code, email, created_at, client_name))
                 conn.commit()
                 
         return JSONResponse({"status": "success", "auth_code": auth_code})
