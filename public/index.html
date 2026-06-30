@@ -786,23 +786,6 @@
                             <i class="ph ph-copy"></i> Copy Prompt
                         </button>
                     </div>
-                    <div class="ai-card" onclick="selectAI('claude')" id="ai-card-claude">
-                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
-                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Claude</div>
-                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                                <div id="ai-status-badge-claude" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
-                                    <span id="ai-dot-claude" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
-                                    <span id="ai-status-text-claude">Offline</span>
-                                </div>
-                                <span id="ai-time-claude" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
-                            </div>
-                        </div>
-                        <button class="card-copy-btn" onclick="copyCardPrompt(event, 'claude')" title="Copy Prompt for Claude">
-                            <i class="ph ph-copy"></i> Copy Prompt
-                        </button>
-                    </div>
-
                     <div class="ai-card" onclick="selectAI('manus')" id="ai-card-manus">
                         <img src="https://www.google.com/s2/favicons?sz=64&domain=manus.im" alt="Manus" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
                         <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
@@ -816,6 +799,23 @@
                             </div>
                         </div>
                         <button class="card-copy-btn" onclick="copyCardPrompt(event, 'manus')" title="Copy Prompt for Manus">
+                            <i class="ph ph-copy"></i> Copy Prompt
+                        </button>
+                    </div>
+
+                    <div class="ai-card" onclick="selectAI('claude')" id="ai-card-claude">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Claude</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-claude" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-claude" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-claude">Offline</span>
+                                </div>
+                                <span id="ai-time-claude" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
+                        <button class="card-copy-btn" onclick="copyCardPrompt(event, 'claude')" title="Copy Prompt for Claude">
                             <i class="ph ph-copy"></i> Copy Prompt
                         </button>
                     </div>
@@ -837,7 +837,7 @@
                                 <!-- Left side: video -->
                                 <div class="panel-video-col">
                                     <div class="video-guide-wrapper">
-                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                        <iframe src="https://player.vimeo.com/video/1205888811?autoplay=1&muted=1&loop=1&controls=0&background=1" title="Tutorial video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
                                     </div>
                                 </div>
                                 <!-- Right side: details -->
@@ -877,24 +877,59 @@
                         <!-- Claude Panel -->
                         <div id="panel-claude" class="ai-panel">
                             <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
-                                <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude" style="width: 24px; height: 24px; border-radius: 6px;">
                                 Connect to Claude (MCP Server)
                             </h3>
 
-                            
                             <div class="panel-content-layout">
-                                <!-- Left side: video -->
-                                <div class="panel-video-col">
-                                    <div class="video-guide-wrapper">
-                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                <!-- Left side: instructions -->
+                                <div class="panel-video-col" style="overflow-y: auto;">
+                                    <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+
+                                        <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Go to Claude.ai Settings</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">Open <a href="https://claude.ai" target="_blank" style="color: #10b981; font-weight: 600;">claude.ai</a>, click your profile icon → <strong>Settings</strong> → <strong>Integrations</strong>.</div>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Add Integration</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">Click <strong>Add Integration</strong> and enter the App Name and MCP URL from the panel on the right.</div>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Authorize with OAuth</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">Claude will prompt you to sign in to Rulip. Approve the authorization to grant Claude access to your memories.</div>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
+                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">4</span>
+                                                <div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Enable in a Conversation</div>
+                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">In any new Claude chat, click the <strong>🔌 Integrations</strong> icon in the toolbar and toggle <strong>Rulip</strong> on. Claude can now read and save your memories.</div>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
+
                                 <!-- Right side: details -->
                                 <div class="panel-details-col">
                                     <div class="parameter-group">
                                         <span class="parameter-label">App Name</span>
                                         <div class="parameter-box">
-                                            <span class="parameter-value" id="client-name-claude">Memories</span>
+                                            <span class="parameter-value" id="client-name-claude">Rulip</span>
                                             <button onclick="copyText(this, 'client-name-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
                                         </div>
                                     </div>
@@ -919,6 +954,7 @@
                                             <button onclick="copyText(this, 'client-secret-claude')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -937,7 +973,7 @@
                                 <!-- Left side: video -->
                                 <div class="panel-video-col">
                                     <div class="video-guide-wrapper">
-                                        <iframe src="https://www.youtube.com/embed/eur8dUO9mvE?autoplay=1&mute=1&loop=1&playlist=eur8dUO9mvE&controls=0&modestbranding=1&rel=0&iv_load_policy=3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
+                                        <iframe src="https://player.vimeo.com/video/1205889648?autoplay=1&muted=1&loop=1&controls=0&background=1" title="Tutorial video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
                                     </div>
                                 </div>
                                 <!-- Right side: details -->

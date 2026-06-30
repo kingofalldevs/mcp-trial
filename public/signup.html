@@ -20,7 +20,7 @@
     <title>Rulip - Create your account</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -36,10 +36,10 @@
         :root {
             --primary: #10b981;
             --primary-hover: #059669;
-            --bg-color: #f2ebd9;
-            --text-color: #1e293b;
-            --glass-bg: rgba(0, 0, 0, 0.03);
-            --glass-border: rgba(0, 0, 0, 0.08);
+            --bg-color: #f8f6f0;
+            --text-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -50,26 +50,62 @@
         }
 
         body {
-            background-color: #ffffff;
+            background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Blobs */
+        .bg-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .blob-1 {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+            top: -10%;
+            left: -10%;
+            animation: float 15s infinite alternate;
+        }
+        .blob-2 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%);
+            bottom: -10%;
+            right: -10%;
+            animation: float 18s infinite alternate-reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, -40px) scale(1.15); }
         }
 
         header {
             width: 100%;
-            padding: 1.2rem 3rem;
+            padding: 1.5rem 3rem;
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            z-index: 10;
         }
 
         .logo {
             display: flex;
             align-items: center;
             text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
         }
 
         main {
@@ -81,65 +117,98 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            z-index: 10;
         }
 
-        /* Card Container */
+        /* Glassmorphic Card */
         .glass-container {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 28px;
+            padding: 3.5rem 2.75rem;
             width: 100%;
-            max-width: 480px;
+            max-width: 460px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-            transition: all 0.3s ease;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.03),
+                0 12px 24px rgba(0, 0, 0, 0.02),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-container:hover {
+            border-color: rgba(16, 185, 129, 0.2);
+            box-shadow: 
+                0 40px 80px rgba(16, 185, 129, 0.05),
+                0 15px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .icon-badge {
+            width: 60px;
+            height: 60px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.75rem auto;
+            color: var(--primary);
+            font-size: 1.8rem;
         }
 
         .glass-container h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 2.4rem;
+            font-weight: 500;
             margin-bottom: 0.75rem;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, #10b981, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.015em;
+            color: #0f172a;
         }
 
         .glass-container p {
             color: #475569;
-            margin-bottom: 2rem;
-            line-height: 1.5;
-            font-size: 0.95rem;
+            margin-bottom: 2.25rem;
+            line-height: 1.6;
+            font-size: 0.98rem;
         }
 
-        /* Firebase UI overrides to match styling */
+        /* Firebase UI styling improvements */
         .firebaseui-container {
             background-color: transparent !important;
             box-shadow: none !important;
         }
         
         .firebaseui-idp-button {
-            border-radius: 12px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
-            transition: all 0.2s ease !important;
+            height: 50px !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            background-color: #ffffff !important;
         }
 
         .firebaseui-idp-button:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06) !important;
+            background-color: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .firebaseui-idp-text {
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            font-size: 0.95rem !important;
         }
 
         /* Loader Spinner */
         .spinner {
-            border: 3px solid rgba(0, 0, 0, 0.05);
+            border: 3px solid rgba(16, 185, 129, 0.1);
             border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             animation: spin 1s linear infinite;
             margin: 0 auto 1.5rem;
         }
@@ -150,25 +219,39 @@
         }
 
         .footer-link {
-            margin-top: 2rem;
-            font-size: 0.9rem;
+            margin-top: 2.25rem;
+            font-size: 0.92rem;
             color: #64748b;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 1.5rem;
         }
 
         .footer-link a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            transition: color 0.2s;
+            transition: all 0.2s;
         }
 
         .footer-link a:hover {
             color: var(--primary-hover);
             text-decoration: underline;
         }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1.2rem 1.5rem;
+            }
+            .glass-container {
+                padding: 2.5rem 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
 
     <header>
         <a href="/landing" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #0f172a;">
@@ -192,6 +275,9 @@
     <main>
         <div class="glass-container">
             <div id="loader" class="spinner"></div>
+            <div class="icon-badge">
+                <i class="ph-fill ph-user-plus"></i>
+            </div>
             <h1>Create your account</h1>
             <p>Start giving persistent, long-term memory to your AI agents in under a minute.</p>
             
@@ -232,7 +318,6 @@
 
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
-                    // Redirect to dashboard upon successful registration/login
                     window.location.href = "/dashboard";
                 } else {
                     ui.start('#firebaseui-auth-container', uiConfig);
