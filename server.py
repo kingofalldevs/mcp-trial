@@ -285,13 +285,22 @@ def get_email_for_access_token(access_token: str):
         print(f"[AUTH] DB error in get_email_for_access_token: {e}")
         return None
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # We only protect the MCP streaming endpoints
-        if request.method != "OPTIONS" and request.url.path in ["/sse", "/messages", "/messages/"]:
+class AuthMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        request = Request(scope, receive)
+        # Check if the path starts with /messages in case FastMCP adds session IDs to the path
+        is_protected = request.url.path == "/sse" or request.url.path.startswith("/messages")
+        
+        if request.method != "OPTIONS" and is_protected:
             token = None
             auth_header = request.headers.get("Authorization")
-            print(f"[MW] {request.method} {request.url.path} | Auth header: {repr(auth_header)} | Query params: {dict(request.query_params)}")
+            print(f"[MW] {request.method} {request.url.path} | Auth header: {repr(auth_header)}")
             if auth_header and auth_header.startswith("Bearer "):
                 token = auth_header.split(" ")[1]
             else:
@@ -301,17 +310,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
                          request.query_params.get("api_key"))
                 
             if not token:
-                print(f"[MW] All headers: { {k: v for k, v in request.headers.items()} }")
-                base_url = str(request.base_url).rstrip("/")
-                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource"'
-                return JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401, headers={"WWW-Authenticate": auth_header_val})
+                print(f"[MW] Missing token. Headers: { {k: v for k, v in request.headers.items()} }")
+                response = JSONResponse({"error": "Unauthorized", "details": "Missing access token"}, status_code=401)
+                return await response(scope, receive, send)
             
             email = get_email_for_access_token(token)
             
             if not email:
-                base_url = str(request.base_url).rstrip("/")
-                auth_header_val = f'Bearer resource_metadata="{base_url}/.well-known/oauth-protected-resource", error="invalid_token"'
-                return JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401, headers={"WWW-Authenticate": auth_header_val})
+                print(f"[MW] Invalid token: {token[:10]}...")
+                response = JSONResponse({"error": "Unauthorized", "details": "Invalid access token"}, status_code=401)
+                return await response(scope, receive, send)
             
             # Save the email in context so the tools can magically read it
             user_email_var.set(email)
@@ -344,7 +352,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             except Exception as e:
                 print(f"Error recording client activity: {e}")
             
-        return await call_next(request)
+        return await self.app(scope, receive, send)
 
 @mcp.tool()
 def save_memory(content: str) -> str:
