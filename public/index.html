@@ -931,62 +931,44 @@
                             </h3>
 
                             <div class="panel-content-layout">
-                                <!-- Left: steps -->
-                                <div class="panel-video-col" style="overflow-y: auto;">
-                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-
-                                        <!-- OS toggle -->
-                                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                            <button id="os-btn-mac" onclick="switchOS('mac')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid #10b981; background: #10b981; color: white; cursor: pointer; transition: all 0.2s;">Mac</button>
-                                            <button id="os-btn-win" onclick="switchOS('win')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid rgba(0,0,0,0.1); background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s;">Windows</button>
-                                        </div>
-
-                                        <div style="display: flex; flex-direction: column; gap: 0.65rem;">
-
-                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">1</span>
-                                                <div>
-                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Download Claude Desktop</div>
-                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5;">Get the free app from <a href="https://claude.ai/download" target="_blank" style="color: #10b981; font-weight: 600;">claude.ai/download</a>. Works on Mac and Windows.</div>
-                                                </div>
-                                            </div>
-
-                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">2</span>
-                                                <div>
-                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Open the config file</div>
-                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5; margin-bottom: 0.4rem;">Navigate to this file on your computer (create it if it doesn't exist):</div>
-                                                    <div id="config-path-display" style="font-family: monospace; font-size: 0.75rem; background: rgba(15,23,42,0.05); border: 1px solid rgba(15,23,42,0.08); border-radius: 8px; padding: 0.5rem 0.75rem; color: #0f172a; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
-                                                        <span id="config-path-text" style="word-break: break-all;">~/Library/Application Support/Claude/claude_desktop_config.json</span>
-                                                        <button onclick="copyPathText()" style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0; flex-shrink: 0;" title="Copy path"><i class="ph ph-copy" style="font-size: 0.9rem;"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div style="display: flex; gap: 0.85rem; align-items: flex-start;">
-                                                <span style="background: #10b981; color: white; font-size: 0.7rem; font-weight: 700; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;">3</span>
-                                                <div style="width: 100%;">
-                                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a; margin-bottom: 0.2rem;">Paste this config &amp; restart</div>
-                                                    <div style="font-size: 0.8rem; color: #475569; line-height: 1.5; margin-bottom: 0.5rem;">Copy the block on the right, paste it into the file, save, then <strong>fully quit and relaunch</strong> Claude Desktop. That's it!</div>
-                                                </div>
-                                            </div>
-
-                                        </div>
+                                <!-- Left side: video -->
+                                <div class="panel-video-col">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://player.vimeo.com/video/1205888811?autoplay=1&muted=1&loop=1&controls=0&background=1" title="Tutorial video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top: -12%; left: -12%; width: 124%; height: 124%; border: 0;"></iframe>
                                     </div>
                                 </div>
 
-                                <!-- Right: config block -->
-                                <div class="panel-details-col" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Right side: details & config -->
+                                <div class="panel-details-col" style="display: flex; flex-direction: column; gap: 1rem; overflow-y: auto;">
+                                    <!-- OS toggle -->
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="parameter-label" style="margin: 0;">Select your OS</span>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button id="os-btn-mac" onclick="switchOS('mac')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid #10b981; background: #10b981; color: white; cursor: pointer; transition: all 0.2s;">Mac</button>
+                                            <button id="os-btn-win" onclick="switchOS('win')" style="padding: 0.3rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; border: 1.5px solid rgba(0,0,0,0.1); background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s;">Windows</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Config file path -->
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Config File Path</span>
+                                        <div id="config-path-display" style="font-family: monospace; font-size: 0.75rem; background: rgba(15,23,42,0.05); border: 1px solid rgba(15,23,42,0.08); border-radius: 8px; padding: 0.5rem 0.75rem; color: #0f172a; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                                            <span id="config-path-text" style="word-break: break-all;">~/Library/Application Support/Claude/claude_desktop_config.json</span>
+                                            <button onclick="copyPathText()" style="background: none; border: none; cursor: pointer; color: #64748b; padding: 0; flex-shrink: 0;" title="Copy path"><i class="ph ph-copy" style="font-size: 0.9rem;"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pre-filled JSON config block -->
                                     <div>
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                            <span style="font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">Config JSON</span>
+                                            <span class="parameter-label" style="margin: 0; text-transform: uppercase; letter-spacing: 0.06em;">Config JSON</span>
                                             <button id="copy-desktop-config-btn" onclick="copyDesktopConfig(event)" style="display: flex; align-items: center; gap: 0.35rem; background: #10b981; color: white; border: none; padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-                                                <i class="ph ph-copy"></i> Copy All
+                                                <i class="ph ph-copy"></i> Copy JSON
                                             </button>
                                         </div>
                                         <pre id="desktop-config-block" style="background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 1.1rem 1.25rem; font-size: 0.75rem; line-height: 1.7; overflow-x: auto; margin: 0; white-space: pre-wrap; word-break: break-all; font-family: 'Courier New', monospace;">Loading your config...</pre>
                                     </div>
-                                    <p style="font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.5;">⚠️ If you already have a <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">mcpServers</code> key, just add the <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">"rulip"</code> block inside it.</p>
+                                    <p style="font-size: 0.75rem; color: #94a3b8; margin: 0; line-height: 1.5;">⚠️ If you already have a <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">mcpServers</code> key, just add the <code style="font-size: 0.72rem; background: rgba(0,0,0,0.05); padding: 0.1rem 0.3rem; border-radius: 4px;">"rulip"</code> block inside it.</p>
                                 </div>
                             </div>
                         </div>
