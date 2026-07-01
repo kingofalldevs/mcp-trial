@@ -145,6 +145,7 @@
             gap: 2.5rem;
             align-items: stretch;
             flex-direction: row;
+                        flex: 0 0 260px;
             margin-top: 1rem;
             width: 100%;
             flex: 1;
@@ -706,6 +707,7 @@
                         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                         display: flex;
                         flex-direction: row;
+                        flex: 0 0 260px;
                         align-items: center;
                         gap: 0.85rem;
                         text-align: left;
@@ -769,7 +771,7 @@
                 </div>
 
                 <!-- SELECTOR GRID -->
-                <div class="ai-selector-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.75rem; flex-shrink: 0;">
+                <div class="ai-selector-grid" style="display: flex; gap: 1.25rem; margin-bottom: 1.75rem; flex-shrink: 0; overflow-x: auto; padding-bottom: 0.5rem; scroll-behavior: smooth;">
                     <div class="ai-card active" onclick="selectAI('chatgpt')" id="ai-card-chatgpt">
                         <img src="https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com" alt="ChatGPT" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
                         <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
@@ -822,12 +824,68 @@
                             <i class="ph ph-copy"></i> Copy Config
                         </button>
                     </div>
+                    <div class="ai-card" onclick="selectAI('grok')" id="ai-card-grok">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=x.com" alt="Grok" style="width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Grok Desktop</div>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <div id="ai-status-badge-grok" style="font-size: 0.62rem; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 0.2rem; background: rgba(100, 116, 139, 0.08); padding: 0.12rem 0.4rem; border-radius: 10px; transition: all 0.2s ease; flex-shrink: 0;">
+                                    <span id="ai-dot-grok" style="width: 4px; height: 4px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.2s ease;"></span>
+                                    <span id="ai-status-text-grok">Offline</span>
+                                </div>
+                                <span id="ai-time-grok" style="font-size: 0.65rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Never connected</span>
+                            </div>
+                        </div>
+                        <button class="card-copy-btn" onclick="copyCardPrompt(event, 'grok')" title="Copy Prompt for Grok">
+                            <i class="ph ph-copy"></i> Copy Prompt
+                        </button>
+                    </div>
+
                 </div>
 
                 <!-- Flex layout container for side-by-side view -->
                 <div style="display: flex; gap: 2rem; align-items: stretch; width: 100%; flex: 1; min-height: 0; overflow: hidden;">
                     <!-- CONNECTION DETAIL PANELS -->
                     <div class="glass-container-wide" style="flex: 1; margin-bottom: 0; display: flex; flex-direction: column; overflow: hidden; padding: 2rem 2.5rem;">
+                        
+                        <!-- Grok Panel -->
+                        <div id="panel-grok" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=x.com" alt="Grok" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Grok Desktop
+                            </h3>
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col" style="flex: 1.5;">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://player.vimeo.com/video/1205888811?autoplay=1&muted=1&loop=1&controls=1" title="Tutorial video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col" style="flex: 1;">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Action SSE URL</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-grok"></span>
+                                            <button onclick="copyText(this, 'mcp-url-grok')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Header (Authentication)</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value">Authorization: Bearer <span class="token-value-display"></span></span>
+                                            <button onclick="copyAuthHeader(this)" class="copy-btn-new" title="Copy Header"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(15,23,42,0.06);">
+                                        <button onclick="copyCardPrompt(event, 'grok')" class="setup-guide-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #0f172a; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                                            <i class="ph ph-copy"></i> Copy Setup Prompt
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- ChatGPT Panel -->
                         <div id="panel-chatgpt" class="ai-panel active">
                             <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
@@ -983,6 +1041,7 @@
         // Use the production domain URL
         const baseUrl = "https://www.rulip.co";
         document.getElementById('mcp-url-chatgpt').innerText = baseUrl + '/sse';
+        document.getElementById('mcp-url-grok').innerText = baseUrl + '/sse';
         document.getElementById('mcp-url-manus').innerText = baseUrl + '/sse';
         
         // Use placeholders that server.py will replace during rendering
@@ -1138,7 +1197,7 @@
         }
 
         function renderConnectionsStatus(connectedClients) {
-            const ais = ['chatgpt', 'claude', 'manus'];
+            const ais = ['chatgpt', 'claude', 'manus', 'grok'];
             
             ais.forEach(id => {
                 const connection = connectedClients.find(c => c.client_name.toLowerCase().includes(id));
@@ -1493,6 +1552,9 @@
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Client ID: rulip\n- Client Secret: rulip\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
             } else if (aiName === 'claude') {
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Client ID: rulip\n- Client Secret: rulip\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
+            } else if (aiName === 'grok') {
+                promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
+            }
             } else if (aiName === 'manus') {
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
             }
