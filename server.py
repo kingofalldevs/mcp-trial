@@ -1360,13 +1360,26 @@ async def register_client(request: Request) -> JSONResponse:
             conn.commit()
             
     import time
-    return JSONResponse({
+    
+    # RFC 7591 requires echoing back the registered metadata (like redirect_uris)
+    response_data = {
         "client_id": client_id,
         "client_id_issued_at": int(time.time()),
         "token_endpoint_auth_method": "none",
         "grant_types": ["authorization_code"],
         "response_types": ["code"]
-    })
+    }
+    
+    # Merge the requested metadata into the response
+    try:
+        if isinstance(body, dict):
+            for k, v in body.items():
+                if k not in response_data:
+                    response_data[k] = v
+    except:
+        pass
+        
+    return JSONResponse(response_data)
 
 @mcp.custom_route("/authorize", methods=["GET"])
 async def authorize(request: Request) -> HTMLResponse:
