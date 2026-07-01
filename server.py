@@ -1574,8 +1574,8 @@ async def token_endpoint(request: Request) -> JSONResponse:
 
 if __name__ == "__main__":
     app = mcp.sse_app()
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"], allow_headers=["*"])
     app.add_middleware(AuthMiddleware)
+    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"], allow_headers=["*"])
     
     port = int(os.environ.get("PORT", "8000"))
     print(f"Starting MCP Server with Native OAuth on port {port}")
