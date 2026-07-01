@@ -361,12 +361,24 @@ class AuthMiddleware:
             
             user_agent = request.headers.get("user-agent", "")
             
-            if client_name_param:
+            if db_client_name:
+                # If we have a registered OAuth client name, prioritize it (e.g. Grok, Manus, etc.)
+                client_name = db_client_name
+                # Normalize capitalization
+                if "grok" in client_name.lower():
+                    client_name = "Grok"
+                elif "claude" in client_name.lower():
+                    client_name = "Claude"
+                elif "manus" in client_name.lower():
+                    client_name = "Manus"
+            elif client_name_param:
                 param_lower = client_name_param.lower()
                 if "manus" in param_lower:
                     client_name = "Manus"
                 elif "claude" in param_lower:
                     client_name = "Claude"
+                elif "grok" in param_lower:
+                    client_name = "Grok"
                 elif "chatgpt" in param_lower or "openai" in param_lower:
                     client_name = "ChatGPT"
                 else:
