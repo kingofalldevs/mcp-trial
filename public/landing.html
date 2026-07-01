@@ -1614,7 +1614,7 @@ I need help setting this up. Can you explain the exact step-by-step process I mu
             measurementId: "{{FIREBASE_MEASUREMENT_ID}}"
         };
         firebase.initializeApp(firebaseConfig);
-        firebase.analytics();
+        try { if (firebaseConfig.measurementId) { firebase.analytics(); } } catch(e) {}
 
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {

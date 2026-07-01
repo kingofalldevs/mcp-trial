@@ -734,7 +734,7 @@
             measurementId: "{{FIREBASE_MEASUREMENT_ID}}"
         };
         firebase.initializeApp(firebaseConfig);
-        firebase.analytics();
+        try { if (firebaseConfig.measurementId) { firebase.analytics(); } } catch(e) {}
     </script>
 </body>
 </html>

@@ -1100,7 +1100,7 @@
         // Only init if API key exists
         if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('{{')) {
             firebase.initializeApp(firebaseConfig);
-            firebase.analytics();
+            try { if (firebaseConfig.measurementId) { firebase.analytics(); } } catch(e) {}
             
             // Listen for auth state changes
             firebase.auth().onAuthStateChanged(function(user) {
