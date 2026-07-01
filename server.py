@@ -235,7 +235,9 @@ init_db()
 def get_client_name_from_user_agent(user_agent: str) -> str:
     """Classifies a user agent string to identify the client name."""
     ua = (user_agent or "").lower()
-    if "claude" in ua:
+    if "grok" in ua or "xai" in ua:
+        return "Grok"
+    elif "claude" in ua:
         return "Claude"
     elif "chatgpt" in ua or "openai" in ua:
         return "ChatGPT"
