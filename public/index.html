@@ -886,6 +886,45 @@
                             </div>
                         </div>
 
+                        
+                        <!-- Claude Web Panel -->
+                        <div id="panel-claudeweb" class="ai-panel">
+                            <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="https://www.google.com/s2/favicons?sz=64&domain=claude.ai" alt="Claude Web" style="width: 24px; height: 24px; border-radius: 6px;"> 
+                                Connect to Claude Web (Custom MCP)
+                            </h3>
+                            <div class="panel-content-layout">
+                                <!-- Left side: video -->
+                                <div class="panel-video-col" style="flex: 1.5;">
+                                    <div class="video-guide-wrapper">
+                                        <iframe src="https://player.vimeo.com/video/1205888811?autoplay=1&muted=1&loop=1&controls=1" title="Tutorial video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"></iframe>
+                                    </div>
+                                </div>
+                                <!-- Right side: details -->
+                                <div class="panel-details-col" style="flex: 1;">
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Action SSE URL</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value" id="mcp-url-claudeweb"></span>
+                                            <button onclick="copyText(this, 'mcp-url-claudeweb')" class="copy-btn-new" title="Copy"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group">
+                                        <span class="parameter-label">Header (Authentication)</span>
+                                        <div class="parameter-box">
+                                            <span class="parameter-value">Authorization: Bearer <span class="token-value-display"></span></span>
+                                            <button onclick="copyAuthHeader(this)" class="copy-btn-new" title="Copy Header"><i class="ph ph-copy"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="parameter-group" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(15,23,42,0.06);">
+                                        <button onclick="copyCardPrompt(event, 'claudeweb')" class="setup-guide-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #0f172a; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                                            <i class="ph ph-copy"></i> Copy Setup Prompt
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- ChatGPT Panel -->
                         <div id="panel-chatgpt" class="ai-panel active">
                             <h3 style="font-size: 1.4rem; color: #0f172a; font-weight: 700; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.75rem;">
@@ -1042,6 +1081,7 @@
         const baseUrl = "https://www.rulip.co";
         document.getElementById('mcp-url-chatgpt').innerText = baseUrl + '/sse';
         document.getElementById('mcp-url-grok').innerText = baseUrl + '/sse';
+        document.getElementById('mcp-url-claudeweb').innerText = baseUrl + '/sse';
         document.getElementById('mcp-url-manus').innerText = baseUrl + '/sse';
         
         // Use placeholders that server.py will replace during rendering
@@ -1197,7 +1237,7 @@
         }
 
         function renderConnectionsStatus(connectedClients) {
-            const ais = ['chatgpt', 'claude', 'manus', 'grok'];
+            const ais = ['chatgpt', 'claude', 'manus', 'grok', 'claudeweb'];
             
             ais.forEach(id => {
                 const connection = connectedClients.find(c => c.client_name.toLowerCase().includes(id));
@@ -1350,6 +1390,11 @@
                 color = "#059669";
                 iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=chatgpt.com";
                 displayName = "ChatGPT";
+                        } else if (lower.includes("claudeweb") || lower.includes("claude web")) {
+                bg = "rgba(217, 119, 6, 0.1)";
+                color = "#d97706";
+                iconUrl = "https://www.google.com/s2/favicons?sz=64&domain=claude.ai";
+                displayName = "Claude Web";
             } else if (lower.includes("claude")) {
                 bg = "rgba(217, 119, 6, 0.1)";
                 color = "#d97706";
@@ -1555,6 +1600,9 @@
             } else if (aiName === 'grok') {
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
             }
+            } else if (aiName === 'claudeweb') {
+                promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
+            }
             } else if (aiName === 'manus') {
                 promptText = `Please configure an MCP server for Rulip with these details:\n- App Name: Rulip\n- MCP URL: https://www.rulip.co/sse\n- Headers: {"Authorization": "Bearer ${token}"}\n\nOnce connected, your task is to proactively remember context. Whenever I share key facts, preferences, code details, or project decisions, use the \`save_memory\` tool to store them. Use \`search_memory\` or \`list_memories\` to retrieve relevant past context.`;
             }
@@ -1584,7 +1632,8 @@
                 <label style="font-weight: 600; font-size: 0.85rem; color: #475569; text-align: left;">Source / Client Tag</label>
                 <select id="modal-memory-client" style="width: 100%; padding: 0.85rem; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); font-size: 0.95rem; outline: none; font-family: inherit; background: white;">
                     <option value="Manual">Manual Dashboard Entry</option>
-                    <option value="Claude">Claude</option>
+                    <option value="Claude">Claude Desktop</option>
+                    <option value="Claude Web">Claude Web</option>
                     <option value="Grok">Grok</option>
                     <option value="ChatGPT">ChatGPT</option>
                     <option value="Cursor">Cursor</option>
